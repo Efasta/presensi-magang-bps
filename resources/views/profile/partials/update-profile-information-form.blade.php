@@ -132,6 +132,22 @@
             <x-input-error class="mt-2" :messages="$errors->get('jenis_kelamin')" />
         </div>
 
+        <!-- Fungsi -->
+        <div>
+            <x-input-label for="fungsi_id" :value="__('Fungsi')" />
+            <select id="fungsi_id" name="fungsi_id" required
+                class="mt-1 block w-full text-gray-500 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md">
+                <option value="">Pilih Fungsi</option>
+                @foreach ($fungsiList as $fungsi)
+                    <option value="{{ $fungsi->id }}"
+                        {{ old('fungsi_id', $user->fungsi_id) == $fungsi->id ? 'selected' : '' }}>
+                        {{ $fungsi->nama }}
+                    </option>
+                @endforeach
+            </select>
+            <x-input-error class="mt-2" :messages="$errors->get('fungsi_id')" />
+        </div>
+
         {{-- Upload foto --}}
         <div>
             <label class="block mb-2 text-sm font-medium text-gray-800 dark:text-white" for="foto">Upload

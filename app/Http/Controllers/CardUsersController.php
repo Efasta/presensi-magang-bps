@@ -18,7 +18,7 @@ class CardUsersController extends Controller
         $users = User::with(['fungsi'])
             ->filter($filters)
             ->orderBy('id', 'asc')
-            ->paginate(9)
+            ->paginate(10)
             ->withQueryString();
 
         $fungsis = Fungsi::all();

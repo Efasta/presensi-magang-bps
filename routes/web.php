@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Card;
 use App\Models\User;
 use App\Models\Notif;
 use App\Models\Fungsi;
@@ -48,7 +47,7 @@ Route::get('/absensi', function () {
         })
         ->filter($filters)
         ->latest()
-        ->paginate(7)
+        ->paginate(8)
         ->withQueryString();
 
     return view('absensi', [
@@ -89,7 +88,7 @@ Route::get('/pesan/{notif:slug}', function (Notif $notif) {
 
 
 Route::get('/fungsi', function () {
-    $users = User::with(['absensi.status', 'fungsi', 'card'])->get();
+    $users = User::with(['absensi.status', 'fungsi'])->get();
     $fungsis = Fungsi::all();
     $statuses = Status::all();
 

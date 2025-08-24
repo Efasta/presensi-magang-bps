@@ -28,6 +28,7 @@ class ProfileUpdateRequest extends FormRequest
             'tanggal_keluar' => ['nullable', 'date'],
             'keahlian' => ['nullable', 'string', 'max:255'],
             'jenis_kelamin' => ['required', Rule::in([$this->user()->jenis_kelamin])],
+            'fungsi_id' => ['required', 'exists:fungsis,id'],
             // 'foto' => 'image|max:1000',
 
             // Protected fields - make read-only

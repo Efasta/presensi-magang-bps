@@ -54,10 +54,10 @@
                     </span>
                 </h1>
                 <h2 class="text-2xl sm:text-3xl font-semibold text-gray-800 mb-6">
-                    Ini adalah sistem absensi online Badan Pusat Statistik
+                    Ini adalah sistem absensi online Badan Pusat Statistik Provinsi Sulawesi Selatan
                 </h2>
                 <p class="text-gray-600 text-base sm:text-lg mb-8">
-                    Login untuk mengisi kehadiran dan mengakses informasi pegawai secara mudah dan cepat.
+                    Login sekarang untuk mengisi data kehadiran anda pada lembaga pemerintah ini.
                 </p>
                 <a href="/register"
                     class="inline-block px-6 py-3 bg-emerald-600 text-white rounded-md font-medium text-sm hover:bg-emerald-700 transition">

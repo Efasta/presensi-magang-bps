@@ -57,7 +57,7 @@
                     Ini adalah sistem absensi online Badan Pusat Statistik Provinsi Sulawesi Selatan
                 </h2>
                 <p class="text-gray-600 text-base sm:text-lg mb-8">
-                    Login sekarang untuk mengisi data kehadiran anda pada lembaga pemerintah ini.
+                    Daftar sekarang untuk mengisi data kehadiran anda pada lembaga pemerintah ini.
                 </p>
                 <a href="/register"
                     class="inline-block px-6 py-3 bg-emerald-600 text-white rounded-md font-medium text-sm hover:bg-emerald-700 transition">

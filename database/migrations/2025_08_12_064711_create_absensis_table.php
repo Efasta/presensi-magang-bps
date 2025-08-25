@@ -24,7 +24,7 @@ return new class extends Migration
                 table: 'statuses',
                 indexName: 'posts_status_id'
             )->nullable();
-            $table->text('keterangan');
+            $table->text('keterangan')->nullable();
             $table->timestamps();
         });
     }

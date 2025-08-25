@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Card;
 use App\Models\Notif;
 use App\Models\Fungsi;
 use App\Models\Status;
@@ -11,7 +10,6 @@ use Illuminate\Support\Str;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -81,16 +79,16 @@ class User extends Authenticatable implements MustVerifyEmail
         });
     }
 
-    protected $with = ['status', 'fungsi', 'absensi'];
+    protected $with = ['status', 'fungsi', 'absensis'];
 
     public function notifs(): HasMany
     {
         return $this->hasMany(Notif::class);
     }
 
-    public function absensi(): HasOne
+    public function absensis(): HasMany
     {
-        return $this->hasOne(Absensi::class);
+        return $this->hasMany(Absensi::class);
     }
 
     public function status(): BelongsTo

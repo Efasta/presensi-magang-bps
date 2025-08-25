@@ -18,8 +18,8 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     $filters = request()->only(['status', 'fungsi']);
 
-    $users = User::with(['absensi.status', 'fungsi']) // eager load
-        ->whereHas('absensi', function ($query) {
+    $users = User::with(['absensis.status', 'fungsi']) // eager load
+        ->whereHas('absensis', function ($query) {
             $query->whereNotNull('status_id'); // hanya absensi yang punya status
         })
         ->filter($filters)
@@ -48,9 +48,9 @@ Route::get('/dashboard', function () {
 Route::get('/absensi', function () {
     $filters = request()->only(['search', 'status', 'fungsi']); // bisa juga tambah 'jenis_kelamin' kalau mau
 
-    $users = User::with(['absensi.status', 'fungsi'])
-        ->whereHas('absensi', function ($query) {
-            $query->whereNotNull('status_id'); // hanya absensi yang punya status
+    $users = User::with(['absensis.status', 'fungsi'])
+        ->whereHas('absensis', function ($query) {
+            $query->whereDate('tanggal', today());
         })
         ->filter($filters)
         ->latest()
@@ -96,8 +96,8 @@ Route::get('/pesan/{notif:slug}', function (Notif $notif) {
 
 
 Route::get('/fungsi', function () {
-    $users = User::with(['absensi.status', 'fungsi'])
-        ->whereHas('absensi', function ($query) {
+    $users = User::with(['absensis.status', 'fungsi'])
+        ->whereHas('absensis', function ($query) {
             $query->whereNotNull('status_id'); // hanya absensi yang punya status
         })->get();
     $fungsis = Fungsi::all();

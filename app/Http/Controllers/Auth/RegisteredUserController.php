@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Validator;
 
 class RegisteredUserController extends Controller
 {
@@ -33,12 +34,28 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
+        // $request->validate([
+        //     'name' => ['required', 'string', 'max:255'],
+        //     'nim' => ['required', 'numeric', 'digits_between:8,15', 'unique:users,nim'],
+        //     'jurusan' => ['required', 'string', 'max:255'],
+        //     'universitas' => ['required', 'string', 'max:255'],
+        //     'email' => ['required', 'string', 'lowercase', 'email:dns', 'max:255', 'unique:users,email'],
+        //     'telepon' => ['required', 'string', 'digits_between:9,13'],
+        //     'alamat' => ['required', 'string', 'max:1000'],
+        //     'tanggal_masuk' => ['required', 'date'],
+        //     'tanggal_keluar' => ['required', 'date', 'after_or_equal:tanggal_masuk'],
+        //     'jenis_kelamin' => ['required', Rule::in(['Laki-laki', 'Perempuan'])],
+        //     'keahlian' => ['required', 'string', 'max:255'],
+        //     'fungsi_id' => ['required', 'exists:fungsis,id'],
+        //     'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        // ]);
+
+        Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255'],
             'nim' => ['required', 'numeric', 'digits_between:8,15', 'unique:users,nim'],
             'jurusan' => ['required', 'string', 'max:255'],
             'universitas' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email:dns', 'max:255', 'unique:users,email'],
+            'email' => ['required', 'string', 'email:dns', 'max:255', 'unique:users,email'],
             'telepon' => ['required', 'string', 'digits_between:9,13'],
             'alamat' => ['required', 'string', 'max:1000'],
             'tanggal_masuk' => ['required', 'date'],
@@ -47,7 +64,42 @@ class RegisteredUserController extends Controller
             'keahlian' => ['required', 'string', 'max:255'],
             'fungsi_id' => ['required', 'exists:fungsis,id'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+        ], [
+            'required' => 'Field :attribute harus diisi.',
+
+            // Spesifik
+            'name.max' => 'Nama tidak boleh lebih dari :max karakter.',
+            'nim.numeric' => 'NIM harus berupa angka.',
+            'nim.digits_between' => 'NIM harus terdiri dari antara :min sampai :max digit.',
+            'nim.unique' => 'NIM ini sudah terdaftar.',
+            'jurusan.max' => 'Jurusan tidak boleh lebih dari :max karakter.',
+            'universitas.max' => 'Universitas tidak boleh lebih dari :max karakter.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email ini sudah terdaftar.',
+            'telepon.digits_between' => 'Nomor telepon harus terdiri dari :min sampai :max digit.',
+            'alamat.max' => 'Alamat tidak boleh lebih dari :max karakter.',
+            'tanggal_masuk.date' => 'Tanggal masuk harus berupa tanggal yang valid.',
+            'tanggal_keluar.date' => 'Tanggal keluar harus berupa tanggal yang valid.',
+            'tanggal_keluar.after_or_equal' => 'Tanggal keluar tidak boleh sebelum tanggal masuk.',
+            'jenis_kelamin.in' => 'Jenis kelamin harus diisi dengan Laki-laki atau Perempuan.',
+            'keahlian.max' => 'Keahlian tidak boleh lebih dari :max karakter.',
+            'fungsi_id.exists' => 'Fungsi yang dipilih tidak tersedia.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+        ], [
+            'name' => 'Nama',
+            'nim' => 'NIM/NISN',
+            'jurusan' => 'Jurusan',
+            'universitas' => 'Universitas',
+            'email' => 'Email',
+            'telepon' => 'Nomor Telepon',
+            'alamat' => 'Alamat',
+            'tanggal_masuk' => 'Tanggal Masuk',
+            'tanggal_keluar' => 'Tanggal Keluar',
+            'jenis_kelamin' => 'Jenis Kelamin',
+            'keahlian' => 'Keahlian',
+            'fungsi_id' => 'Fungsi',
+            'password' => 'Password',
+        ])->validate();
 
         $user = User::create([
             'name' => $request->name,

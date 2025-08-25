@@ -10,17 +10,15 @@
             <div>
                 <x-input-label for="user_cred" :value="__('Email atau Nama lengkap')" />
                 <x-text-input id="user_cred" class="block mt-1 w-full" type="text" name="user_cred" :value="old('user_cred')"
-                    required autofocus autocomplete="username" />
+                    autofocus autocomplete="username" />
                 <x-input-error :messages="$errors->get('user_cred')" class="mt-2" />
             </div>
 
             <!-- Password -->
             <div class="mt-4">
                 <x-input-label for="password" :value="__('Password')" />
-
-                <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required
+                <x-text-input id="password" class="block mt-1 w-full" type="password" name="password"
                     autocomplete="current-password" />
-
                 <x-input-error :messages="$errors->get('password')" class="mt-2" />
             </div>
 

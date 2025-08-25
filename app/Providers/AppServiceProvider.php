@@ -5,6 +5,7 @@ namespace App\Providers;
 use Carbon\Carbon;
 use App\Models\Notif;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
@@ -27,6 +28,11 @@ class AppServiceProvider extends ServiceProvider
         Carbon::setLocale('id'); // untuk Carbon (tanggal lokal)
         App::setLocale('id');    // untuk Laravel translation bawaan (opsional)
         Model::preventLazyLoading();
+
+        //Kirim data ke layout
+        // View::composer('components.layout', function ($view) {
+        //     $view->with('user', Auth::user());
+        // });
 
         // Kirim data notifikasi ke semua view navbar
         View::composer('components.navbar', function ($view) {

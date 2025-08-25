@@ -35,7 +35,14 @@ Route::get('/dashboard', function () {
         $query->select(DB::raw('count(distinct id)'));
     }])->get();
 
-    return view('dashboard', ['title' => 'Dashboard', 'users' => $users, 'statuses' => $statuses, 'absensis' => $absensis, 'fungsis' => $fungsis, 'statusCounts' => $statusCounts]);
+    return view('dashboard', [
+        'title' => 'Dashboard',
+        'users' => $users,
+        'statuses' => $statuses,
+        'absensis' => $absensis,
+        'fungsis' => $fungsis,
+        'statusCounts' => $statusCounts
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/absensi', function () {
@@ -54,7 +61,8 @@ Route::get('/absensi', function () {
         'title' => 'Absensi',
         'users' => $users,
         'statuses' => Status::all(),
-        'fungsis' => Fungsi::all()
+        'fungsis' => Fungsi::all(),
+
     ]);
 });
 
@@ -88,7 +96,10 @@ Route::get('/pesan/{notif:slug}', function (Notif $notif) {
 
 
 Route::get('/fungsi', function () {
-    $users = User::with(['absensi.status', 'fungsi'])->get();
+    $users = User::with(['absensi.status', 'fungsi'])
+        ->whereHas('absensi', function ($query) {
+            $query->whereNotNull('status_id'); // hanya absensi yang punya status
+        })->get();
     $fungsis = Fungsi::all();
     $statuses = Status::all();
 

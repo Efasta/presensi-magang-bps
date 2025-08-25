@@ -24,7 +24,7 @@
         <div>
             <x-input-label for="name" :value="__('Nama Lengkap')" />
             <x-text-input id="name" name="name" type="text" class="mt-1 block w-full autofocus"
-                :value="old('name', $user->name)" required autofocus autocomplete="name" />
+                :value="old('name', $user->name)" autofocus autocomplete="name" />
             <x-input-error class="mt-2" :messages="$errors->get('name')" />
         </div>
 
@@ -32,7 +32,7 @@
         <div>
             <x-input-label for="nim" :value="__('NIM/NISN')" />
             <x-text-input id="nim" name="nim" type="text"
-                class="mt-1 block w-full text-gray-500 cursor-not-allowed" :value="old('nim', $user->nim)" required autocomplete="nim"
+                class="mt-1 block w-full text-gray-500 cursor-not-allowed" :value="old('nim', $user->nim)" autocomplete="nim"
                 disabled />
             <x-input-error class="mt-2" :messages="$errors->get('nim')" />
         </div>
@@ -41,7 +41,7 @@
         <div>
             <x-input-label for="jurusan" :value="__('Jurusan')" />
             <x-text-input id="jurusan" name="jurusan" type="text" class="mt-1 block w-full" :value="old('jurusan', $user->jurusan)"
-                required autocomplete="jurusan" />
+                autocomplete="jurusan" />
             <x-input-error class="mt-2" :messages="$errors->get('jurusan')" />
         </div>
 
@@ -49,7 +49,7 @@
         <div>
             <x-input-label for="universitas" :value="__('Universitas')" />
             <x-text-input id="universitas" name="universitas" type="text" class="mt-1 block w-full"
-                :value="old('universitas', $user->universitas)" required autocomplete="universitas" />
+                :value="old('universitas', $user->universitas)" autocomplete="universitas" />
             <x-input-error class="mt-2" :messages="$errors->get('universitas')" />
         </div>
 
@@ -57,7 +57,7 @@
         <div>
             <x-input-label for="email" :value="__('Email')" />
             <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)"
-                required autocomplete="username" />
+                autocomplete="username" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
 
             @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && !$user->hasVerifiedEmail())
@@ -84,7 +84,7 @@
         <div>
             <x-input-label for="telepon" :value="__('No. Telepon')" />
             <x-text-input id="telepon" name="telepon" type="tel" class="mt-1 block w-full" :value="old('telepon', $user->telepon)"
-                required autocomplete="tel" />
+                autocomplete="tel" />
             <x-input-error class="mt-2" :messages="$errors->get('telepon')" />
         </div>
 
@@ -92,8 +92,16 @@
         <div>
             <x-input-label for="alamat" :value="__('Alamat Lengkap')" />
             <x-text-input id="alamat" name="alamat" type="text" class="mt-1 block w-full" :value="old('alamat', $user->alamat)"
-                required autocomplete="address" />
+                autocomplete="address" />
             <x-input-error class="mt-2" :messages="$errors->get('alamat')" />
+        </div>
+
+        <!-- Keahlian -->
+        <div>
+            <x-input-label for="keahlian" :value="__('Keahlian')" />
+            <x-text-input id="keahlian" name="keahlian" type="text" class="mt-1 block w-full" :value="old('keahlian', $user->keahlian)"
+                autocomplete="keahlian" />
+            <x-input-error class="mt-2" :messages="$errors->get('keahlian')" />
         </div>
 
         <!-- Tanggal Masuk & Keluar dalam satu baris -->
@@ -102,7 +110,7 @@
             <div>
                 <x-input-label for="tanggal_masuk" :value="__('Tanggal Masuk')" />
                 <x-text-input id="tanggal_masuk" name="tanggal_masuk" type="date"
-                    class="text-gray-500 mt-1 block w-full cursor-not-allowed" :value="old('tanggal_masuk', optional($user->tanggal_masuk)->format('Y-m-d'))" required
+                    class="text-gray-500 mt-1 block w-full cursor-not-allowed" :value="old('tanggal_masuk', optional($user->tanggal_masuk)->format('Y-m-d'))"
                     autocomplete="tanggal_masuk" disabled />
                 <x-input-error class="mt-2" :messages="$errors->get('tanggal_masuk')" />
             </div>
@@ -110,7 +118,7 @@
             <div>
                 <x-input-label for="tanggal_keluar" :value="__('Tanggal Keluar')" />
                 <x-text-input id="tanggal_keluar" name="tanggal_keluar" type="date" class="mt-1 block w-full"
-                    :value="old('tanggal_keluar', optional($user->tanggal_keluar)->format('Y-m-d'))" required autocomplete="tanggal_keluar" />
+                    :value="old('tanggal_keluar', optional($user->tanggal_keluar)->format('Y-m-d'))" autocomplete="tanggal_keluar" />
                 <x-input-error class="mt-2" :messages="$errors->get('tanggal_keluar')" />
             </div>
         </div>
@@ -135,8 +143,11 @@
         <!-- Fungsi -->
         <div>
             <x-input-label for="fungsi_id" :value="__('Fungsi')" />
-            <select id="fungsi_id" name="fungsi_id" required
-                class="mt-1 block w-full text-gray-500 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md">
+            <select id="fungsi_id" name="fungsi_id"
+                class="mt-1 block w-full text-gray-500 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md
+                {{ $errors->has('fungsi_id')
+                    ? 'bg-red-50 border-red-500 text-red-500 placeholder-red-700 focus:ring-red-500 focus:border-red-500'
+                    : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500' }}">
                 <option value="">Pilih Fungsi</option>
                 @foreach ($fungsiList as $fungsi)
                     <option value="{{ $fungsi->id }}"

@@ -1,3 +1,17 @@
-@props(['disabled' => false])
+@props(['disabled' => false, 'name'])
 
-<input @disabled($disabled) {{ $attributes->merge(['class' => 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-xs']) }}>
+@php
+    $hasError = $name && $errors->has($name);
+@endphp
+
+<input
+    name="{{ $name }}"
+    @disabled($disabled)
+    {{ $attributes->merge([
+        'class' =>
+            'rounded-md shadow-xs ' .
+            ($hasError
+                ? 'bg-red-50 border-red-500 text-red-500 placeholder-red-700 focus:ring-red-500 focus:border-red-500'
+                : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500')
+    ]) }}
+>

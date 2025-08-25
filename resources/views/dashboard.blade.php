@@ -273,7 +273,8 @@
                                     <th scope="row"
                                         class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                         <div class="flex items-center mr-3 gap-3">
-                                            <img class="w-8 h-8 rounded-full" src="{{ $user->foto ? asset('storage/' . $user->foto) : asset('img/Anonymous.png') }}"
+                                            <img class="w-8 h-8 rounded-full"
+                                                src="{{ $user->foto ? asset('storage/' . $user->foto) : asset('img/Anonymous.png') }}"
                                                 alt="{{ $user->name }}" class="h-8 w-auto mr-3">
                                             <a class="hover:underline" href="/users/{{ $user->slug }}">
                                                 {{ $user->name }}
@@ -296,6 +297,7 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4">
+
                                         @php
                                             $isAdmin = Auth::user()->is_admin;
                                             $isOwner = Auth::user()->id === $user->id;
@@ -327,22 +329,24 @@
             </div>
         </div>
         <!-- Start block -->
-        <section class="pt-4 pb-20 antialiased">
-            <div class="mx-auto">
-                <div class="bg-white relative border border-gray-200 sm:rounded-lg overflow-hidden">
-                    <div class="flex items-center justify-between p-5 border-b border-gray-200">
-                        <p class="text-xl font-semibold text-gray-900 dark:text-white">Aktivitas Terkini</p>
-                    </div>
+        @if ($isAdmin || $isOwner)
+            <section class="pt-4 pb-20 antialiased">
+                <div class="mx-auto">
+                    <div class="bg-white relative border border-gray-200 sm:rounded-lg overflow-hidden">
+                        <div class="flex items-center justify-between p-5 border-b border-gray-200">
+                            <p class="text-xl font-semibold text-gray-900 dark:text-white">Aktivitas Terkini</p>
+                        </div>
 
-                    <!-- Container marquee -->
-                    <div class="overflow-hidden">
-                        <div id="marquee" class="flex gap-6 pt-4 pb-4 will-change-transform">
-                            <!-- Card cards akan di-inject dari JS -->
+                        <!-- Container marquee -->
+                        <div class="overflow-hidden">
+                            <div id="marquee" class="flex gap-6 pt-4 pb-4 will-change-transform">
+                                <!-- Card cards akan di-inject dari JS -->
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        @endif
 
         <style>
             #marquee {

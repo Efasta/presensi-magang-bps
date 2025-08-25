@@ -18,13 +18,13 @@
 
 <body class="font-sans text-gray-900 antialiased">
     <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-        <div>
+        <div class="mt-5">
             <a href="/">
                 <x-application-logo class=" fill-current text-gray-500" />
             </a>
         </div>
 
-        <div class="w-full sm:max-w-2xl mt-6 px-6 py-4 mx-auto bg-white shadow-md overflow-hidden sm:rounded-lg">
+        <div class="w-full sm:max-w-2xl mt-6 px-6 py-4 mx-auto bg-white shadow-md overflow-hidden sm:rounded-lg mb-5">
             {{ $slot }}
         </div>
     </div>

@@ -33,6 +33,14 @@ class LoginRequest extends FormRequest
         ];
     }
 
+    public function messages(): array
+    {
+        return [
+            'user_cred.required' => 'Email atau Nama lengkap harus diisi.',
+            'password.required' => 'Password wajib diisi.',
+        ];
+    }
+
     protected function prepareForValidation(): void
     {
         $this->user_type = (filter_var($this->input('user_cred'), FILTER_VALIDATE_EMAIL) ? 'email' : 'name');

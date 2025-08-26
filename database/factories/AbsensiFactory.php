@@ -19,7 +19,7 @@ class AbsensiFactory extends Factory
     public function definition(): array
     {
         return [
-            'tanggal' => fake()->date('d-m-Y', now()->addYear()),
+            'tanggal' => fake()->date('Y-m-d', now()->addYear()),
             'jam_masuk' => fake()->time('H:i', now()->subHours(4)),
             'jam_keluar' => fake()->time('H:i', now()->addHours(9)),
             'status_id' => Status::inRandomOrder()->first()?->id,

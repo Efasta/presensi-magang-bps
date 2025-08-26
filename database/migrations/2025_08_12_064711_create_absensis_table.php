@@ -17,14 +17,14 @@ return new class extends Migration
                 table: 'users',
                 indexName: 'posts_user_id'
             )->onDelete('cascade');
-            $table->string('tanggal');
+            $table->date('tanggal');
             $table->string('jam_masuk');
-            $table->string('jam_keluar');
+            $table->string('jam_keluar')->default('-');
             $table->foreignId('status_id')->constrained(
                 table: 'statuses',
                 indexName: 'posts_status_id'
             )->nullable();
-            $table->text('keterangan')->nullable();
+            $table->text('keterangan')->default('-');
             $table->timestamps();
         });
     }

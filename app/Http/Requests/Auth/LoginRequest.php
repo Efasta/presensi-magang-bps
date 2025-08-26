@@ -58,13 +58,28 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only($this->user_type, 'password'), $this->boolean('remember'))) {
-            RateLimiter::hit($this->throttleKey());
+        // Cari user berdasarkan email atau nama
+        $user = \App\Models\User::where($this->user_type, $this->input('user_cred'))->first();
 
+        if (!$user) {
+            // User tidak ditemukan, error di user_cred
             throw ValidationException::withMessages([
                 'user_cred' => trans('auth.failed'),
             ]);
         }
+
+        // User ada, cek password-nya manual
+        if (!\Illuminate\Support\Facades\Hash::check($this->input('password'), $user->password)) {
+            // Password salah, error di password
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'password' => trans('auth.password_failed'),
+            ]);
+        }
+
+        // Kalau valid, login user
+        Auth::login($user, $this->boolean('remember'));
 
         RateLimiter::clear($this->throttleKey());
     }

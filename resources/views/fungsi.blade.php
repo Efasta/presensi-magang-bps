@@ -136,7 +136,7 @@
                                 </thead>
                                 <tbody>
                                     @foreach ($users as $user)
-                                        <tr data-status="{{ strtolower($user->absensi->status->nama) }}"
+                                        <tr data-status="{{ strtolower(optional($user->absensis->first()->status)->nama ?? '') }}"
                                             data-fungsi="{{ strtolower($user->fungsi->slug) }}"
                                             class="border-b border-gray-200 dark:border-gray-600 dark:hover:bg-gray-700">
                                             <td class="px-4 py-3 font-medium text-gray-900">
@@ -160,9 +160,9 @@
                                                 class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                                 <div class="flex items-center">
                                                     <div
-                                                        class="h-4 w-4 rounded-full inline-block mr-2 {{ $user->absensi->status->warna }}">
+                                                        class="h-4 w-4 rounded-full inline-block mr-2 {{ optional($user->absensis->first()->status)->warna ?? '' }}">
                                                     </div>
-                                                    {{ $user->absensi->status->nama }}
+                                                    {{ optional($user->absensis->first()->status)->nama ?? '' }}
                                                 </div>
                                             </td>
                                             <td class="px-4 py-3 flex items-center justify-self-end">

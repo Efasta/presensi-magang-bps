@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Controllers\AbsensiController;
 use App\Models\User;
 use App\Models\Notif;
 use App\Models\Fungsi;
 use App\Models\Status;
 use App\Models\Absensi;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
@@ -17,23 +19,30 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     $filters = request()->only(['status', 'fungsi']);
+    $date = request('date') ? Carbon::parse(request('date')) : Carbon::today();
 
-    $users = User::with(['absensis.status', 'fungsi']) // eager load
-        ->whereHas('absensis', function ($query) {
-            $query->whereNotNull('status_id'); // hanya absensi yang punya status
+    // Ambil semua absensi pada tanggal tertentu
+    $absensis = Absensi::whereDate('tanggal', $date)->get();
+
+    // Ambil semua user yang memiliki absensi di tanggal tersebut
+    $users = User::with(['absensis' => function ($query) use ($date) {
+        $query->whereDate('tanggal', $date)->whereNotNull('status_id')->with('status');
+    }, 'fungsi'])
+        ->whereHas('absensis', function ($query) use ($date) {
+            $query->whereDate('tanggal', $date)->whereNotNull('status_id');
         })
         ->filter($filters)
         ->orderBy('id', 'asc')
         ->paginate(10)
         ->withQueryString();
 
+    // Status dengan jumlah user-nya per tanggal
+    $statusCounts = Status::withCount(['absensis as user_count' => function ($query) use ($date) {
+        $query->whereDate('tanggal', $date)->select(DB::raw('count(distinct user_id)'));
+    }])->get();
+
     $statuses = Status::all();
     $fungsis = Fungsi::all();
-    $absensis = Absensi::all();
-
-    $statusCounts = Status::withCount(['absensis as user_count' => function ($query) {
-        $query->select(DB::raw('count(distinct id)'));
-    }])->get();
 
     return view('dashboard', [
         'title' => 'Dashboard',
@@ -41,49 +50,16 @@ Route::get('/dashboard', function () {
         'statuses' => $statuses,
         'absensis' => $absensis,
         'fungsis' => $fungsis,
-        'statusCounts' => $statusCounts
+        'statusCounts' => $statusCounts,
+        'selectedDate' => $date->format('Y-m-d'), // untuk frontend
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/absensi', function () {
-    $filters = request()->only(['search', 'status', 'fungsi']); // bisa juga tambah 'jenis_kelamin' kalau mau
-
-    $users = User::with(['absensis.status', 'fungsi'])
-        ->whereHas('absensis', function ($query) {
-            $query->whereDate('tanggal', today());
-        })
-        ->filter($filters)
-        ->latest()
-        ->paginate(8)
-        ->withQueryString();
-
-    return view('absensi', [
-        'title' => 'Absensi',
-        'users' => $users,
-        'statuses' => Status::all(),
-        'fungsis' => Fungsi::all(),
-
-    ]);
+Route::middleware('auth')->group(function () {
+    Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensis.index');
+    Route::post('/absensi', [AbsensiController::class, 'store']);
+    Route::get('/absensi/{user:slug}', [AbsensiController::class, 'create']);
 });
-
-// public function showAll()
-//     {
-//         $filters = request()->only(['search', 'fungsi', 'jenis_kelamin']);
-
-//         $users = User::with(['fungsi'])
-//             ->filter($filters)
-//             ->orderBy('id', 'asc')
-//             ->paginate(20)
-//             ->withQueryString();
-
-//         $fungsis = Fungsi::all();
-
-//         return view('users', [
-//             'title' => 'Users',
-//             'users' => $users,
-//             'fungsis' => $fungsis
-//         ]);
-//     }
 
 Route::middleware('auth')->group(function () {
     Route::get('/users', [CardUsersController::class, 'index'])->name('users.index');
@@ -96,10 +72,17 @@ Route::get('/pesan/{notif:slug}', function (Notif $notif) {
 
 
 Route::get('/fungsi', function () {
-    $users = User::with(['absensis.status', 'fungsi'])
-        ->whereHas('absensis', function ($query) {
-            $query->whereNotNull('status_id'); // hanya absensi yang punya status
+    $today = now()->toDateString(); // Gunakan tanggal sekarang (format Y-m-d)
+
+    $users = User::with(['absensis' => function ($query) use ($today) {
+        $query->where('tanggal', $today)  // filter absensi berdasarkan kolom 'tanggal'
+            ->with('status');
+    }, 'fungsi'])
+        ->whereHas('absensis', function ($query) use ($today) {
+            $query->where('tanggal', $today)
+                ->whereNotNull('status_id');
         })->get();
+
     $fungsis = Fungsi::all();
     $statuses = Status::all();
 
@@ -113,6 +96,7 @@ Route::get('/fungsi', function () {
                 ->join('absensis', 'users.id', '=', 'absensis.user_id')
                 ->where('users.fungsi_id', $fungsi->id)
                 ->where('absensis.status_id', $status->id)
+                ->where('absensis.tanggal', $today) // pastikan filter tanggal juga di sini
                 ->count();
         }
 
@@ -126,7 +110,7 @@ Route::get('/fungsi', function () {
         'statuses' => $statuses,
         'users' => $users
     ]);
-});
+})->middleware(['auth', 'verified'])->name('fungsi');
 
 Route::middleware('auth')->group(function () {
     Route::get('/pesan', [NotifikasiController::class, 'index'])->name('notifikasi.index');

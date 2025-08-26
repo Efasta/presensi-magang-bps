@@ -66,7 +66,7 @@
                         {{ __('Alamat email Anda belum diverifikasi.') }}
 
                         <button form="send-verification"
-                            class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             {{ __('Klik di sini untuk mengirim ulang email verifikasi.') }}
                         </button>
                     </p>
@@ -144,10 +144,10 @@
         <div>
             <x-input-label for="fungsi_id" :value="__('Fungsi')" />
             <select id="fungsi_id" name="fungsi_id"
-                class="mt-1 block w-full text-gray-500 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md
+                class="mt-1 block w-full text-gray-500 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-md
                 {{ $errors->has('fungsi_id')
                     ? 'bg-red-50 border-red-500 text-red-500 placeholder-red-700 focus:ring-red-500 focus:border-red-500'
-                    : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500' }}">
+                    : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500' }}">
                 <option value="">Pilih Fungsi</option>
                 @foreach ($fungsiList as $fungsi)
                     <option value="{{ $fungsi->id }}"

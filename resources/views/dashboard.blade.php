@@ -1,66 +1,110 @@
 <x-layout :title="$title">
+    @if (Session::has('success'))
+        <div class="flex justify-center">
+            <div id="toast-success"
+                class="absolute top-[10rem] flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800"
+                role="alert">
+                <div
+                    class="inline-flex items-center justify-center shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">
+                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                        viewBox="0 0 20 20">
+                        <path
+                            d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
+                    </svg>
+                    <span class="sr-only">Check icon</span>
+                </div>
+                <div class="ms-3 text-sm font-normal">{{ Session::get('success') }}</div>
+                <button type="button"
+                    class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
+                    data-dismiss-target="#toast-success" aria-label="Close">
+                    <span class="sr-only">Close</span>
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <script>
+            setTimeout(() => {
+                const toast = document.getElementById('toast-success');
+                if (toast) {
+                    toast.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 500);
+                }
+            }, 5000);
+        </script>
+    @elseif(Session::has('error'))
+
+        <body>
+            <div class="flex justify-center">
+                <div id="toast-success"
+                    class="absolute top-[10rem] flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800"
+                    role="alert">
+                    <div class="inline-flex items-center justify-center w-8 h-8 bg-red-100 rounded-lg dark:bg-red-800">
+                        <div class="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                            <svg class="text-white w-3.5 h-3.5 mx-auto" aria-hidden="true" fill="currentColor"
+                                viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd"
+                                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <span class="sr-only">Delete icon</span>
+                    </div>
+                    <div class="ms-3 text-sm font-normal">{{ Session::get('error') }}</div>
+                    <button type="button"
+                        class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
+                        data-dismiss-target="#toast-success" aria-label="Close">
+                        <span class="sr-only">Close</span>
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <script>
+                setTimeout(() => {
+                    const toast = document.getElementById('toast-success');
+                    if (toast) {
+                        toast.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+
+                        setTimeout(() => {
+                            toast.remove();
+                        }, 500);
+                    }
+                }, 5000);
+            </script>
+    @endif
     @php
         $isAdmin = Auth::user()->is_admin;
         $isOwner = false;
     @endphp
     {{-- {{ \Carbon\Carbon::parse($card->tanggal_masuk)->format('d-m-Y') }} --}}
     <div class="flex flex-col justify-start gap-x-15 mx-7 max-h-107 mt-3">
+        @if (!$isAdmin)
+            <div class="mb-3 flex justify-center">
+                <a href="/absensi/{{ Auth::user()->slug }}"
+                    class="inline-flex items-center px-4 py-2 text-white text-sm bg-emerald-600 hover:bg-emerald-800 focus:ring-4 focus:ring-emerald-300 font-medium rounded-lg shadow focus:outline-none">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Absen Sekarang
+                </a>
+            </div>
+        @endif
         <div class="flex flex-col sm:flex-row gap-x-10">
             <div class="rounded-lg py-3 mb-1.5 border sm:w-3xl border-gray-200 whitespace-nowrap">
                 <p class="text-center font-semibold border-b border-gray-200 pb-3.5">Total : {{ count($absensis) }}
                 </p>
-
                 <div class="max-w-3xl bg-white rounded-lg dark:bg-gray-800 p-4 md:p-6">
-
-                    <div class="flex justify-between items-start w-full">
-                        <div class="flex-col items-center">
-                            <button id="dateRangeButton" data-dropdown-toggle="dateRangeDropdown"
-                                data-dropdown-ignore-click-outside-class="datepicker" type="button"
-                                class="inline-flex items-center text-blue-700 dark:text-blue-600 font-medium hover:underline">31-Juli-2025<svg
-                                    class="w-3 h-3 ms-  2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                    fill="none" viewBox="0 0 10 6">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="2" d="m1 1 4 4 4-4" />
-                                </svg>
-                            </button>
-                            <div id="dateRangeDropdown"
-                                class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-80 lg:w-96 dark:bg-gray-700 dark:divide-gray-600">
-                                <div class="p-3" aria-labelledby="dateRangeButton">
-                                    <div date-rangepicker datepicker-autohide class="flex items-center">
-                                        <div class="relative">
-                                            <div
-                                                class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                                                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
-                                                    xmlns="http://www.w3.org/2000/svg" fill="currentColor"
-                                                    viewBox="0 0 20 20">
-                                                    <path
-                                                        d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
-                                                </svg>
-                                            </div>
-                                            <input name="start" type="text"
-                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                                placeholder="Start date">
-                                        </div>
-                                        <span class="mx-2 text-gray-500 dark:text-gray-400">to</span>
-                                        <div class="relative">
-                                            <div
-                                                class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                                                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
-                                                    xmlns="http://www.w3.org/2000/svg" fill="currentColor"
-                                                    viewBox="0 0 20 20">
-                                                    <path
-                                                        d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
-                                                </svg>
-                                            </div>
-                                            <input name="end" type="text"
-                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                                placeholder="End date">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- Pie Chart Container -->
                     <div class="py-1 pb-12 relative min-h-[350px]">
@@ -281,7 +325,7 @@
                                 @php
                                     $isOwner = Auth::user()->id === $user->id;
                                 @endphp
-                                <tr data-status="{{ strtolower($status->nama ?? '') }}"
+                                <tr data-status="{{ strtolower($user->status->nama ?? '') }}"
                                     data-fungsi="{{ strtolower($user->fungsi->nama ?? '') }}">
                                     <td
                                         class="px-6
@@ -293,9 +337,7 @@
                                             <img class="w-8 h-8 rounded-full"
                                                 src="{{ $user->foto ? asset('storage/' . $user->foto) : asset('img/Anonymous.png') }}"
                                                 alt="{{ $user->name }}" class="h-8 w-auto mr-3">
-                                            <a class="hover:underline" href="/users/{{ $user->slug }}">
-                                                {{ $user->name }}
-                                            </a>
+                                            {{ $user->name }}
                                         </div>
                                     </th>
                                     <td class="px-6 py-4 font-medium text-gray-900">{{ $user->nim }}</td>
@@ -305,12 +347,20 @@
                                             {{ $user->fungsi->nama }}
                                         </a>
                                     </td>
-                                    <td class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        <div class="flex items-center">
-                                            <div class="h-4 w-4 rounded-full inline-block mr-2 {{ $status->warna }}">
+                                    <td>
+                                        @if ($user->absensis->isNotEmpty())
+                                            @php
+                                                $absensi = $user->absensis->first(); // Karena cuma satu tanggal yang diambil
+                                            @endphp
+                                            <div class="flex items-center">
+                                                <div
+                                                    class="h-4 w-4 rounded-full inline-block mr-2 {{ $absensi->status->warna ?? 'bg-gray-300' }}">
+                                                </div>
+                                                {{ $absensi->status->nama ?? '-' }}
                                             </div>
-                                            {{ $status->nama }}
-                                        </div>
+                                        @else
+                                            -
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4">
                                         @if ($isAdmin || $isOwner)
@@ -345,7 +395,7 @@
             </div>
         </div>
         <!-- Start block -->
-        @if ($isAdmin || $isOwner)
+        @if ($isAdmin)
             <section class="pt-4 pb-20 antialiased">
                 <div class="mx-auto">
                     <div class="bg-white relative border border-gray-200 sm:rounded-lg overflow-hidden">
@@ -456,7 +506,6 @@
                 }
 
                 // Duplikat supaya loop scroll halus
-                testimonials.forEach(t => marquee.appendChild(createCard(t)));
                 testimonials.forEach(t => marquee.appendChild(createCard(t)));
             @endif
         </script>

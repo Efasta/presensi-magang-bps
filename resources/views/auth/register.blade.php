@@ -56,10 +56,10 @@
             <div class="md:col-span-2">
                 <x-input-label for="alamat" :value="__('Alamat')" />
                 <textarea id="alamat" name="alamat"
-                    class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md
+                    class="block mt-1 w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-md
                     {{ $errors->has('alamat')
                         ? 'bg-red-50 border-red-500 text-red-500 placeholder-red-700 focus:ring-red-500 focus:border-red-500'
-                        : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500' }}"
+                        : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500' }}"
                     rows="3">{{ old('alamat') }}</textarea>
                 <x-input-error :messages="$errors->get('alamat')" class="mt-2" />
             </div>
@@ -84,10 +84,10 @@
             <div>
                 <x-input-label for="jenis_kelamin" :value="__('Jenis Kelamin')" />
                 <select id="jenis_kelamin" name="jenis_kelamin"
-                    class="block mt-1 w-full text-gray-500 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md
+                    class="block mt-1 w-full text-gray-500 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-md
                     {{ $errors->has('jenis_kelamin')
                         ? 'bg-red-50 border-red-500 text-red-500 placeholder-red-700 focus:ring-red-500 focus:border-red-500'
-                        : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500' }}">
+                        : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500' }}">
                     <option value="">Pilih</option>
                     <option value="Laki-laki" @selected(old('jenis_kelamin') == 'Laki-laki')>Laki-laki</option>
                     <option value="Perempuan" @selected(old('jenis_kelamin') == 'Perempuan')>Perempuan</option>
@@ -107,10 +107,10 @@
             <div class="md:col-span-2">
                 <x-input-label for="fungsi_id" :value="__('Fungsi')" />
                 <select id="fungsi_id" name="fungsi_id"
-                    class="block mt-1 w-full text-gray-500 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md
+                    class="block mt-1 w-full text-gray-500 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-md
                     {{ $errors->has('fungsi_id')
                         ? 'bg-red-50 border-red-500 text-red-500 placeholder-red-700 focus:ring-red-500 focus:border-red-500'
-                        : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500' }}">
+                        : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500' }}">
                     <option value="">Pilih Fungsi</option>
                     @foreach ($fungsiList as $fungsi)
                         <option value="{{ $fungsi->id }}" @selected(old('fungsi_id') == $fungsi->id)>
@@ -141,7 +141,7 @@
 
         <!-- Tombol -->
         <div class="flex items-center justify-end mt-6">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 href="{{ route('login') }}">
                 {{ __('Sudah terdaftar?') }}
             </a>

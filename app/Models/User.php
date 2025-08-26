@@ -79,7 +79,7 @@ class User extends Authenticatable implements MustVerifyEmail
         });
     }
 
-    protected $with = ['status', 'fungsi', 'absensis'];
+    protected $with = ['status', 'fungsi'];
 
     public function notifs(): HasMany
     {
@@ -110,7 +110,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
         // Filter berdasarkan status (relasi)
         if (!empty($filters['status']) && is_array($filters['status'])) {
-            $query->whereHas('absensi.status', function ($q) use ($filters) {
+            $query->whereHas('absensis.status', function ($q) use ($filters) {
                 $q->whereIn('nama', $filters['status']);
             });
         }

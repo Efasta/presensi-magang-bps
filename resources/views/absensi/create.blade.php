@@ -10,16 +10,39 @@
         <div id="map" class="w-full h-[661px] rounded-lg border pointer-events-auto"></div>
 
         <!-- Tombol Absen -->
-        <div class="absolute bottom-10 left-10 bg-white shadow-lg py-4 px-[30px] rounded-lg z-[999] flex flex-col space-y-2">
-            <p class="text-sm text-gray-600 max-w-sm">Jl. H. Bau No.6, Kunjung Mae, Kec. Mariso, Kota Makassar, Sulawesi Selatan 90125</p>
-            <form action="/absensi" method="POST">
-                @csrf
-                <input type="hidden" name="latitude" id="latInput" value="0">
-                <input type="hidden" name="longitude" id="lngInput" value="0">
-                <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                    ✅ Absen Sekarang
+        <div
+            class="absolute bottom-10 left-10 bg-white shadow-lg py-4 px-[30px] rounded-lg z-[999] flex flex-col space-y-2">
+            <p class="text-sm text-gray-600 max-w-sm">
+                Jl. H. Bau No.6, Kunjung Mae, Kec. Mariso, Kota Makassar, Sulawesi Selatan 90125
+            </p>
+
+            <!-- Form absensi -->
+            @if (!$absensi)
+                <!-- Belum absen masuk -->
+                <form action="{{ url('/absensi') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="latitude" id="latInput" value="0">
+                    <input type="hidden" name="longitude" id="lngInput" value="0">
+                    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                        Absen Sekarang
+                    </button>
+                </form>
+            @elseif (!$absensi->jam_keluar || $absensi->jam_keluar === '-')
+                <!-- Sudah absen masuk tapi belum absen pulang -->
+                <form action="{{ url('/absensi/pulang') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="latitude" id="latInput" value="0">
+                    <input type="hidden" name="longitude" id="lngInput" value="0">
+                    <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+                        Absen Pulang
+                    </button>
+                </form>
+            @else
+                <!-- Sudah absen masuk dan pulang -->
+                <button type="button" class="bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed" disabled>
+                    Sudah Absen Masuk & Pulang
                 </button>
-            </form>
+            @endif
         </div>
     </div>
 
@@ -52,9 +75,9 @@
 
             if (userLat && userLng) {
                 L.marker([userLat, userLng], {
-                    title: 'Lokasi Anda'
-                }).addTo(map)
-                .bindPopup('Lokasi Anda');
+                        title: 'Lokasi Anda'
+                    }).addTo(map)
+                    .bindPopup('Lokasi Anda');
 
                 map.setView([userLat, userLng], 17);
             }

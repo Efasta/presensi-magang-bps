@@ -2,7 +2,7 @@
     @if (Session::has('success'))
         <div class="flex justify-center">
             <div id="toast-success"
-                class="absolute top-[10rem] flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800"
+                class="absolute top-[5rem] flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800"
                 role="alert">
                 <div
                     class="inline-flex items-center justify-center shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">
@@ -39,48 +39,46 @@
             }, 5000);
         </script>
     @elseif(Session::has('error'))
-
-        <body>
-            <div class="flex justify-center">
-                <div id="toast-success"
-                    class="absolute top-[10rem] flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800"
-                    role="alert">
-                    <div class="inline-flex items-center justify-center w-8 h-8 bg-red-100 rounded-lg dark:bg-red-800">
-                        <div class="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-                            <svg class="text-white w-3.5 h-3.5 mx-auto" aria-hidden="true" fill="currentColor"
-                                viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        <span class="sr-only">Delete icon</span>
-                    </div>
-                    <div class="ms-3 text-sm font-normal">{{ Session::get('error') }}</div>
-                    <button type="button"
-                        class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
-                        data-dismiss-target="#toast-success" aria-label="Close">
-                        <span class="sr-only">Close</span>
-                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            viewBox="0 0 14 14">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+        <div class="flex justify-center">
+            <div id="toast-success"
+                class="absolute top-[4.5rem] flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800"
+                role="alert">
+                <div class="inline-flex items-center justify-center w-8 h-8 bg-red-100 rounded-lg dark:bg-red-800">
+                    <div class="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                        <svg class="text-white w-3.5 h-3.5 mx-auto" aria-hidden="true" fill="currentColor"
+                            viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                                d="M10 4a1 1 0 011 1v6a1 1 0 11-2 0V5a1 1 0 011-1zm0 10a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"
+                                clip-rule="evenodd" />
                         </svg>
-                    </button>
+                    </div>
+                    <span class="sr-only">Delete icon</span>
                 </div>
+                <div class="ms-3 text-sm font-normal">{{ Session::get('error') }}</div>
+                <button type="button"
+                    class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
+                    data-dismiss-target="#toast-success" aria-label="Close">
+                    <span class="sr-only">Close</span>
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                    </svg>
+                </button>
             </div>
-            <script>
-                setTimeout(() => {
-                    const toast = document.getElementById('toast-success');
-                    if (toast) {
-                        toast.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+        </div>
+        <script>
+            setTimeout(() => {
+                const toast = document.getElementById('toast-success');
+                if (toast) {
+                    toast.classList.add('opacity-0', 'transition-opacity', 'duration-500');
 
-                        setTimeout(() => {
-                            toast.remove();
-                        }, 500);
-                    }
-                }, 5000);
-            </script>
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 500);
+                }
+            }, 5000);
+        </script>
     @endif
     @php
         $isAdmin = Auth::user()->is_admin;
@@ -89,20 +87,33 @@
     {{-- {{ \Carbon\Carbon::parse($card->tanggal_masuk)->format('d-m-Y') }} --}}
     <div class="flex flex-col justify-start gap-x-15 mx-7 max-h-107 mt-3">
         @if (!$isAdmin)
-            <div class="mb-3 flex justify-center">
+            <div class="mb-3 w-full mt-4.5 flex flex-col sm:flex-row gap-3">
+                <!-- Tombol Absen Sekarang -->
                 <a href="/absensi/{{ Auth::user()->slug }}"
-                    class="inline-flex items-center px-4 py-2 text-white text-sm bg-emerald-600 hover:bg-emerald-800 focus:ring-4 focus:ring-emerald-300 font-medium rounded-lg shadow focus:outline-none">
+                    class="inline-flex justify-center items-center w-full sm:w-1/2 py-2 text-white text-sm bg-emerald-600 hover:bg-emerald-800 focus:ring-4 focus:ring-emerald-300 font-medium rounded-lg shadow focus:outline-none">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
                         xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
                     </svg>
                     Absen Sekarang
                 </a>
+
+                <!-- Tombol Presensi Detail -->
+                <a href="/presensi-detail/{{ Auth::user()->slug }}"
+                    class="inline-flex justify-center items-center w-full sm:w-1/2 py-2 text-white text-sm bg-blue-600 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg shadow focus:outline-none">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M15 12H9m12 0A9 9 0 11 3 12a9 9 0 0118 0z" />
+                    </svg>
+                    Presensi Detail
+                </a>
             </div>
         @endif
         <div class="flex flex-col sm:flex-row gap-x-10">
             <div class="rounded-lg py-3 mb-1.5 border sm:w-3xl border-gray-200 whitespace-nowrap">
-                <p class="text-center font-semibold border-b border-gray-200 pb-3.5">Total : {{ count($absensis) }}
+                <p class="text-center font-semibold border-b border-gray-200 pb-3.5">Total absensi user :
+                    {{ count($absensis) }}
                 </p>
                 <div class="max-w-3xl bg-white rounded-lg dark:bg-gray-800 p-4 md:p-6">
 
@@ -403,10 +414,10 @@
                             <p class="text-xl font-semibold text-gray-900 dark:text-white">Aktivitas Terkini</p>
                         </div>
 
-                        <!-- Container marquee -->
-                        <div class="overflow-hidden">
-                            <div id="marquee" class="flex gap-6 pt-4 pb-4 will-change-transform">
-                                <!-- Card cards akan di-inject dari JS -->
+                        <!-- Container marquee dengan wrapper -->
+                        <div id="marquee-wrapper">
+                            <div id="marquee" class="flex gap-6 pt-4 pb-4">
+                                <!-- Cards injected by JS -->
                             </div>
                         </div>
                     </div>
@@ -415,18 +426,17 @@
         @endif
 
         <style>
-            /* Wrapper untuk mencegah overflow */
             #marquee-wrapper {
                 overflow: hidden;
                 position: relative;
                 width: 100%;
+                height: auto;
             }
 
-            /* Kontainer scroll hanya jika ada data */
             #marquee {
                 display: flex;
                 gap: 1rem;
-                animation: marquee 20s linear infinite;
+                animation: scroll-marquee 20s linear infinite;
                 will-change: transform;
             }
 
@@ -434,13 +444,13 @@
                 animation-play-state: paused;
             }
 
-            @keyframes marquee {
+            @keyframes scroll-marquee {
                 0% {
-                    transform: translateX(0%);
+                    transform: translateX(100%);
                 }
 
                 100% {
-                    transform: translateX(-50%);
+                    transform: translateX(-100%);
                 }
             }
 
@@ -449,18 +459,17 @@
                 max-width: 300px;
                 flex-shrink: 0;
                 border-radius: 12px;
+                transition: border-color 0.3s ease;
             }
 
             .testimonial-card:hover {
                 border-color: #065f46;
             }
 
-            /* Teks saat kosong */
             .empty-message {
                 text-align: center;
                 padding: 2rem;
                 color: #6b7280;
-                /* Tailwind gray-500 */
                 font-size: 0.875rem;
                 width: 100%;
             }
@@ -471,7 +480,6 @@
             const marquee = document.getElementById('marquee');
 
             @if ($users->isEmpty())
-                // Hapus animasi jika kosong
                 marquee.style.animation = 'none';
                 marquee.style.justifyContent = 'center';
 
@@ -485,7 +493,7 @@
                         img: "{{ $user->foto ? asset('storage/' . $user->foto) : asset('img/Anonymous.png') }}",
                         slug: "/users/{{ $user->slug }}",
                         name: "{{ $user->name }}",
-                        text: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quaerat vitae deleniti est repudiandae! Nulla cupiditate fugit atque! Nulla ducimus"
+                        text: "{{ $user->name }} Absen Tepat waktu! 🎊🎉"
                     });
                 @endforeach
 
@@ -494,19 +502,21 @@
                     div.className =
                         'testimonial-card bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200';
                     div.innerHTML = `
-                <div class="flex items-center mb-2">
-                    <img class="w-8 h-8 rounded-full" src="${testimonial.img}" alt="${testimonial.name}">
-                    <a class="pl-2 text-green-700 dark:text-green-500 font-semibold hover:underline" href="${testimonial.slug}">
-                        ${testimonial.name}
-                    </a>
-                </div>
-                <p class="text-gray-800 dark:text-gray-300 text-sm leading-relaxed">${testimonial.text}</p>
-            `;
+            <div class="flex items-center mb-2">
+                <img class="w-8 h-8 rounded-full" src="${testimonial.img}" alt="${testimonial.name}">
+                <a class="pl-2 text-green-700 dark:text-green-500 font-semibold hover:underline" href="${testimonial.slug}">
+                    ${testimonial.name}
+                </a>
+            </div>
+            <p class="text-gray-800 dark:text-gray-300 text-sm leading-relaxed">${testimonial.text}</p>
+        `;
                     return div;
                 }
 
-                // Duplikat supaya loop scroll halus
+                // Isi konten utama
                 testimonials.forEach(t => marquee.appendChild(createCard(t)));
+
+                // Duplikat konten agar animasi bisa loop tanpa jeda
             @endif
         </script>
     </div>

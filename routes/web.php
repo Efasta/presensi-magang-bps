@@ -57,8 +57,11 @@ Route::get('/dashboard', function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensis.index');
+    Route::post('/absensi/pulang', [AbsensiController::class, 'pulang']);
     Route::post('/absensi', [AbsensiController::class, 'store']);
     Route::get('/absensi/{user:slug}', [AbsensiController::class, 'create']);
+    Route::post('/presensi-detail', [AbsensiController::class, 'storeDetail'])->name('absensi.storeDetail');
+    Route::get('/presensi-detail/{user:slug}', [AbsensiController::class, 'createDetail']);
 });
 
 Route::middleware('auth')->group(function () {

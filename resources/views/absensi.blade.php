@@ -202,7 +202,7 @@
                                                 <span class="text-gray-500 italic">Belum absen</span>
                                             @endif
                                         </td>
-                                        <td class="px-4 py-3">{{ Str::limit($absensi->keterangan, 25) }}</td>
+                                        <td class="px-4 py-3">{{ Str::limit($absensi->keterangan, 25) ?? '-' }}</td>
                                         <td class="px-4 py-3">
                                             @if ($absensi)
                                                 <!-- tombol dropdown seperti biasa -->

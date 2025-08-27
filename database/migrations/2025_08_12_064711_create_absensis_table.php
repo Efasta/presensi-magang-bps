@@ -18,13 +18,15 @@ return new class extends Migration
                 indexName: 'posts_user_id'
             )->onDelete('cascade');
             $table->date('tanggal');
-            $table->string('jam_masuk');
-            $table->string('jam_keluar')->default('-');
+            $table->time('jam_masuk')->nullable();
+            $table->time('jam_keluar')->nullable();
             $table->foreignId('status_id')->constrained(
                 table: 'statuses',
                 indexName: 'posts_status_id'
             )->nullable();
-            $table->text('keterangan')->default('-');
+            $table->string('judul')->nullable();
+            $table->string('slug')->nullable();
+            $table->text('keterangan')->nullable();
             $table->timestamps();
         });
     }

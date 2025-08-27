@@ -1,6 +1,7 @@
-<nav x-data="{ isOpen: false, isNotifOpen: false }" class="fixed top-0 z-50 w-full bg-white border-b border-gray-200">
+<nav x-data="{ isOpen: false, isNotifOpen: false }" class="fixed top-0 z-[999] w-full bg-white border-b border-gray-200">
     <div class="px-3 py-3 lg:px-5 lg:pl-3">
         <div class="flex items-center justify-between">
+            <!-- Sidebar toggle & logo -->
             <div class="flex items-center justify-start rtl:justify-end">
                 <button data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar" aria-controls="logo-sidebar"
                     type="button"
@@ -19,9 +20,11 @@
                         Provinsi Sulawesi Selatan</span>
                 </a>
             </div>
-            <div class="flex items-center relative">
+
+            <!-- Right section (notif & user menu) -->
+            <div class="flex items-center relative space-x-3">
                 <!-- Notifikasi Bell Icon -->
-                <div class="relative flex" @click.away="isNotifOpen = false">
+                <div class="relative" @click.away="isNotifOpen = false">
                     <button @click.stop="isNotifOpen = !isNotifOpen"
                         class="relative  p-1 mr-3 rounded hover:bg-gray-100 transition-colors duration-150 ease-in-out cursor-pointer">
 
@@ -42,13 +45,12 @@
                                     {{ $unreadCount }}
                                 </span>
                             @endif
-
                         </div>
                     </button>
 
                     <!-- NOTIFICATION DROPDOWN -->
                     <div x-show="isNotifOpen" x-transition
-                        class="absolute right-0 mt-10 w-80 max-h-96 overflow-y-auto bg-white border border-gray-100 rounded-lg shadow-lg z-50 mr-5">
+                        class="absolute right-0 z-[9999] mt-2 w-80 max-h-96 overflow-y-auto bg-white border border-gray-100 rounded-lg shadow-lg">
                         <ul>
                             @forelse ($recentNotifs as $notif)
                                 <li class="border-b border-gray-100 dark:border-gray-600">
@@ -57,11 +59,13 @@
                                             alt="{{ $notif->nama }}">
                                         <div>
                                             <p class="text-sm text-gray-500 dark:text-gray-400">
-                                                Pesan baru dari <span
+                                                Pesan baru dari
+                                                <span
                                                     class="font-medium text-gray-900 dark:text-white">{{ $notif->nama }}</span>
                                             </p>
-                                            <span
-                                                class="text-xs text-blue-600 dark:text-blue-500">{{ $notif->created_at->diffForHumans() }}</span>
+                                            <span class="text-xs text-blue-600 dark:text-blue-500">
+                                                {{ $notif->created_at->diffForHumans() }}
+                                            </span>
                                         </div>
                                     </a>
                                 </li>
@@ -74,68 +78,54 @@
 
                     </div>
                 </div>
-                <div @click.away="isOpen = false">
-                    <button type="button" @click="isOpen = !isOpen"
+
+                <!-- User menu -->
+                <div class="relative" @click.away="isOpen = false">
+                    <button @click="isOpen = !isOpen"
                         :class="{ 'ring ring-gray-600 ring-offset-2 ring-offset-white': isOpen }"
-                        class="flex text-sm max-w-xs rounded-full" aria-expanded="false"
-                        data-dropdown-toggle="dropdown-user">
-                        <div>
-                            <span class="sr-only">Open user menu</span>
-                            <img class="w-8 h-8 rounded-full"
-                                src="{{ Auth::user()->foto ? asset('storage/' . Auth::user()->foto) : asset('img/Anonymous.png') }}"
-                                alt="{{ Auth::user()->name }}">
-                        </div>
-                        <div class="hidden sm:flex items-center text-sm font-medium px-2 ">{{ Auth::user()->name }}
-                        </div>
-                        <div class="hidden sm:flex items-center justify-center pr-1">
-                            <svg x-show="!isOpen" class="fill-current h-4 w-4" xmlns="{http://www.w3.org/2000/svg}"
-                                viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                            <svg x-show="isOpen" class="fill-current h-4 w-4 rotate-180"
-                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                        </div>
+                        class="flex text-sm max-w-xs rounded-full items-center">
+                        <!-- Avatar + Nama -->
+                        <img class="w-8 h-8 rounded-full"
+                            src="{{ Auth::user()->foto ? asset('storage/' . Auth::user()->foto) : asset('img/Anonymous.png') }}"
+                            alt="{{ Auth::user()->name }}">
+                        <span class="hidden sm:inline-block text-sm font-medium px-2">{{ Auth::user()->name }}</span>
+                        <svg x-show="!isOpen" class="fill-current h-4 w-4" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <svg x-show="isOpen" class="fill-current h-4 w-4 rotate-180" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
                     </button>
-                </div>
-                <div x-show="isOpen"
-                    class="absolute right-0 z-10 mt-50 mr-1 w-48 origin-top-right text-base list-none border-1 border-gray-600 bg-white divide-y divide-gray-100 rounded-sm dark:bg-gray-700 dark:divide-gray-600"
-                    role="menu" aria-orientation="vertical"
-                    aria-labelledby="user-menu-button
-                            id="dropdown-user">
-                    <ul class="py-1" role="none">
-                        <li>
-                            <a href="/profile"
-                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                                role="menuitem">Profil Anda</a>
-                        </li>
-                        <li>
-                            <a href="/users/{{ Auth::user()->slug }}"
-                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                                role="menuitem">Card Anda</a>
-                        </li>
-                        <li>
-                            <a href="/dashboard"
-                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                                role="menuitem">Dashboard</a>
-                        </li>
-                        <li>
-                            <form method="POST"action="/logout">
-                                @csrf
-                                <button type="submit"
-                                    class="w-full text-start block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer"
-                                    role="menuitem">Sign out</button>
-                            </form>
-                        </li>
-                    </ul>
+
+                    <!-- Dropdown user menu -->
+                    <div x-show="isOpen"
+                        class="absolute right-0 z-[9999] mt-2 w-48 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded shadow-md dark:bg-gray-700 dark:divide-gray-600">
+                        <ul class="py-1">
+                            <li><a href="/profile"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600">Profil
+                                    Anda</a></li>
+                            <li><a href="/users/{{ Auth::user()->slug }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600">Card
+                                    Anda</a></li>
+                            <li><a href="/dashboard"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600">Dashboard</a>
+                            </li>
+                            <li>
+                                <form method="POST" action="/logout">
+                                    @csrf
+                                    <button type="submit"
+                                        class="w-full text-start block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 cursor-pointer">Sign
+                                        out</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
     </div>
 </nav>

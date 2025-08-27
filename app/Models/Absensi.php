@@ -29,6 +29,9 @@ class Absensi extends Model
         'jam_masuk',
         'jam_keluar',
         'status_id',
+        'judul',
+        'slug',
         'keterangan',
+        'gambar',
     ];
 }

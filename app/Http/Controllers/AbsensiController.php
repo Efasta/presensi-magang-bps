@@ -46,7 +46,35 @@ class AbsensiController extends Controller
      */
     public function create()
     {
-        return view('absensi.create', ['title' => 'Absensi']);
+        $user = auth()->user();
+        $today = now()->toDateString();
+
+        // Ambil data absen hari ini milik user
+        $absensiToday = Absensi::where('user_id', $user->id)
+            ->where('tanggal', $today)
+            ->first();
+
+        return view('absensi.create', [
+            'title' => 'Absensi',
+            'absensi' => $absensiToday,
+        ]);
+    }
+
+    public function createDetail()
+    {
+        $user = auth()->user();
+        $today = now()->toDateString();
+
+        // Ambil data absen hari ini milik user yang dipilih
+        $absensiToday = Absensi::where('user_id', $user->id)
+            ->where('tanggal', $today)
+            ->first();
+
+        return view('absensi.create-detail', [
+            'title' => 'Detail Presensi',
+            'absensi' => $absensiToday,
+            'user' => $user,
+        ]);
     }
 
     /**
@@ -55,32 +83,129 @@ class AbsensiController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'latitude' => 'nullable|numeric', //Sementara
-            'longitude' => 'nullable|numeric',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
         ]);
 
         $user = auth()->user();
-
         $today = now()->toDateString();
 
-        // Cek apakah user sudah absen hari ini
-        $alreadyAbsen = Absensi::where('user_id', $user->id)
+        // Cek apakah user sudah absen Hadir
+        $alreadyAbsenHadir = Absensi::where('user_id', $user->id)
             ->where('tanggal', $today)
+            ->where('status_id', 1) // 1 = Hadir
             ->exists();
 
-        if ($alreadyAbsen) {
+        if ($alreadyAbsenHadir) {
             return redirect('/dashboard')->with('error', 'Kamu sudah absen hari ini!');
+        }
+
+        // ✅ Cek apakah sudah izin atau sakit
+        $sudahIzinAtauSakit = Absensi::where('user_id', $user->id)
+            ->where('tanggal', $today)
+            ->whereIn('status_id', [2, 3]) // 2 = Izin, 3 = Sakit (pastikan ini sesuai di database kamu)
+            ->exists();
+
+        if ($sudahIzinAtauSakit) {
+            return redirect('/dashboard')->with('error', 'Kamu sudah mengajukan izin/sakit hari ini!');
         }
 
         Absensi::create([
             'user_id' => $user->id,
             'tanggal' => $today,
             'jam_masuk' => now()->format('H:i'),
-            'status_id' => 1, // contoh: 1 = Hadir
+            'status_id' => 1, // Hadir
             'keterangan' => 'Tepat waktu',
         ]);
 
         return redirect('/dashboard')->with('success', 'Absen berhasil!');
+    }
+
+
+    public function storeDetail(Request $request)
+    {
+        $request->validate([
+            'judul' => 'required|string|max:255',
+            'keterangan' => 'required|string',
+            'status_id' => 'required|exists:statuses,id',
+            'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:10000',
+        ], [
+            'judul.required' => 'Judul wajib diisi.',
+            'judul.max' => 'Judul tidak boleh lebih dari 255 karakter.',
+            'keterangan.required' => 'Keterangan wajib diisi.',
+            'status_id.required' => 'Status wajib dipilih.',
+            'status_id.exists' => 'Status tidak valid.',
+            'gambar.image' => 'File harus berupa gambar.',
+            'gambar.mimes' => 'Format gambar harus jpg, jpeg, atau png.',
+            'gambar.max' => 'Ukuran gambar maksimal 10MB.',
+        ]);
+
+        $user = auth()->user();
+        $today = now()->toDateString();
+
+        // Cek apakah user sudah absen hadir hari ini
+        $sudahHadir = Absensi::where('user_id', $user->id)
+            ->where('tanggal', $today)
+            ->where('status_id', 1) // 1 = Hadir
+            ->exists();
+
+        if ($sudahHadir) {
+            return redirect('/dashboard')->with('error', 'Anda sudah absen hari ini!');
+        }
+
+        // Upload gambar jika ada
+        $gambarPath = null;
+        if ($request->hasFile('gambar')) {
+            $gambarPath = $request->file('gambar')->store('uploads/gambar', 'public');
+        }
+
+        // Simpan data izin/sakit
+        Absensi::create([
+            'user_id' => $user->id,
+            'tanggal' => $today,
+            'status_id' => $request->status_id,
+            'judul' => $request->judul,
+            'keterangan' => $request->keterangan,
+            'gambar' => $gambarPath,
+        ]);
+
+        return redirect('/dashboard')->with('success', 'Pengajuan berhasil dikirim!');
+    }
+
+
+    public function pulang(Request $request)
+    {
+        // $request->validate([
+        //     'latitude' => 'required|numeric', //Sementara nullable ->('required')
+        //     'longitude' => 'required|numeric',
+        // ]);
+
+        // Set manual koordinat (contoh koordinat kantor) sementara set longlat :)
+        $manualLatitude = -5.147665;
+        $manualLongitude = 119.432731;
+
+        $user = auth()->user();
+        $today = now()->toDateString();
+
+        $absensi = Absensi::where('user_id', $user->id)
+            ->where('tanggal', $today)
+            ->first();
+
+        if (!$absensi) {
+            return redirect('/dashboard')->with('error', 'Belum melakukan absen masuk!');
+        }
+
+        if ($absensi->jam_keluar !== null) {
+            return redirect('/dashboard')->with('error', 'Sudah absen pulang!');
+        }
+
+        $absensi->update([
+            'jam_keluar' => now()->format('H:i'),
+            'latitude' => $manualLatitude,
+            'longitude' => $manualLongitude,
+        ]);
+
+        return redirect('/dashboard')->with('success', 'Absen pulang berhasil!');
     }
 
     /**

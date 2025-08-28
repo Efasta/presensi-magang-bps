@@ -167,7 +167,7 @@
                                 data-dropdown-placement="bottom"
                                 class="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 text-center inline-flex items-center dark:hover:text-white"
                                 type="button">
-                                Last 7 days
+                                7 hari terakhir
                                 <svg class="w-2.5 m-2.5 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                     fill="none" viewBox="0 0 10 6">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
@@ -180,26 +180,23 @@
                                     aria-labelledby="dropdownDefaultButton">
                                     <li>
                                         <a href="#"
-                                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Yesterday</a>
+                                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Kemarin</a>
                                     </li>
                                     <li>
                                         <a href="#"
-                                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Today</a>
+                                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Hari ini</a>
                                     </li>
                                     <li>
                                         <a href="#"
-                                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last
-                                            7 days</a>
+                                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">7 hari terakhir</a>
                                     </li>
                                     <li>
                                         <a href="#"
-                                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last
-                                            30 days</a>
+                                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">30 hari terakhir</a>
                                     </li>
                                     <li>
                                         <a href="#"
-                                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last
-                                            90 days</a>
+                                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">90 hari terakhir</a>
                                     </li>
                                 </ul>
                             </div>
@@ -322,19 +319,33 @@
                     {{-- Tabel Kehadiran --}}
                     <table class="min-w-full text-sm text-left text-gray-500">
                         <thead class="bg-gray-100 text-xs text-gray-700 uppercase">
-                            <tr>
-                                <th class="px-6 py-3">ID</th>
-                                <th class="px-6 py-3">Nama</th>
-                                <th class="px-6 py-3">NIM/NISN</th>
-                                <th class="px-6 py-3">Fungsi</th>
-                                <th scope="col" class="p-4">Status</th>
-                                <th class="px-6 py-3">Aksi</th>
-                            </tr>
+                            @if (!$isAdmin)
+                                <tr>
+                                    <th scope="col" class="p-4">Id</th>
+                                    <th scope="col" class="p-4">Nama</th>
+                                    <th scope="col" class="p-4">Tanggal</th>
+                                    <th scope="col" class="p-4">Jam Masuk</th>
+                                    <th scope="col" class="p-4">Jam Keluar</th>
+                                    <th scope="col" class="p-4">Status</th>
+                                    <th scope="col" class="p-4">Keterangan</th>
+                                    <th scope="col" class="p-4">Aksi</th>
+                                </tr>
+                            @else
+                                <tr>
+                                    <th scope="col" class="p-4">ID</th>
+                                    <th scope="col" class="p-4">Nama</th>
+                                    <th scope="col" class="p-4">NIM/NISN</th>
+                                    <th scope="col" class="p-4">Fungsi</th>
+                                    <th scope="col" class="p-4">Status</th>
+                                    <th scope="col" class="p-4">Aksi</th>
+                                </tr>
+                            @endif
                         </thead>
                         <tbody class="divide-y divide-gray-200">
                             @forelse ($users as $user)
                                 @php
                                     $isOwner = Auth::user()->id === $user->id;
+                                    $absensi = $user->absensis->first(); // Letakkan di awal
                                 @endphp
                                 <tr data-status="{{ strtolower($user->status->nama ?? '') }}"
                                     data-fungsi="{{ strtolower($user->fungsi->nama ?? '') }}">
@@ -351,28 +362,44 @@
                                             {{ $user->name }}
                                         </div>
                                     </th>
-                                    <td class="px-6 py-4 font-medium text-gray-900">{{ $user->nim }}</td>
-                                    <td class="px-6 py-4">
-                                        <a href="/fungsi?fungsi={{ $user->fungsi->slug }}"
-                                            class="{{ $user->fungsi->warna }} font-medium px-2 py-0.5 rounded hover:underline">
-                                            {{ $user->fungsi->nama }}
-                                        </a>
-                                    </td>
-                                    <td>
-                                        @if ($user->absensis->isNotEmpty())
-                                            @php
-                                                $absensi = $user->absensis->first(); // Karena cuma satu tanggal yang diambil
-                                            @endphp
+                                    @if (!$isAdmin)
+                                        <td class="px-4 py-3">{{ $absensi?->tanggal ?? '-' }}</td>
+                                        <td class="px-4 py-3">{{ $absensi?->jam_masuk ?? '-' }}</td>
+                                        <td class="px-4 py-3">{{ $absensi?->jam_keluar ?? '-' }}</td>
+                                        <td>
                                             <div class="flex items-center">
                                                 <div
                                                     class="h-4 w-4 rounded-full inline-block mr-2 {{ $absensi->status->warna ?? 'bg-gray-300' }}">
                                                 </div>
                                                 {{ $absensi->status->nama ?? '-' }}
                                             </div>
-                                        @else
-                                            -
-                                        @endif
-                                    </td>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            @if (!empty($absensi->judul))
+                                                <a href="/keterangan/{{ $absensi->slug }}" class="hover:underline">
+                                                    {{ Str::limit($absensi->judul, 10) }}
+                                                </a>
+                                            @else
+                                                <span class="text-gray-500 italic">-</span>
+                                            @endif
+                                        </td>
+                                    @else
+                                        <td class="px-6 py-4 font-medium text-gray-900">{{ $user->nim }}</td>
+                                        <td class="px-6 py-4">
+                                            <a href="/fungsi?fungsi={{ $user->fungsi->slug }}"
+                                                class="{{ $user->fungsi->warna }} font-medium px-2 py-0.5 rounded hover:underline">
+                                                {{ $user->fungsi->nama }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <div class="flex items-center">
+                                                <div
+                                                    class="h-4 w-4 rounded-full inline-block mr-2 {{ $absensi->status->warna ?? 'bg-gray-300' }}">
+                                                </div>
+                                                {{ $absensi->status->nama ?? '-' }}
+                                            </div>
+                                        </td>
+                                    @endif
                                     <td class="px-6 py-4">
                                         @if ($isAdmin || $isOwner)
                                             <a href="/users/{{ $user->slug }}"

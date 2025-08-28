@@ -30,49 +30,49 @@ class ProfileController extends Controller
      * Update the user's profile information.
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
-{
-    $validated = $request->validated();
+    {
+        $validated = $request->validated();
 
-    // Simpan foto lama sebelum diubah
-    // $oldFoto = $request->user()->foto;
+        // Simpan foto lama sebelum diubah
+        // $oldFoto = $request->user()->foto;
 
-    if ($request->name !== $request->user()->name) {
-        $slug = Str::slug($request->name);
-        $originalSlug = $slug;
-        $i = 1;
+        if ($request->name !== $request->user()->name) {
+            $slug = Str::slug($request->name);
+            $originalSlug = $slug;
+            $i = 1;
 
-        while (User::where('slug', $slug)->where('id', '!=', $request->user()->id)->exists()) {
-            $slug = $originalSlug . '-' . $i++;
+            while (User::where('slug', $slug)->where('id', '!=', $request->user()->id)->exists()) {
+                $slug = $originalSlug . '-' . $i++;
+            }
+
+            $request->user()->slug = $slug;
         }
 
-        $request->user()->slug = $slug;
-    }
+        $request->user()->fill($request->safe()->except([
+            'nim',
+            'jenis_kelamin',
+            'tanggal_masuk',
+            'slug'
+        ]));
 
-    $request->user()->fill($request->safe()->except([
-        'nim',
-        'jenis_kelamin',
-        'tanggal_masuk',
-        'slug'
-    ]));
-
-    if ($request->user()->isDirty('email')) {
-        $request->user()->email_verified_at = null;
-    }
-
-    // ========== UPLOAD FOTO (BARU) ==========
-    if ($request->foto) {
-        if (!empty($request->user()->foto)) {
-            Storage::disk('public')->delete($request->user()->foto);
+        if ($request->user()->isDirty('email')) {
+            $request->user()->email_verified_at = null;
         }
 
-        $newFileName = Str::after($request->foto, 'tmp/');
-        Storage::disk('public')->move($request->foto, "img/$newFileName");
+        // ========== UPLOAD FOTO (BARU) ==========
+        if ($request->foto) {
+            if (!empty($request->user()->foto)) {
+                Storage::disk('public')->delete($request->user()->foto);
+            }
 
-        $validated['foto'] = "img/$newFileName";
-    }
+            $newFileName = Str::after($request->foto, 'tmp/');
+            Storage::disk('public')->move($request->foto, "img/$newFileName");
 
-    // ========== UPLOAD FOTO (LAMA - dikomentari) ==========
-    /*
+            $validated['foto'] = "img/$newFileName";
+        }
+
+        // ========== UPLOAD FOTO (LAMA - dikomentari) ==========
+        /*
     if ($request->hasFile('foto')) {
         // Hapus foto lama dulu
         if (!empty($oldFoto)) {
@@ -85,11 +85,11 @@ class ProfileController extends Controller
     }
     */
 
-    // Simpan perubahan ke database (termasuk foto baru jika ada)
-    $request->user()->update($validated);
+        // Simpan perubahan ke database (termasuk foto baru jika ada)
+        $request->user()->update($validated);
 
-    return Redirect::route('profile.edit')->with('status', 'profile-updated');
-}
+        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+    }
 
     public function upload(Request $request)
     {
@@ -98,6 +98,21 @@ class ProfileController extends Controller
         }
 
         return $path;
+    }
+
+    public function revert(Request $request)
+    {
+        $request->validate([
+            'path' => 'required|string',
+        ]);
+
+        // Pastikan hanya file di direktori tmp yang bisa dihapus
+        if (str_starts_with($request->path, 'tmp/')) {
+            Storage::disk('public')->delete($request->path);
+            return response()->noContent(); // 204 success
+        }
+
+        return response()->json(['error' => 'Invalid file path'], 400);
     }
 
     /**

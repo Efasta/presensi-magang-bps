@@ -1,7 +1,10 @@
 <x-layout :title="$title">
-    <div class="flex justify-center items-start py-10">
+    @push('style')
+        <link href="https://unpkg.com/filepond@^4/dist/filepond.css" rel="stylesheet" />
+    @endpush
+    <div class="flex justify-center items-start mt-4.5">
         <div class="w-full max-w-4xl bg-white p-8 rounded-lg border border-gray-200">
-            <h2 class="text-3xl font-bold text-emerald-700 mb-10 text-center">
+            <h2 class="text-3xl font-bold text-emerald-700 mb-5 text-center">
                 Formulir Pengajuan Izin / Sakit
             </h2>
 
@@ -62,8 +65,14 @@
                 <div class="mb-8">
                     <label for="gambar" class="block text-base font-medium text-gray-700 mb-2">Upload Bukti
                         (Opsional)</label>
-                    <input type="file" id="gambar" name="gambar" accept="image/*"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                    <input
+                        class="@error('gambar') bg-red-50 border-red-500 text-red-500 placeholder-red-700 focus:ring-red-500 focus:border-red-500 @enderror block w-full text-sm text-gray-800 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                        aria-describedby="gambar_help" id="gambar" name="gambar" type="file"
+                        accept="application/pdf">
+                    <input type="hidden" name="gambar_path" id="gambar_path">
+                    <div class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="gambar_help">File yang diterima
+                        adalah PDF dan tak lebih besar dari 10MB. <br> !PERHATIAN! (Jangan keluar dari halaman ini
+                        setelah mengupload file dan belum kirim.)</div>
                     @error('gambar')
                         <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
                     @enderror
@@ -79,4 +88,66 @@
             </form>
         </div>
     </div>
+    @push('script')
+        <script src="https://unpkg.com/filepond-plugin-file-validate-size/dist/filepond-plugin-file-validate-size.js"></script>
+        <script src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.js"></script>
+        <script src="https://unpkg.com/filepond@^4/dist/filepond.js"></script>
+
+        <script>
+            FilePond.registerPlugin(FilePondPluginFileValidateType);
+            FilePond.registerPlugin(FilePondPluginFileValidateSize);
+
+            const inputElement = document.querySelector('#gambar');
+            const pond = FilePond.create(inputElement, {
+                acceptedFileTypes: ['application/pdf'],
+                labelFileTypeNotAllowed: 'Hanya file PDF yang diizinkan.',
+                fileValidateTypeLabelExpectedTypes: 'Format file yang diperbolehkan: PDF',
+                maxFileSize: '10MB',
+                labelMaxFileSizeExceeded: 'Ukuran file terlalu besar.',
+                labelMaxFileSize: 'Ukuran maksimum: 10MB',
+                server: {
+                    process: {
+                        url: '/upload-absensi',
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        onload: (response) => {
+                            // Set path yang dikembalikan ke input hidden
+                            document.querySelector('#gambar_path').value = response;
+                            return response;
+                        }, // response adalah path nama file, misalnya "tmp/abcd123.pdf"
+                    },
+                    revert: (filename, load, error) => {
+                        fetch('/revert-absensi', {
+                                method: 'DELETE',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    filename: filename
+                                })
+                            })
+                            .then(res => {
+                                if (res.ok) {
+                                    load(); // Berhasil hapus
+                                } else {
+                                    error('Gagal menghapus file');
+                                }
+                            })
+                            .catch(() => {
+                                error('Gagal menghapus file');
+                            });
+                    }
+                },
+                labelIdle: 'Drag & drop file PDF Anda atau <span class="filepond--label-action">Telusuri</span>',
+                labelFileProcessing: 'Mengupload...',
+                labelFileProcessingComplete: 'Upload selesai',
+                labelTapToUndo: 'Ketuk untuk batal',
+                labelFileProcessingError: 'Gagal mengupload',
+                labelFileRemoveError: 'Gagal menghapus file',
+            });
+        </script>
+    @endpush
 </x-layout>

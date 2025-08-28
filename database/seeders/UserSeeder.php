@@ -20,8 +20,8 @@ class UserSeeder extends Seeder
             'is_admin' => true,
             'email' => 'fialfakhri08@gmail.com',
             'jenis_kelamin' => 'Laki-laki',
-            'foto' => 'img/foto saya.jpeg',
-            'password' => Hash::make('efakahaeri!@#')
+            'foto' => 'img/QDUXTA4gODAHsxXmssBaKtCp1Sjc3zQPVUNRGgBf.jpg',
+            'password' => Hash::make('simple')
         ]);
 
         User::factory()->create([
@@ -30,7 +30,7 @@ class UserSeeder extends Seeder
             'is_admin' => true,
             'email' => 'sigit.ardis2008@gmail.com',
             'jenis_kelamin' => 'Laki-laki',
-            'foto' => 'img/download.jpg',
+            'foto' => 'img/a2jp9a61i4CRujURwbEOYZMIsdbMS9toPcPF6gEc.jpg',
             'password' => Hash::make('13579024680')
         ]);
         
@@ -40,7 +40,7 @@ class UserSeeder extends Seeder
             'is_admin' => true,
             'email' => 'ridh0gaming@gmail.com',
             'jenis_kelamin' => 'Laki-laki',
-            'foto' => 'img/Anonymous.png',
+            'foto' => 'img/518g5ANKm9Q0aiEX9qXQpFGRrLu5aWOutISVF5dq.jpg',
         ]);
     }
 }

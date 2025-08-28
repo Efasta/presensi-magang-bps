@@ -35,20 +35,16 @@ class AppServiceProvider extends ServiceProvider
         // });
 
         // Kirim data notifikasi ke semua view navbar
-        View::composer('components.navbar', function ($view) {
-            $view->with('notifs', Notif::all());
-            $unreadCount = Notif::where('is_read', false)->count();
-            $recentNotifs = Notif::where('is_read', false)->orderBy('created_at', 'desc')->get();
+        View::composer('*', function ($view) {
+    if (Auth::check()) {
+        $unreadCount = Notif::where('is_read', false)->count();
+        $recentNotifs = Notif::where('is_read', false)
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-            $view->with(compact('unreadCount', 'recentNotifs'));
-        });
+        $view->with(compact('unreadCount', 'recentNotifs'));
+    }
+});
 
-        View::composer('layouts.navigation', function ($view) {
-            $view->with('notifs', Notif::all());
-            $unreadCount = Notif::where('is_read', false)->count();
-            $recentNotifs = Notif::where('is_read', false)->orderBy('created_at', 'desc')->get();
-
-            $view->with(compact('unreadCount', 'recentNotifs'));
-        });
     }
 }

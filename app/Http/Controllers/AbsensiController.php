@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Fungsi;
 use App\Models\Status;
 use App\Models\Absensi;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
 class AbsensiController extends Controller
@@ -121,23 +122,19 @@ class AbsensiController extends Controller
         return redirect('/dashboard')->with('success', 'Absen berhasil!');
     }
 
-
     public function storeDetail(Request $request)
     {
         $request->validate([
             'judul' => 'required|string|max:255',
             'keterangan' => 'required|string',
             'status_id' => 'required|exists:statuses,id',
-            'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:10000',
+            'gambar_path' => 'nullable|string',
         ], [
             'judul.required' => 'Judul wajib diisi.',
             'judul.max' => 'Judul tidak boleh lebih dari 255 karakter.',
             'keterangan.required' => 'Keterangan wajib diisi.',
             'status_id.required' => 'Status wajib dipilih.',
             'status_id.exists' => 'Status tidak valid.',
-            'gambar.image' => 'File harus berupa gambar.',
-            'gambar.mimes' => 'Format gambar harus jpg, jpeg, atau png.',
-            'gambar.max' => 'Ukuran gambar maksimal 10MB.',
         ]);
 
         $user = auth()->user();
@@ -155,16 +152,30 @@ class AbsensiController extends Controller
 
         // Upload gambar jika ada
         $gambarPath = null;
-        if ($request->hasFile('gambar')) {
-            $gambarPath = $request->file('gambar')->store('uploads/gambar', 'public');
+        if ($request->filled('gambar_path')) {
+            $from = storage_path('app/public/' . $request->gambar_path);
+            $toDir = storage_path('app/public/uploads/gambar');
+            if (file_exists($from)) {
+                if (!file_exists($toDir)) {
+                    mkdir($toDir, 0755, true);
+                }
+                $fileName = basename($from);
+                $to = $toDir . '/' . $fileName;
+                rename($from, $to);
+                $gambarPath = 'uploads/gambar/' . $fileName;
+            }
         }
 
-        // Simpan data izin/sakit
+        // Buat slug dari judul + uniqid
+        $slug = Str::slug($request->judul) . uniqid();
+
+        // Simpan data izin/sakit dengan slug
         Absensi::create([
             'user_id' => $user->id,
             'tanggal' => $today,
             'status_id' => $request->status_id,
             'judul' => $request->judul,
+            'slug' => $slug,
             'keterangan' => $request->keterangan,
             'gambar' => $gambarPath,
         ]);
@@ -172,6 +183,32 @@ class AbsensiController extends Controller
         return redirect('/dashboard')->with('success', 'Pengajuan berhasil dikirim!');
     }
 
+
+    public function upload(Request $request)
+    {
+        if ($request->hasFile('gambar')) {
+            $path = $request->file('gambar')->store('tmp', 'public');
+        }
+
+        return $path;
+    }
+
+    public function revert(Request $request)
+    {
+        $filename = $request->input('filename');
+
+        if ($filename) {
+            // Pastikan path benar
+            $filePath = storage_path('app/public/tmp/' . basename($filename));
+
+            if (file_exists($filePath)) {
+                unlink($filePath); // Hapus file
+                return response()->json(['message' => 'File berhasil dihapus.']);
+            }
+        }
+
+        return response()->json(['message' => 'File tidak ditemukan.'], 404);
+    }
 
     public function pulang(Request $request)
     {
@@ -213,7 +250,13 @@ class AbsensiController extends Controller
      */
     public function show(Absensi $absensi)
     {
-        //
+        // eager load relasi user, user.fungsi, dan status
+        $absensi->load('user.fungsi', 'status');
+
+        return view('absensi.view', [
+            'title' => 'Keterangan',
+            'absensi' => $absensi,
+        ]);
     }
 
     /**

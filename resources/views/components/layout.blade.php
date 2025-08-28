@@ -13,6 +13,8 @@
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+    @stack('style')
 </head>
 
 <body>
@@ -34,6 +36,7 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
 
+    @stack('script')
 </body>
 
 <footer class="border-t border-gray-200 sm:ml-64 fixed bottom-0 w-full bg-white z-50">

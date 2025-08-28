@@ -202,7 +202,14 @@
                                                 <span class="text-gray-500 italic">Belum absen</span>
                                             @endif
                                         </td>
-                                        <td class="px-4 py-3">{{ Str::limit($absensi->keterangan, 25) ?? '-' }}</td>
+                                        @php
+                                            $absensiToday = $user->absensis->first(); // ambil absensi pertama di koleksi absensis
+                                        @endphp
+                                        <td class="px-4 py-3">
+                                            <a href="/keterangan/{{ $absensiToday->slug }}" class="hover:underline">
+                                                {{ Str::limit($absensiToday->judul ?? $absensiToday->status->nama, 10) }}
+                                            </a>
+                                        </td>
                                         <td class="px-4 py-3">
                                             @if ($absensi)
                                                 <!-- tombol dropdown seperti biasa -->
@@ -231,9 +238,22 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/datepicker.min.js"></script>
     @else
         {{-- Optional: Jika kamu mau tampilkan pesan untuk non-admin --}}
-        <div class="p-6 text-center text-gray-500">
-            Anda tidak memiliki izin untuk melihat data absensi.
-        </div>
+        <section class="bg-white dark:bg-gray-900">
+            <div class="py-8 px-4 mx-auto max-w-screen-xl lg:pt-40 lg:px-6">
+                <div class="mx-auto max-w-screen-sm text-center">
+                    <h1
+                        class="mb-4 text-7xl tracking-tight font-extrabold lg:text-9xl text-blue-600 dark:text-red-500">
+                        403</h1>
+                    <p class="mb-4 text-3xl tracking-tight font-bold text-gray-900 md:text-4xl dark:text-white">Akses
+                        Ditolak</p>
+                    <p class="mb-4 text-lg font-light text-gray-500 dark:text-gray-400">Maaf, Anda tidak memiliki izin
+                        untuk mengakses halaman ini.</p>
+                    <a href="{{ route('dashboard') }}"
+                        class="inline-flex text-white bg-emerald-600 hover:bg-emerald-700 focus:ring-4 focus:outline-none focus:ring-emerald-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-emerald-800 my-4">Kembali
+                        ke Dashboard</a>
+                </div>
+            </div>
+        </section>
     @endif
 
 </x-layout>

@@ -7,7 +7,8 @@
             {{-- FOTO USER --}}
             <div
                 class="w-full md:w-auto flex flex-col justify-start pr-5 text-gray-800 font-semibold order-1 md:order-2 sm:border-l pl-6 pt-9">
-                <img src="{{ $user->foto ? asset('storage/' . $user->foto) : asset('img/Anonymous.png') }}" alt="{{ $user->name }}"
+                <img src="{{ $user->foto ? asset('storage/' . $user->foto) : asset('img/Anonymous.png') }}"
+                    alt="{{ $user->name }}"
                     class="w-65 h-72 object-cover border-2 border-black rounded-lg shadow-sm mx-auto md:ml-8 mb-7">
 
                 {{-- Biodata tambahan --}}
@@ -55,11 +56,21 @@
 
                 {{-- Tombol Aksi --}}
                 <div class="flex mt-6 w-full">
+                    @php
+                        $isAdmin = Auth::user()->is_admin;
+                    @endphp
                     {{-- Tombol Kembali --}}
+                    @if (!$isAdmin)
+                    <a href="/dashboard"
+                        class="inline-block px-4 py-2 text-sm bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition">
+                        ← Kembali ke Dashboard
+                    </a>
+                    @else
                     <a href="/users"
                         class="inline-block px-4 py-2 text-sm bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition">
                         ← Kembali ke Daftar
                     </a>
+                    @endif
 
                     {{-- Tombol Edit & Delete (dalam flex) --}}
                     <div class="flex space-x-3 ml-auto">

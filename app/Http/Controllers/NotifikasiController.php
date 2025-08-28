@@ -14,6 +14,19 @@ class NotifikasiController extends Controller
         return view('pesan', ['title' => 'Pesan', 'notifs' => $notifs]);
     }
 
+    public function show(Notif $notif)
+    {
+        if (! $notif->is_read) {
+            $notif->is_read = true;
+            $notif->save();
+        }
+
+        return view('pesan.view', [
+            'title' => 'Detail Pesan',
+            'notif' => $notif,
+        ]);
+    }
+
     // Update notifikasi jadi read
     public function markRead(Request $request)
     {

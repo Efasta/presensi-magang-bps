@@ -35,8 +35,6 @@
                                     <path d="M3 3l14 14" stroke="currentColor" stroke-width="1.5"
                                         stroke-linecap="round" />
                                 </svg>
-
-
                                 Unread
                             </button>
 
@@ -171,7 +169,7 @@
                                     const messageContent = messageDiv.querySelector('.message-content');
                                     const senderName = messageDiv.querySelector('.sender-name');
                                     if (messageContent) messageContent.classList.remove(
-                                    'font-semibold');
+                                        'font-semibold');
                                     if (senderName) senderName.classList.remove('font-semibold');
                                 }
                                 cb.checked = false;

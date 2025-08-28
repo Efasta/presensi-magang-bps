@@ -26,7 +26,7 @@
             </div>
         </div>
     </div>
-    @push('scripts')
+    @push('script')
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 const params = new URLSearchParams(window.location.search);

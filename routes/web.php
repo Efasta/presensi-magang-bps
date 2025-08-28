@@ -57,22 +57,20 @@ Route::get('/dashboard', function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensis.index');
+    Route::get('/keterangan/{absensi:slug}', [AbsensiController::class, 'show']);
     Route::post('/absensi/pulang', [AbsensiController::class, 'pulang']);
     Route::post('/absensi', [AbsensiController::class, 'store']);
     Route::get('/absensi/{user:slug}', [AbsensiController::class, 'create']);
     Route::post('/presensi-detail', [AbsensiController::class, 'storeDetail'])->name('absensi.storeDetail');
     Route::get('/presensi-detail/{user:slug}', [AbsensiController::class, 'createDetail']);
+    Route::post('/upload-absensi', [AbsensiController::class, 'upload']);
+    Route::delete('/revert-absensi', [AbsensiController::class, 'revert']);
 });
 
 Route::middleware('auth')->group(function () {
     Route::get('/users', [CardUsersController::class, 'index'])->name('users.index');
     Route::get('/users/{user:slug}', [CardUsersController::class, 'show']);
 });
-
-Route::get('/pesan/{notif:slug}', function (Notif $notif) {
-    return view('pesan-view', ['title' => 'Detail Pesan', 'notif' => $notif]);
-});
-
 
 Route::get('/fungsi', function () {
     $today = now()->toDateString(); // Gunakan tanggal sekarang (format Y-m-d)
@@ -117,6 +115,7 @@ Route::get('/fungsi', function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/pesan', [NotifikasiController::class, 'index'])->name('notifikasi.index');
+    Route::get('/pesan/{notif:slug}', [NotifikasiController::class, 'show']);
     Route::post('/notifikasi/read', [NotifikasiController::class, 'markRead'])->name('notifikasi.read');
     Route::post('/notifikasi/unread', [NotifikasiController::class, 'markUnread'])->name('notifikasi.unread');
     Route::post('/notifikasi/delete', [NotifikasiController::class, 'delete'])->name('notifikasi.delete');
@@ -126,7 +125,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::post('/upload', [ProfileController::class, 'upload']);
+    Route::post('/upload-profile', [ProfileController::class, 'upload']);
+    Route::delete('/revert-profile', [ProfileController::class, 'revert']);
 });
 
 require __DIR__ . '/auth.php';

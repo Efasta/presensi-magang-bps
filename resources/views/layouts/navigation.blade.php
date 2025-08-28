@@ -5,7 +5,7 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="/" class="flex items-center space-x-3">
+                    <a href="/dashboard" class="flex items-center space-x-3">
                         <x-application-logo class="h-10 w-auto fill-current text-gray-500" />
                         <div class="text-lg font-semibold text-gray-900">
                             BPS Provinsi Sulawesi Selatan

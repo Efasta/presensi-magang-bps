@@ -422,7 +422,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="text-center text-gray-500 py-6">
+                                        <td colspan="6" class="text-center text-gray-500 py-50">
                                             Belum ada pengguna yang absen...
                                         </td>
                                     </tr>
@@ -474,7 +474,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="8" class="text-center text-gray-500 py-6">
+                                        <td colspan="8" class="text-center text-gray-500 py-50">
                                             Belum ada data absensi untuk Anda...
                                         </td>
                                     </tr>

@@ -26,59 +26,57 @@
                 </button>
             </div>
         </div>
-        <script>
+        <div>
             setTimeout(() => {
-                const toast = document.getElementById('toast-success');
-                if (toast) {
-                    toast.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+            const toast = document.getElementById('toast-success');
+            if (toast) {
+            toast.classList.add('opacity-0', 'transition-opacity', 'duration-500');
 
-                    setTimeout(() => {
-                        toast.remove();
-                    }, 500);
-                }
+            setTimeout(() => {
+            toast.remove();
+            }, 500);
+            }
             }, 5000);
-        </script>
-    @elseif(Session::has('error'))
-        <div class="flex justify-center">
-            <div id="toast-success"
-                class="absolute top-[4.5rem] flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800"
-                role="alert">
-                <div class="inline-flex items-center justify-center w-8 h-8 bg-red-100 rounded-lg dark:bg-red-800">
-                    <div class="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-                        <svg class="text-white w-3.5 h-3.5 mx-auto" aria-hidden="true" fill="currentColor"
-                            viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                                d="M10 4a1 1 0 011 1v6a1 1 0 11-2 0V5a1 1 0 011-1zm0 10a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"
-                                clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                    <span class="sr-only">Delete icon</span>
-                </div>
-                <div class="ms-3 text-sm font-normal">{{ Session::get('error') }}</div>
-                <button type="button"
-                    class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
-                    data-dismiss-target="#toast-success" aria-label="Close">
-                    <span class="sr-only">Close</span>
-                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 14 14">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+    </div @elseif(Session::has('error')) <div class="flex justify-center">
+        <div id="toast-error"
+            class="absolute top-[4.5rem] flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800"
+            role="alert">
+            <div class="inline-flex items-center justify-center w-8 h-8 bg-red-100 rounded-lg dark:bg-red-800">
+                <div class="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                    <svg class="text-white w-3.5 h-3.5 mx-auto" aria-hidden="true" fill="currentColor"
+                        viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd"
+                            d="M10 4a1 1 0 011 1v6a1 1 0 11-2 0V5a1 1 0 011-1zm0 10a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"
+                            clip-rule="evenodd" />
                     </svg>
-                </button>
+                </div>
+                <span class="sr-only">Delete icon</span>
             </div>
+            <div class="ms-3 text-sm font-normal">{{ Session::get('error') }}</div>
+            <button type="button"
+                class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
+                data-dismiss-target="#toast-error" aria-label="Close">
+                <span class="sr-only">Close</span>
+                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 14 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                </svg>
+            </button>
         </div>
-        <script>
+        </div>
+        <div>
             setTimeout(() => {
-                const toast = document.getElementById('toast-success');
-                if (toast) {
-                    toast.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+            const toast = document.getElementById('toast-error');
+            if (toast) {
+            toast.classList.add('opacity-0', 'transition-opacity', 'duration-500');
 
-                    setTimeout(() => {
-                        toast.remove();
-                    }, 500);
-                }
+            setTimeout(() => {
+            toast.remove();
+            }, 500);
+            }
             }, 5000);
-        </script>
+        </div>
     @endif
     @php
         $isAdmin = Auth::user()->is_admin;
@@ -112,62 +110,42 @@
         @endif
         <div class="flex flex-col sm:flex-row gap-x-10">
             <div class="rounded-lg py-3 mb-1.5 border sm:w-3xl border-gray-200 whitespace-nowrap">
-                <p class="text-center font-semibold border-b border-gray-200 pb-3.5">Total absensi user :
-                    {{ count($absensis) }}
-                </p>
+                @if (!$isAdmin)
+                    <p class="text-center font-semibold border-b border-gray-200 pb-3.5">Statistik Kehadiran Anda</p>
+                @else
+                    <p class="text-center font-semibold border-b border-gray-200 pb-3.5">Total absensi user :
+                        {{ count($absensis) }}
+                    </p>
+                @endif
                 <div class="max-w-3xl bg-white rounded-lg dark:bg-gray-800 p-4 md:p-6">
 
                     <!-- Pie Chart Container -->
                     <div class="py-1 pb-12 relative min-h-[350px]">
                         @if ($statusCounts->sum('user_count') === 0)
-                            <!-- Fallback saat data kosong -->
-                            <div class="absolute inset-0 flex items-center justify-center text-gray-500 text-sm">
+                            <div
+                                class="absolute inset-0 flex flex-col items-center justify-center text-gray-500 text-sm text-center">
+                                <svg class="w-6 h-6 text-gray-800 dark:text-white mb-2" aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M5 1v3m5-3v3m5-3v3M1 7h18M5 11h10M2 3h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" />
+                                </svg>
                                 Belum ada data absensi untuk ditampilkan.
                             </div>
                         @else
-                            <!-- Pie Chart -->
                             <div id="pie-chart"></div>
-
-                            <script>
-                                document.addEventListener("DOMContentLoaded", function() {
-                                    const labels = @json($statusCounts->pluck('nama'));
-                                    const series = @json($statusCounts->pluck('user_count'));
-
-                                    const chartOptions = {
-                                        chart: {
-                                            type: 'pie',
-                                            height: 350
-                                        },
-                                        series: series,
-                                        labels: labels,
-                                        colors: ['#10B981', '#EAB308', '#3B82F6', '#DC2626'],
-                                        legend: {
-                                            show: true
-                                        },
-                                        dataLabels: {
-                                            enabled: true,
-                                            formatter: function(val) {
-                                                return `${val.toFixed(1)}%`;
-                                            }
-                                        }
-                                    };
-
-                                    const chart = new ApexCharts(document.querySelector("#pie-chart"), chartOptions);
-                                    chart.render();
-                                });
-                            </script>
                         @endif
                     </div>
 
+                    <!-- 🔽 Dropdown Filter -->
                     <div
                         class="grid grid-cols-1 items-center border-gray-200 border-t dark:border-gray-700 justify-between">
                         <div class="flex justify-between items-center pt-5">
-                            <!-- Button -->
                             <button id="dropdownDefaultButton" data-dropdown-toggle="lastDaysdropdown"
-                                data-dropdown-placement="bottom"
+                                data-dropdown-placement="top"
                                 class="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 text-center inline-flex items-center dark:hover:text-white"
                                 type="button">
-                                7 hari terakhir
+                                {{ $isAdmin ? 'Hari ini' : 'Sepanjang waktu' }}
                                 <svg class="w-2.5 m-2.5 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                     fill="none" viewBox="0 0 10 6">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
@@ -178,26 +156,24 @@
                                 class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700">
                                 <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
                                     aria-labelledby="dropdownDefaultButton">
-                                    <li>
-                                        <a href="#"
-                                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Kemarin</a>
-                                    </li>
-                                    <li>
-                                        <a href="#"
-                                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Hari ini</a>
-                                    </li>
-                                    <li>
-                                        <a href="#"
-                                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">7 hari terakhir</a>
-                                    </li>
-                                    <li>
-                                        <a href="#"
-                                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">30 hari terakhir</a>
-                                    </li>
-                                    <li>
-                                        <a href="#"
-                                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">90 hari terakhir</a>
-                                    </li>
+
+                                    @if (!$isAdmin)
+                                        <li><a href="#" class="block px-4 py-2">Sepanjang waktu</a></li>
+                                    @endif
+
+                                    @if ($isAdmin)
+                                        <li><a href="#" class="dropdown-range block px-4 py-2"
+                                                data-range="today">Hari ini</a></li>
+                                        <li><a href="#" class="dropdown-range block px-4 py-2"
+                                                data-range="yesterday">Kemarin</a></li>
+                                    @endif
+
+                                    <li><a href="#" class="dropdown-range block px-4 py-2" data-range="7">7
+                                            hari terakhir</a></li>
+                                    <li><a href="#" class="dropdown-range block px-4 py-2" data-range="30">30
+                                            hari terakhir</a></li>
+                                    <li><a href="#" class="dropdown-range block px-4 py-2" data-range="90">90
+                                            hari terakhir</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -205,10 +181,75 @@
                 </div>
             </div>
 
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    const labels = @json($statusCounts->pluck('nama'));
+                    const series = @json($statusCounts->pluck('user_count'));
+
+                    const chartOptions = {
+                        chart: {
+                            type: 'pie',
+                            height: 350
+                        },
+                        series: series,
+                        labels: labels,
+                        colors: ['#10B981', '#EAB308', '#3B82F6', '#DC2626'],
+                        legend: {
+                            show: true
+                        },
+                        dataLabels: {
+                            enabled: true,
+                            formatter: function(val) {
+                                return `${val.toFixed(1)}%`;
+                            }
+                        }
+                    };
+
+                    const chart = new ApexCharts(document.querySelector("#pie-chart"), chartOptions);
+                    chart.render();
+
+                    // 🔥 Update chart + tabel saat dropdown diklik
+                    document.querySelectorAll(".dropdown-range").forEach(item => {
+                        item.addEventListener("click", function(e) {
+                            e.preventDefault();
+                            const range = this.dataset.range;
+
+                            fetch(`/absensi/chart/${range}`)
+                                .then(res => res.json())
+                                .then(data => {
+                                    const newLabels = data.map(d => d.nama);
+                                    const newSeries = data.map(d => d.user_count);
+
+                                    // update chart
+                                    chart.updateOptions({
+                                        labels: newLabels
+                                    });
+                                    chart.updateSeries(newSeries);
+
+                                    // update tabel
+                                    const tbody = document.getElementById("recap-body");
+                                    tbody.innerHTML = "";
+                                    data.forEach(d => {
+                                        tbody.innerHTML += `
+                            <tr class="border-b dark:border-gray-700">
+                                <td class="px-4 py-3">${d.nama}</td>
+                                <td class="px-4 py-3">${d.user_count}</td>
+                            </tr>`;
+                                    });
+                                });
+                        });
+                    });
+                });
+            </script>
+
             <div class="rounded-lg py-3 mt-1 sm:mt-0 mb-1.5 border w-full border-gray-200 flex flex-col min-h-[600px]">
                 <div class="flex flex-row items-center justify-between border-b border-gray-200 pb-3 px-4">
                     <!-- Tengah (Judul) -->
-                    <div class="text-center font-semibold text-base">Tabel Data</div>
+                    @if (!$isAdmin)
+                        <div class="text-center font-semibold text-base">Tabel Data Kehadiran Anda</div>
+                    @else
+                        <div class="text-center font-semibold text-base">Tabel Data Kehadiran User</div>
+                    @endif
 
                     <!-- Kanan (Tombol Filter) -->
                     <div>
@@ -319,54 +360,89 @@
                     {{-- Tabel Kehadiran --}}
                     <table class="min-w-full text-sm text-left text-gray-500">
                         <thead class="bg-gray-100 text-xs text-gray-700 uppercase">
-                            @if (!$isAdmin)
-                                <tr>
-                                    <th scope="col" class="p-4">Id</th>
-                                    <th scope="col" class="p-4">Nama</th>
-                                    <th scope="col" class="p-4">Tanggal</th>
-                                    <th scope="col" class="p-4">Jam Masuk</th>
-                                    <th scope="col" class="p-4">Jam Keluar</th>
-                                    <th scope="col" class="p-4">Status</th>
-                                    <th scope="col" class="p-4">Keterangan</th>
-                                    <th scope="col" class="p-4">Aksi</th>
-                                </tr>
-                            @else
-                                <tr>
-                                    <th scope="col" class="p-4">ID</th>
-                                    <th scope="col" class="p-4">Nama</th>
-                                    <th scope="col" class="p-4">NIM/NISN</th>
-                                    <th scope="col" class="p-4">Fungsi</th>
-                                    <th scope="col" class="p-4">Status</th>
-                                    <th scope="col" class="p-4">Aksi</th>
-                                </tr>
-                            @endif
+                            <tr>
+                                @if (!$isAdmin)
+                                    <th class="p-4">ID</th>
+                                    <th class="p-4">Nama</th>
+                                    <th class="p-4">Tanggal</th>
+                                    <th class="p-4">Jam Masuk</th>
+                                    <th class="p-4">Jam Keluar</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4">Keterangan</th>
+                                    <th class="p-4">Aksi</th>
+                                @else
+                                    <th class="p-4">ID</th>
+                                    <th class="p-4">Nama</th>
+                                    <th class="p-4">NIM/NISN</th>
+                                    <th class="p-4">Fungsi</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4"></th>
+                                    <th class="p-4">Aksi</th>
+                                @endif
+                            </tr>
                         </thead>
+
                         <tbody class="divide-y divide-gray-200">
-                            @forelse ($users as $user)
-                                @php
-                                    $isOwner = Auth::user()->id === $user->id;
-                                    $absensi = $user->absensis->first(); // Letakkan di awal
-                                @endphp
-                                <tr data-status="{{ strtolower($user->status->nama ?? '') }}"
-                                    data-fungsi="{{ strtolower($user->fungsi->nama ?? '') }}">
-                                    <td
-                                        class="px-6
-                                    py-4 font-medium text-gray-900">
-                                        {{ $loop->iteration }}</td>
-                                    <th scope="row"
-                                        class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        <div class="flex items-center mr-3 gap-3">
-                                            <img class="w-8 h-8 rounded-full"
-                                                src="{{ $user->foto ? asset('storage/' . $user->foto) : asset('img/Anonymous.png') }}"
-                                                alt="{{ $user->name }}" class="h-8 w-auto mr-3">
-                                            {{ $user->name }}
-                                        </div>
-                                    </th>
-                                    @if (!$isAdmin)
-                                        <td class="px-4 py-3">{{ $absensi?->tanggal ?? '-' }}</td>
-                                        <td class="px-4 py-3">{{ $absensi?->jam_masuk ?? '-' }}</td>
-                                        <td class="px-4 py-3">{{ $absensi?->jam_keluar ?? '-' }}</td>
-                                        <td>
+                            @if ($isAdmin)
+                                @forelse ($users as $user)
+                                    @php
+                                        $absensiFirst = $user->absensis->first();
+                                    @endphp
+                                    <tr>
+                                        <td class="px-4 py-3">{{ $loop->iteration }}</td>
+                                        <td class="px-4 py-3">
+                                            <div class="flex items-center gap-3 text-black">
+                                                <img class="w-8 h-8 rounded-full"
+                                                    src="{{ $user->foto ? asset('storage/' . $user->foto) : asset('img/Anonymous.png') }}"
+                                                    alt="{{ $user->name }}">
+                                                {{ $user->name }}
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3 text-black">{{ $user->nim }}</td>
+                                        <td class="px-4 py-3">
+                                            <a href="/fungsi?fungsi={{ $user->fungsi->slug }}"
+                                                class="{{ $user->fungsi->warna }} font-medium px-2 py-0.5 rounded hover:underline">
+                                                {{ $user->fungsi->nama }}
+                                            </a>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <div class="flex items-center text-black">
+                                                <div
+                                                    class="h-4 w-4 rounded-full inline-block mr-2 {{ $absensiFirst->status->warna ?? 'bg-gray-300' }}">
+                                                </div>
+                                                {{ $absensiFirst->status->nama ?? '-' }}
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3 text-black">
+                                            {{ $user->absensis->where('status_id', $user->absensis->first()->status_id)->count() . 'x' }}
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <x-dropdown-action :user="$user" />
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center text-gray-500 py-6">
+                                            Belum ada pengguna yang absen...
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            @else
+                                @forelse ($absensisPaginated as $absensi)
+                                    <tr>
+                                        <td class="px-4 py-3">{{ $loop->iteration }}</td>
+                                        <td class="px-4 py-3">
+                                            <div class="flex items-center gap-3 text-black">
+                                                <img class="w-8 h-8 rounded-full"
+                                                    src="{{ $absensi->user->foto ? asset('storage/' . $absensi->user->foto) : asset('img/Anonymous.png') }}"
+                                                    alt="{{ $absensi->user->name }}">
+                                                {{ $absensi->user->name }}
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3 text-black">{{ $absensi->tanggal ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-black">{{ $absensi->jam_masuk ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-black">{{ $absensi->jam_keluar ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-black">
                                             <div class="flex items-center">
                                                 <div
                                                     class="h-4 w-4 rounded-full inline-block mr-2 {{ $absensi->status->warna ?? 'bg-gray-300' }}">
@@ -374,7 +450,7 @@
                                                 {{ $absensi->status->nama ?? '-' }}
                                             </div>
                                         </td>
-                                        <td class="px-4 py-3">
+                                        <td class="px-4 py-3 text-black">
                                             @if (!empty($absensi->judul))
                                                 <a href="/keterangan/{{ $absensi->slug }}" class="hover:underline">
                                                     {{ Str::limit($absensi->judul, 10) }}
@@ -383,53 +459,44 @@
                                                 <span class="text-gray-500 italic">-</span>
                                             @endif
                                         </td>
-                                    @else
-                                        <td class="px-6 py-4 font-medium text-gray-900">{{ $user->nim }}</td>
-                                        <td class="px-6 py-4">
-                                            <a href="/fungsi?fungsi={{ $user->fungsi->slug }}"
-                                                class="{{ $user->fungsi->warna }} font-medium px-2 py-0.5 rounded hover:underline">
-                                                {{ $user->fungsi->nama }}
-                                            </a>
-                                        </td>
-                                        <td>
-                                            <div class="flex items-center">
-                                                <div
-                                                    class="h-4 w-4 rounded-full inline-block mr-2 {{ $absensi->status->warna ?? 'bg-gray-300' }}">
-                                                </div>
-                                                {{ $absensi->status->nama ?? '-' }}
-                                            </div>
-                                        </td>
-                                    @endif
-                                    <td class="px-6 py-4">
-                                        @if ($isAdmin || $isOwner)
-                                            <a href="/users/{{ $user->slug }}"
+                                        <td class="px-4 py-3">
+                                            <a href="/users/{{ $absensi->user->slug }}"
                                                 class="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline gap-1.5">
                                                 <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                    fill="currentColor" viewBox="0 0 20 20">
                                                     <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
                                                     <path fill-rule="evenodd" clip-rule="evenodd"
                                                         d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" />
                                                 </svg>
                                                 <span class="text-sm font-medium">Lihat</span>
                                             </a>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="text-center text-gray-500 py-6">
-                                        Belum ada pengguna yang absen...
-                                    </td>
-                                </tr>
-                            @endforelse
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="8" class="text-center text-gray-500 py-6">
+                                            Belum ada data absensi untuk Anda...
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            @endif
+
+                            <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
                         </tbody>
                     </table>
                 </div>
-                @if ($users->hasPages())
+
+                {{-- Pagination --}}
+                @if ($isAdmin && $users->hasPages())
                     <div class="border-t pt-3.5 border-gray-200">
                         {{ $users->onEachSide(0)->links('pagination::tailwind') }}
                     </div>
+                @elseif (!$isAdmin && $absensisPaginated->hasPages())
+                    <div class="border-t pt-3.5 border-gray-200">
+                        {{ $absensisPaginated->onEachSide(0)->links('pagination::tailwind') }}
+                    </div>
                 @endif
+
             </div>
         </div>
         <!-- Start block -->

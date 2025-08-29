@@ -1,63 +1,29 @@
 <?php
 
-use App\Http\Controllers\AbsensiController;
 use App\Models\User;
-use App\Models\Notif;
 use App\Models\Fungsi;
 use App\Models\Status;
-use App\Models\Absensi;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CardUsersController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NotifikasiController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    $filters = request()->only(['status', 'fungsi']);
-    $date = request('date') ? Carbon::parse(request('date')) : Carbon::today();
-
-    // Ambil semua absensi pada tanggal tertentu
-    $absensis = Absensi::whereDate('tanggal', $date)->get();
-
-    // Ambil semua user yang memiliki absensi di tanggal tersebut
-    $users = User::with(['absensis' => function ($query) use ($date) {
-        $query->whereDate('tanggal', $date)->whereNotNull('status_id')->with('status');
-    }, 'fungsi'])
-        ->whereHas('absensis', function ($query) use ($date) {
-            $query->whereDate('tanggal', $date)->whereNotNull('status_id');
-        })
-        ->filter($filters)
-        ->orderBy('id', 'asc')
-        ->paginate(10)
-        ->withQueryString();
-
-    // Status dengan jumlah user-nya per tanggal
-    $statusCounts = Status::withCount(['absensis as user_count' => function ($query) use ($date) {
-        $query->whereDate('tanggal', $date)->select(DB::raw('count(distinct user_id)'));
-    }])->get();
-
-    $statuses = Status::all();
-    $fungsis = Fungsi::all();
-
-    return view('dashboard', [
-        'title' => 'Dashboard',
-        'users' => $users,
-        'statuses' => $statuses,
-        'absensis' => $absensis,
-        'fungsis' => $fungsis,
-        'statusCounts' => $statusCounts,
-        'selectedDate' => $date->format('Y-m-d'), // untuk frontend
-    ]);
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/absensi/chart/{range}', [DashboardController::class, 'getChartData']);
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensis.index');
     Route::get('/keterangan/{absensi:slug}', [AbsensiController::class, 'show']);
+    Route::get('/absensi-detail/{user:slug}', [AbsensiController::class, 'showDetail']);
     Route::post('/absensi/pulang', [AbsensiController::class, 'pulang']);
     Route::post('/absensi', [AbsensiController::class, 'store']);
     Route::get('/absensi/{user:slug}', [AbsensiController::class, 'create']);

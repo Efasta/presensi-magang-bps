@@ -259,6 +259,14 @@ class AbsensiController extends Controller
         ]);
     }
 
+    public function showDetail(User $user)
+    {
+        return view('absensi.view-detail', [
+            'title' => 'Detail Absensi',
+            'user' => $user,
+        ]);
+    }
+
     /**
      * Show the form for editing the specified resource.
      */

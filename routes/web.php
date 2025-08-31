@@ -18,6 +18,7 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/absensi/chart/{range}', [DashboardController::class, 'getChartData']);
+    Route::get('/absensi/table/{range}', [DashboardController::class, 'getTableData']);
 });
 
 Route::middleware('auth')->group(function () {

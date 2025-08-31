@@ -27,62 +27,66 @@
             </div>
         </div>
         <div>
-            setTimeout(() => {
-            const toast = document.getElementById('toast-success');
-            if (toast) {
-            toast.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+            <script>
+                setTimeout(() => {
+                    const toast = document.getElementById('toast-success');
+                    if (toast) {
+                        toast.classList.add('opacity-0', 'transition-opacity', 'duration-500');
 
-            setTimeout(() => {
-            toast.remove();
-            }, 500);
-            }
-            }, 5000);
-    </div @elseif(Session::has('error')) <div class="flex justify-center">
-        <div id="toast-error"
-            class="absolute top-[4.5rem] flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800"
-            role="alert">
-            <div class="inline-flex items-center justify-center w-8 h-8 bg-red-100 rounded-lg dark:bg-red-800">
-                <div class="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-                    <svg class="text-white w-3.5 h-3.5 mx-auto" aria-hidden="true" fill="currentColor"
-                        viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd"
-                            d="M10 4a1 1 0 011 1v6a1 1 0 11-2 0V5a1 1 0 011-1zm0 10a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"
-                            clip-rule="evenodd" />
-                    </svg>
+                        setTimeout(() => {
+                            toast.remove();
+                        }, 500);
+                    }
+                }, 5000);
+            </script>
+        </div>
+    @elseif(Session::has('error'))
+        <div class="flex justify-center">
+            <div id="toast-error"
+                class="absolute top-[4.5rem] flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800"
+                role="alert">
+                <div class="inline-flex items-center justify-center w-8 h-8 bg-red-100 rounded-lg dark:bg-red-800">
+                    <div class="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                        <svg class="text-white w-3.5 h-3.5 mx-auto" aria-hidden="true" fill="currentColor"
+                            viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                                d="M10 4a1 1 0 011 1v6a1 1 0 11-2 0V5a1 1 0 011-1zm0 10a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <span class="sr-only">Delete icon</span>
                 </div>
-                <span class="sr-only">Delete icon</span>
+                <div class="ms-3 text-sm font-normal">{{ Session::get('error') }}</div>
+                <button type="button"
+                    class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
+                    data-dismiss-target="#toast-error" aria-label="Close">
+                    <span class="sr-only">Close</span>
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                    </svg>
+                </button>
             </div>
-            <div class="ms-3 text-sm font-normal">{{ Session::get('error') }}</div>
-            <button type="button"
-                class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
-                data-dismiss-target="#toast-error" aria-label="Close">
-                <span class="sr-only">Close</span>
-                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                    viewBox="0 0 14 14">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-                </svg>
-            </button>
-        </div>
-        </div>
-        <div>
-            setTimeout(() => {
-            const toast = document.getElementById('toast-error');
-            if (toast) {
-            toast.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+            <div>
+                <script>
+                    setTimeout(() => {
+                        const toast = document.getElementById('toast-error');
+                        if (toast) {
+                            toast.classList.add('opacity-0', 'transition-opacity', 'duration-500');
 
-            setTimeout(() => {
-            toast.remove();
-            }, 500);
-            }
-            }, 5000);
-        </div>
+                            setTimeout(() => {
+                                toast.remove();
+                            }, 500);
+                        }
+                    }, 5000);
+                </script>
+            </div>
     @endif
     @php
         $isAdmin = Auth::user()->is_admin;
         $isOwner = false;
     @endphp
-    {{-- {{ \Carbon\Carbon::parse($card->tanggal_masuk)->format('d-m-Y') }} --}}
     <div class="flex flex-col justify-start gap-x-15 mx-7 max-h-107 mt-3">
         @if (!$isAdmin)
             <div class="mb-3 w-full mt-4.5 flex flex-col sm:flex-row gap-3">
@@ -114,27 +118,229 @@
                     <p class="text-center font-semibold border-b border-gray-200 pb-3.5">Statistik Kehadiran Anda</p>
                 @else
                     <p class="text-center font-semibold border-b border-gray-200 pb-3.5">Total absensi user :
-                        {{ count($absensis) }}
+                        {{ $totalAbsensi }}
                     </p>
                 @endif
                 <div class="max-w-3xl bg-white rounded-lg dark:bg-gray-800 p-4 md:p-6">
 
                     <!-- Pie Chart Container -->
                     <div class="py-1 pb-12 relative min-h-[350px]">
-                        @if ($statusCounts->sum('user_count') === 0)
-                            <div
-                                class="absolute inset-0 flex flex-col items-center justify-center text-gray-500 text-sm text-center">
-                                <svg class="w-6 h-6 text-gray-800 dark:text-white mb-2" aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M5 1v3m5-3v3m5-3v3M1 7h18M5 11h10M2 3h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" />
-                                </svg>
-                                Belum ada data absensi untuk ditampilkan.
-                            </div>
-                        @else
-                            <div id="pie-chart"></div>
-                        @endif
+                        <div id="empty-state"
+                            class="absolute inset-0 flex flex-col items-center justify-center text-gray-500 text-sm text-center {{ $hasData ? 'hidden' : '' }}">
+                            <svg class="w-6 h-6 text-gray-800 dark:text-white mb-2" aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M5 1v3m5-3v3m5-3v3M1 7h18M5 11h10M2 3h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" />
+                            </svg>
+                            Belum ada data absensi untuk ditampilkan.
+                        </div>
+
+                        <div id="pie-chart"></div> {{-- <<-- Piechart disini --}}
+
+                        <script>
+                            document.addEventListener("DOMContentLoaded", function() {
+                                const labels = @json($statusCounts->pluck('nama'));
+                                const series = @json($statusCounts->pluck('user_count'));
+                                const isAdmin = @json($isAdmin); // ambil role dari backend
+
+                                // Inisialisasi chart
+                                const chartOptions = {
+                                    chart: {
+                                        type: 'pie',
+                                        height: 350
+                                    },
+                                    series: series,
+                                    labels: labels,
+                                    colors: ['#10B981', '#EAB308', '#3B82F6', '#DC2626'],
+                                    legend: {
+                                        show: true
+                                    },
+                                    dataLabels: {
+                                        enabled: true,
+                                        formatter: (val) => `${val.toFixed(1)}%`
+                                    }
+                                };
+                                const chart = new ApexCharts(document.querySelector("#pie-chart"), chartOptions);
+                                chart.render();
+
+                                // Handle dropdown filter
+                                document.querySelectorAll(".dropdown-range").forEach(item => {
+                                    item.addEventListener("click", function(e) {
+                                        e.preventDefault();
+                                        const range = this.dataset.range;
+
+                                        // Update teks tombol
+                                        const dropdownText = document.getElementById("dropdownButtonText");
+                                        if (dropdownText) dropdownText.textContent = this.innerText.trim();
+
+                                        // Ambil data baru dari endpoint
+                                        fetch(`/absensi/chart/${range}`)
+                                            .then(res => res.json())
+                                            .then(data => {
+                                                const newLabels = data.map(item => item.nama);
+                                                const newSeries = data.map(item => item.user_count);
+
+                                                chart.updateOptions({
+                                                    labels: newLabels
+                                                });
+                                                chart.updateSeries(newSeries);
+
+                                                // Tampilkan atau sembunyikan empty state tergantung data
+                                                const emptyState = document.getElementById("empty-state");
+                                                if (newSeries.reduce((a, b) => a + b, 0) === 0) {
+                                                    emptyState.classList.remove("hidden");
+                                                } else {
+                                                    emptyState.classList.add("hidden");
+                                                }
+
+                                                // 🚀 Tambahkan request data tabel
+                                                return fetch(`/absensi/table/${range}`);
+                                            })
+                                            .then(res => res.json())
+                                            .then(tableData => {
+                                                const tbody = document.getElementById("recap-body");
+                                                tbody.innerHTML = "";
+
+                                                if (tableData.length === 0) {
+                                                    tbody.innerHTML = `
+                                                    <tr>
+                                                        <td colspan="${isAdmin ? 7 : 8}" class="text-center text-gray-500 py-10">
+                                                            Tidak ada data absensi untuk rentang ini...
+                                                        </td>
+                                                    </tr>`;
+                                                    return;
+                                                }
+
+                                                tableData.forEach((d, index) => {
+                                                    if (isAdmin) {
+                                                        tbody.innerHTML += `
+                                                        <tr class="border-b dark:border-gray-700">
+                                                            <td class="px-4 py-3">${index + 1}</td>
+                                                            <td class="px-4 py-3">
+                                                                <div class="flex items-center gap-3 text-black">
+                                                                    <img class="w-8 h-8 rounded-full" src="${d.user.foto ?? '/img/Anonymous.png'}" alt="${d.user.name}">
+                                                                    ${d.user.name}
+                                                                </div>
+                                                            </td>
+                                                            <td class="px-4 py-3 text-black">${d.user.nim ?? '-'}</td>
+                                                            <td class="px-4 py-3 text-black">
+                                                                <a href="/fungsi?fungsi=${d.user.fungsi_slug ?? ''}" class="${d.user.fungsi_warna} font-medium px-2 py-0.5 rounded hover:underline">
+                                                                ${d.user.fungsi}
+                                                                </a>
+                                                            </td>
+                                                            <td class="px-4 py-3">
+                                                                <div class="flex items-center text-black">
+                                                                    <div class="h-4 w-4 rounded-full inline-block mr-2 ${d.status.warna ?? 'bg-gray-300'}"></div>
+                                                                    ${d.status.nama ?? '-'}
+                                                                </div>
+                                                            </td>
+                                                            <td class="px-4 py-3 text-black">${d.count}x</td>
+                                                            <td class="px-4 py-3 relative">
+                                                        <div>
+                                                            <button id="users-${d.user.id}-dropdown-button"
+                                                                data-dropdown-toggle="users-${d.user.id}-dropdown"
+                                                                class="inline-flex items-center text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 p-1.5 dark:hover-bg-gray-800 text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100"
+                                                                type="button">
+                                                                <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
+                                                                    xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+                                                                </svg>
+                                                            </button>
+                                                            <div id="users-${d.user.id}-dropdown"
+                                                                class="absolute right-0 mt-2 hidden z-50 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
+                                                                <ul class="py-1 text-sm" aria-labelledby="users-${d.user.id}-dropdown-button">
+                                                                    <li>
+                                                                        <a href="/users/${d.user.user_slug}"
+                                                                            class="flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-gray-700 dark:text-gray-200">
+                                                                            <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                                                                fill="currentColor" aria-hidden="true">
+                                                                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                                                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                                    d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" />
+                                                                            </svg>
+                                                                            Detail Card
+                                                                        </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a href="/absensi-detail/${d.user.user_slug}"
+                                                                            class="flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-gray-700 dark:text-gray-200">
+                                                                            <svg class="w-4 h-4 mr-2 text-gray-800 dark:text-white"
+                                                                                aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                                                fill="none" viewBox="0 0 24 24">
+                                                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                                                                    stroke-width="2"
+                                                                                    d="M7 6H5m2 3H5m2 3H5m2 3H5m2 3H5m11-1a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2M7 3h11a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z" />
+                                                                            </svg>
+                                                                            Detail Absensi
+                                                                        </a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                        </tr>`;
+                                                        // Reinitialize dropdown (Flowbite)
+                                                        document.querySelectorAll('[data-dropdown-toggle]')
+                                                            .forEach(button => {
+                                                                button.addEventListener('click',
+                                                                    function() {
+                                                                        const dropdownId = this
+                                                                            .getAttribute(
+                                                                                'data-dropdown-toggle'
+                                                                            );
+                                                                        const dropdown = document
+                                                                            .getElementById(
+                                                                                dropdownId);
+                                                                        if (dropdown) {
+                                                                            dropdown.classList
+                                                                                .toggle('hidden');
+                                                                        }
+                                                                    });
+                                                            });
+                                                    } else {
+                                                        tbody.innerHTML += `
+                                                        <tr class="border-b dark:border-gray-700">
+                                                            <td class="px-4 py-3">${index + 1}</td>
+                                                            <td class="px-4 py-3">
+                                                                <div class="flex items-center gap-3 text-black">
+                                                                    <img class="w-8 h-8 rounded-full" src="${d.foto ?? '/img/Anonymous.png'}" alt="${d.nama}">
+                                                                    ${d.nama}
+                                                                </div>
+                                                            </td>
+                                                            <td class="px-4 py-3 text-black">${d.tanggal ?? '-'}</td>
+                                                            <td class="px-4 py-3 text-black">${d.jam_masuk ?? '-'}</td>
+                                                            <td class="px-4 py-3 text-black">${d.jam_keluar ?? '-'}</td>
+                                                            <td class="px-4 py-3">
+                                                                <div class="flex items-center">
+                                                                    <div class="h-4 w-4 rounded-full inline-block mr-2 ${d.status_warna ?? 'bg-gray-300'}"></div>
+                                                                    ${d.status_nama ?? '-'}
+                                                                </div>
+                                                            </td>
+                                                            <td class="px-4 py-3 text-black">
+                                                                ${d.judul ? `<a href="/keterangan/${d.slug_keterangan}" class="hover:underline">${d.judul.substring(0, 10)}</a>` : `<span class="text-gray-500 italic">-</span>`}
+                                                            </td>
+                                                            <td class="px-4 py-3">
+                                                                <a href="/users/${d.slug_user}" class="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline gap-1.5">
+                                                                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg"
+                                                                        fill="currentColor" viewBox="0 0 20 20">
+                                                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                                                        <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                            d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" />
+                                                                    </svg>
+                                                                    <span class="text-sm font-medium">Lihat</span>
+                                                                </a>
+                                                            </td>
+                                                        </tr>`;
+                                                    }
+                                                });
+                                            });
+
+                                    });
+                                });
+                            });
+                        </script>
+
                     </div>
 
                     <!-- 🔽 Dropdown Filter -->
@@ -145,7 +351,7 @@
                                 data-dropdown-placement="top"
                                 class="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 text-center inline-flex items-center dark:hover:text-white"
                                 type="button">
-                                {{ $isAdmin ? 'Hari ini' : 'Sepanjang waktu' }}
+                                <span id="dropdownButtonText">Hari ini</span>
                                 <svg class="w-2.5 m-2.5 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                     fill="none" viewBox="0 0 10 6">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
@@ -157,90 +363,37 @@
                                 <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
                                     aria-labelledby="dropdownDefaultButton">
 
-                                    @if (!$isAdmin)
-                                        <li><a href="#" class="block px-4 py-2">Sepanjang waktu</a></li>
-                                    @endif
+                                    <li><button
+                                            class=" w-full text-start dropdown-range block px-4 py-2 hover:bg-gray-200"
+                                            data-range="today">Hari ini</button></li>
 
                                     @if ($isAdmin)
-                                        <li><a href="#" class="dropdown-range block px-4 py-2"
-                                                data-range="today">Hari ini</a></li>
-                                        <li><a href="#" class="dropdown-range block px-4 py-2"
-                                                data-range="yesterday">Kemarin</a></li>
+                                        <li><button
+                                                class=" w-full text-start dropdown-range block px-4 py-2 hover:bg-gray-200"
+                                                data-range="yesterday">Kemarin</button></li>
                                     @endif
 
-                                    <li><a href="#" class="dropdown-range block px-4 py-2" data-range="7">7
-                                            hari terakhir</a></li>
-                                    <li><a href="#" class="dropdown-range block px-4 py-2" data-range="30">30
-                                            hari terakhir</a></li>
-                                    <li><a href="#" class="dropdown-range block px-4 py-2" data-range="90">90
-                                            hari terakhir</a></li>
+                                    <li><button
+                                            class=" w-full text-start dropdown-range block px-4 py-2 hover:bg-gray-200"
+                                            data-range="7">7
+                                            hari terakhir</button></li>
+                                    <li><button
+                                            class=" w-full text-start dropdown-range block px-4 py-2 hover:bg-gray-200"
+                                            data-range="30">30
+                                            hari terakhir</button></li>
+                                    <li><button
+                                            class=" w-full text-start dropdown-range block px-4 py-2 hover:bg-gray-200"
+                                            data-range="90">90
+                                            hari terakhir</button></li>
+                                    <li><button
+                                            class=" w-full text-start dropdown-range block px-4 py-2 hover:bg-gray-200"
+                                            data-range="all">Sepanjang waktu</button></li>
                                 </ul>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <script>
-                document.addEventListener("DOMContentLoaded", function() {
-                    const labels = @json($statusCounts->pluck('nama'));
-                    const series = @json($statusCounts->pluck('user_count'));
-
-                    const chartOptions = {
-                        chart: {
-                            type: 'pie',
-                            height: 350
-                        },
-                        series: series,
-                        labels: labels,
-                        colors: ['#10B981', '#EAB308', '#3B82F6', '#DC2626'],
-                        legend: {
-                            show: true
-                        },
-                        dataLabels: {
-                            enabled: true,
-                            formatter: function(val) {
-                                return `${val.toFixed(1)}%`;
-                            }
-                        }
-                    };
-
-                    const chart = new ApexCharts(document.querySelector("#pie-chart"), chartOptions);
-                    chart.render();
-
-                    // 🔥 Update chart + tabel saat dropdown diklik
-                    document.querySelectorAll(".dropdown-range").forEach(item => {
-                        item.addEventListener("click", function(e) {
-                            e.preventDefault();
-                            const range = this.dataset.range;
-
-                            fetch(`/absensi/chart/${range}`)
-                                .then(res => res.json())
-                                .then(data => {
-                                    const newLabels = data.map(d => d.nama);
-                                    const newSeries = data.map(d => d.user_count);
-
-                                    // update chart
-                                    chart.updateOptions({
-                                        labels: newLabels
-                                    });
-                                    chart.updateSeries(newSeries);
-
-                                    // update tabel
-                                    const tbody = document.getElementById("recap-body");
-                                    tbody.innerHTML = "";
-                                    data.forEach(d => {
-                                        tbody.innerHTML += `
-                            <tr class="border-b dark:border-gray-700">
-                                <td class="px-4 py-3">${d.nama}</td>
-                                <td class="px-4 py-3">${d.user_count}</td>
-                            </tr>`;
-                                    });
-                                });
-                        });
-                    });
-                });
-            </script>
 
             <div class="rounded-lg py-3 mt-1 sm:mt-0 mb-1.5 border w-full border-gray-200 flex flex-col min-h-[600px]">
                 <div class="flex flex-row items-center justify-between border-b border-gray-200 pb-3 px-4">
@@ -356,7 +509,7 @@
                     </div>
                 </div>
 
-                <div class="flex-grow overflow-y-auto max-h-[470px]">
+                <div class="flex-grow overflow-y-auto max-h-[525px]">
                     {{-- Tabel Kehadiran --}}
                     <table class="min-w-full text-sm text-left text-gray-500">
                         <thead class="bg-gray-100 text-xs text-gray-700 uppercase">
@@ -382,54 +535,51 @@
                             </tr>
                         </thead>
 
-                        <tbody class="divide-y divide-gray-200">
+                        <tbody class="divide-y divide-gray-200" id="recap-body">
                             @if ($isAdmin)
-                                @forelse ($users as $user)
-                                    @php
-                                        $absensiFirst = $user->absensis->first();
-                                    @endphp
-                                    <tr>
-                                        <td class="px-4 py-3">{{ $loop->iteration }}</td>
+                                @forelse ($processedUsers as $index => $item)
+                                    <tr class="border-b">
+                                        <td class="px-4 py-3">{{ $index + 1 }}</td>
                                         <td class="px-4 py-3">
                                             <div class="flex items-center gap-3 text-black">
                                                 <img class="w-8 h-8 rounded-full"
-                                                    src="{{ $user->foto ? asset('storage/' . $user->foto) : asset('img/Anonymous.png') }}"
-                                                    alt="{{ $user->name }}">
-                                                {{ $user->name }}
+                                                    src="{{ $item['user']->foto ? asset('storage/' . $item['user']->foto) : asset('img/Anonymous.png') }}"
+                                                    alt="{{ $item['user']->name }}">
+                                                {{ $item['user']->name }}
                                             </div>
                                         </td>
-                                        <td class="px-4 py-3 text-black">{{ $user->nim }}</td>
+                                        <td class="px-4 py-3 text-black">{{ $item['user']->nim ?? '-' }}</td>
                                         <td class="px-4 py-3">
-                                            <a href="/fungsi?fungsi={{ $user->fungsi->slug }}"
-                                                class="{{ $user->fungsi->warna }} font-medium px-2 py-0.5 rounded hover:underline">
-                                                {{ $user->fungsi->nama }}
+                                            <a href="/fungsi?fungsi={{ $item['user']->fungsi->slug ?? '' }}"
+                                                class="{{ $item['user']->fungsi->warna ?? 'bg-gray-100' }} font-medium px-2 py-0.5 rounded hover:underline">
+                                                {{ $item['user']->fungsi->nama ?? 'Umum' }}
                                             </a>
                                         </td>
-                                        <td class="px-4 py-3">
-                                            <div class="flex items-center text-black">
+                                        <td class="px-4 py-3 text-black">
+                                            <div class="flex items-center">
                                                 <div
-                                                    class="h-4 w-4 rounded-full inline-block mr-2 {{ $absensiFirst->status->warna ?? 'bg-gray-300' }}">
+                                                    class="h-4 w-4 rounded-full inline-block mr-2 {{ $item['status_color'] }}">
                                                 </div>
-                                                {{ $absensiFirst->status->nama ?? '-' }}
+                                                {{ $item['status'] }}
                                             </div>
                                         </td>
                                         <td class="px-4 py-3 text-black">
-                                            {{ $user->absensis->where('status_id', $user->absensis->first()->status_id)->count() . 'x' }}
+                                            {{ $item['count'] }}x
                                         </td>
                                         <td class="px-4 py-3">
-                                            <x-dropdown-action :user="$user" />
+                                            <x-dropdown-action :user="$item['user']" />
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="text-center text-gray-500 py-50">
+                                        <td colspan="7" class="text-center text-gray-500 py-50">
                                             Belum ada pengguna yang absen...
                                         </td>
                                     </tr>
                                 @endforelse
                             @else
                                 @forelse ($absensisPaginated as $absensi)
-                                    <tr>
+                                    <tr class="border-b">
                                         <td class="px-4 py-3">{{ $loop->iteration }}</td>
                                         <td class="px-4 py-3">
                                             <div class="flex items-center gap-3 text-black">
@@ -481,9 +631,13 @@
                                 @endforelse
                             @endif
 
-                            <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
                         </tbody>
                     </table>
+                    <script>
+                        // Kirim info role ke JS agar bisa digunakan saat rendering
+                        window.isAdmin = @json($isAdmin);
+                    </script>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
                 </div>
 
                 {{-- Pagination --}}
@@ -614,6 +768,8 @@
             @endif
         </script>
     </div>
+
+
 
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/datepicker.min.js"></script>

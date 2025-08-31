@@ -50,11 +50,11 @@
             <div class="lg:text-left flex-1">
                 <h1 class="text-4xl sm:text-5xl font-bold leading-tight mb-4">
                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-amber-500">
-                        👋 Halo, Selamat Datang!
+                        Halo, Selamat Datang!
                     </span>
                 </h1>
                 <h2 class="text-2xl sm:text-3xl font-semibold text-gray-800 mb-6">
-                    Ini adalah sistem absensi online Badan Pusat Statistik Provinsi Sulawesi Selatan
+                    Ini adalah sistem absensi online untuk anak magang di Badan Pusat Statistik Provinsi Sulawesi Selatan
                 </h2>
                 <p class="text-gray-600 text-base sm:text-lg mb-8">
                     Daftar sekarang untuk mengisi data kehadiran anda pada lembaga pemerintah ini.

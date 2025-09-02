@@ -117,8 +117,8 @@
                 @if (!$isAdmin)
                     <p class="text-center font-semibold border-b border-gray-200 pb-3.5">Statistik Kehadiran Anda</p>
                 @else
-                    <p class="text-center font-semibold border-b border-gray-200 pb-3.5">Total absensi user :
-                        {{ $totalAbsensi }}
+                    <p class="text-center font-semibold border-b border-gray-200 pb-3.5">
+                        Total absensi user : <span id="totalAbsensi">{{ $totalAbsensi }}</span>
                     </p>
                 @endif
                 <div class="max-w-3xl bg-white rounded-lg dark:bg-gray-800 p-4 md:p-6">
@@ -137,7 +137,6 @@
                         </div>
 
                         <div id="pie-chart"></div> {{-- <<-- Piechart disini --}}
-
                         <script>
                             document.addEventListener("DOMContentLoaded", function() {
                                 const labels = @json($statusCounts->pluck('nama'));
@@ -174,19 +173,25 @@
                                         const dropdownText = document.getElementById("dropdownButtonText");
                                         if (dropdownText) dropdownText.textContent = this.innerText.trim();
 
-                                        // Ambil data baru dari endpoint
+                                        // Ambil data chart baru (AJAX tetap dipakai untuk chart)
                                         fetch(`/absensi/chart/${range}`)
                                             .then(res => res.json())
                                             .then(data => {
-                                                const newLabels = data.map(item => item.nama);
-                                                const newSeries = data.map(item => item.user_count);
+                                                const newLabels = data.statusCounts.map(item => item.nama);
+                                                const newSeries = data.statusCounts.map(item => item.user_count);
 
                                                 chart.updateOptions({
                                                     labels: newLabels
                                                 });
                                                 chart.updateSeries(newSeries);
 
-                                                // Tampilkan atau sembunyikan empty state tergantung data
+                                                // Update total absensi
+                                                const totalAbsensiEl = document.getElementById("totalAbsensi");
+                                                if (totalAbsensiEl) {
+                                                    totalAbsensiEl.textContent = data.totalAbsensi ?? 0;
+                                                }
+
+                                                // Tampilkan / sembunyikan empty state
                                                 const emptyState = document.getElementById("empty-state");
                                                 if (newSeries.reduce((a, b) => a + b, 0) === 0) {
                                                     emptyState.classList.remove("hidden");
@@ -194,156 +199,16 @@
                                                     emptyState.classList.add("hidden");
                                                 }
 
-                                                // 🚀 Tambahkan request data tabel
-                                                return fetch(`/absensi/table/${range}`);
-                                            })
-                                            .then(res => res.json())
-                                            .then(tableData => {
-                                                const tbody = document.getElementById("recap-body");
-                                                tbody.innerHTML = "";
-
-                                                if (tableData.length === 0) {
-                                                    tbody.innerHTML = `
-                                                    <tr>
-                                                        <td colspan="${isAdmin ? 7 : 8}" class="text-center text-gray-500 py-10">
-                                                            Tidak ada data absensi untuk rentang ini...
-                                                        </td>
-                                                    </tr>`;
-                                                    return;
-                                                }
-
-                                                tableData.forEach((d, index) => {
-                                                    if (isAdmin) {
-                                                        tbody.innerHTML += `
-                                                        <tr class="border-b dark:border-gray-700">
-                                                            <td class="px-4 py-3">${index + 1}</td>
-                                                            <td class="px-4 py-3">
-                                                                <div class="flex items-center gap-3 text-black">
-                                                                    <img class="w-8 h-8 rounded-full" src="${d.user.foto ?? '/img/Anonymous.png'}" alt="${d.user.name}">
-                                                                    ${d.user.name}
-                                                                </div>
-                                                            </td>
-                                                            <td class="px-4 py-3 text-black">${d.user.nim ?? '-'}</td>
-                                                            <td class="px-4 py-3 text-black">
-                                                                <a href="/fungsi?fungsi=${d.user.fungsi_slug ?? ''}" class="${d.user.fungsi_warna} font-medium px-2 py-0.5 rounded hover:underline">
-                                                                ${d.user.fungsi}
-                                                                </a>
-                                                            </td>
-                                                            <td class="px-4 py-3">
-                                                                <div class="flex items-center text-black">
-                                                                    <div class="h-4 w-4 rounded-full inline-block mr-2 ${d.status.warna ?? 'bg-gray-300'}"></div>
-                                                                    ${d.status.nama ?? '-'}
-                                                                </div>
-                                                            </td>
-                                                            <td class="px-4 py-3 text-black">${d.count}x</td>
-                                                            <td class="px-4 py-3 relative">
-                                                        <div>
-                                                            <button id="users-${d.user.id}-dropdown-button"
-                                                                data-dropdown-toggle="users-${d.user.id}-dropdown"
-                                                                class="inline-flex items-center text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 p-1.5 dark:hover-bg-gray-800 text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100"
-                                                                type="button">
-                                                                <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
-                                                                    xmlns="http://www.w3.org/2000/svg">
-                                                                    <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-                                                                </svg>
-                                                            </button>
-                                                            <div id="users-${d.user.id}-dropdown"
-                                                                class="absolute right-0 mt-2 hidden z-50 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
-                                                                <ul class="py-1 text-sm" aria-labelledby="users-${d.user.id}-dropdown-button">
-                                                                    <li>
-                                                                        <a href="/users/${d.user.user_slug}"
-                                                                            class="flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-gray-700 dark:text-gray-200">
-                                                                            <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                                                                fill="currentColor" aria-hidden="true">
-                                                                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                                                                <path fill-rule="evenodd" clip-rule="evenodd"
-                                                                                    d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" />
-                                                                            </svg>
-                                                                            Detail Card
-                                                                        </a>
-                                                                    </li>
-                                                                    <li>
-                                                                        <a href="/absensi-detail/${d.user.user_slug}"
-                                                                            class="flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-gray-700 dark:text-gray-200">
-                                                                            <svg class="w-4 h-4 mr-2 text-gray-800 dark:text-white"
-                                                                                aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                                                fill="none" viewBox="0 0 24 24">
-                                                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                                                                    stroke-width="2"
-                                                                                    d="M7 6H5m2 3H5m2 3H5m2 3H5m2 3H5m11-1a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2M7 3h11a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z" />
-                                                                            </svg>
-                                                                            Detail Absensi
-                                                                        </a>
-                                                                    </li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                        </tr>`;
-                                                        // Reinitialize dropdown (Flowbite)
-                                                        document.querySelectorAll('[data-dropdown-toggle]')
-                                                            .forEach(button => {
-                                                                button.addEventListener('click',
-                                                                    function() {
-                                                                        const dropdownId = this
-                                                                            .getAttribute(
-                                                                                'data-dropdown-toggle'
-                                                                            );
-                                                                        const dropdown = document
-                                                                            .getElementById(
-                                                                                dropdownId);
-                                                                        if (dropdown) {
-                                                                            dropdown.classList
-                                                                                .toggle('hidden');
-                                                                        }
-                                                                    });
-                                                            });
-                                                    } else {
-                                                        tbody.innerHTML += `
-                                                        <tr class="border-b dark:border-gray-700">
-                                                            <td class="px-4 py-3">${index + 1}</td>
-                                                            <td class="px-4 py-3">
-                                                                <div class="flex items-center gap-3 text-black">
-                                                                    <img class="w-8 h-8 rounded-full" src="${d.foto ?? '/img/Anonymous.png'}" alt="${d.nama}">
-                                                                    ${d.nama}
-                                                                </div>
-                                                            </td>
-                                                            <td class="px-4 py-3 text-black">${d.tanggal ?? '-'}</td>
-                                                            <td class="px-4 py-3 text-black">${d.jam_masuk ?? '-'}</td>
-                                                            <td class="px-4 py-3 text-black">${d.jam_keluar ?? '-'}</td>
-                                                            <td class="px-4 py-3">
-                                                                <div class="flex items-center">
-                                                                    <div class="h-4 w-4 rounded-full inline-block mr-2 ${d.status_warna ?? 'bg-gray-300'}"></div>
-                                                                    ${d.status_nama ?? '-'}
-                                                                </div>
-                                                            </td>
-                                                            <td class="px-4 py-3 text-black">
-                                                                ${d.judul ? `<a href="/keterangan/${d.slug_keterangan}" class="hover:underline">${d.judul.substring(0, 10)}</a>` : `<span class="text-gray-500 italic">-</span>`}
-                                                            </td>
-                                                            <td class="px-4 py-3">
-                                                                <a href="/users/${d.slug_user}" class="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline gap-1.5">
-                                                                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg"
-                                                                        fill="currentColor" viewBox="0 0 20 20">
-                                                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                                                        <path fill-rule="evenodd" clip-rule="evenodd"
-                                                                            d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" />
-                                                                    </svg>
-                                                                    <span class="text-sm font-medium">Lihat</span>
-                                                                </a>
-                                                            </td>
-                                                        </tr>`;
-                                                    }
-                                                });
+                                                // ⛳️ Redirect ke dashboard untuk load ulang table (biar pagination bisa jalan)
+                                                window.location.href = `/dashboard?range=${range}`;
                                             });
-
                                     });
                                 });
                             });
                         </script>
-
                     </div>
 
-                    <!-- 🔽 Dropdown Filter -->
+                    <!-- 🔽 Dropdown Filter (Non-AJAX Version) -->
                     <div
                         class="grid grid-cols-1 items-center border-gray-200 border-t dark:border-gray-700 justify-between">
                         <div class="flex justify-between items-center pt-5">
@@ -351,7 +216,21 @@
                                 data-dropdown-placement="top"
                                 class="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 text-center inline-flex items-center dark:hover:text-white"
                                 type="button">
-                                <span id="dropdownButtonText">Hari ini</span>
+                                <span id="dropdownButtonText">
+                                    {{-- Tampilkan label berdasarkan request --}}
+                                    @php
+                                        $labels = [
+                                            'today' => 'Hari ini',
+                                            'yesterday' => 'Kemarin',
+                                            '7' => '7 hari terakhir',
+                                            '30' => '30 hari terakhir',
+                                            '90' => '90 hari terakhir',
+                                            'all' => 'Sepanjang waktu',
+                                        ];
+                                        $currentRange = request('range', 'today');
+                                    @endphp
+                                    {{ $labels[$currentRange] ?? 'Hari ini' }}
+                                </span>
                                 <svg class="w-2.5 m-2.5 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                     fill="none" viewBox="0 0 10 6">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
@@ -363,35 +242,51 @@
                                 <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
                                     aria-labelledby="dropdownDefaultButton">
 
-                                    <li><button
-                                            class=" w-full text-start dropdown-range block px-4 py-2 hover:bg-gray-200"
-                                            data-range="today">Hari ini</button></li>
+                                    <li>
+                                        <a href="?range=today"
+                                            class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">
+                                            Hari ini
+                                        </a>
+                                    </li>
 
                                     @if ($isAdmin)
-                                        <li><button
-                                                class=" w-full text-start dropdown-range block px-4 py-2 hover:bg-gray-200"
-                                                data-range="yesterday">Kemarin</button></li>
+                                        <li>
+                                            <a href="?range=yesterday"
+                                                class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">
+                                                Kemarin
+                                            </a>
+                                        </li>
                                     @endif
 
-                                    <li><button
-                                            class=" w-full text-start dropdown-range block px-4 py-2 hover:bg-gray-200"
-                                            data-range="7">7
-                                            hari terakhir</button></li>
-                                    <li><button
-                                            class=" w-full text-start dropdown-range block px-4 py-2 hover:bg-gray-200"
-                                            data-range="30">30
-                                            hari terakhir</button></li>
-                                    <li><button
-                                            class=" w-full text-start dropdown-range block px-4 py-2 hover:bg-gray-200"
-                                            data-range="90">90
-                                            hari terakhir</button></li>
-                                    <li><button
-                                            class=" w-full text-start dropdown-range block px-4 py-2 hover:bg-gray-200"
-                                            data-range="all">Sepanjang waktu</button></li>
+                                    <li>
+                                        <a href="?range=7"
+                                            class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">
+                                            7 hari terakhir
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="?range=30"
+                                            class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">
+                                            30 hari terakhir
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="?range=90"
+                                            class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">
+                                            90 hari terakhir
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="?range=all"
+                                            class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">
+                                            Sepanjang waktu
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
 
@@ -463,7 +358,8 @@
                                                 <ul class="space-y-2 mb-2">
                                                     <li class="flex items-center">
                                                         <input id="status-{{ Str::slug($status->nama) }}"
-                                                            type="checkbox" value="{{ $status->nama }}"
+                                                            type="checkbox" name="status"
+                                                            value="{{ $status->nama }}"
                                                             class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-emerald-600 focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
                                                         <label for="status-{{ Str::slug($status->nama) }}"
                                                             class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $status->nama }}</label>
@@ -494,7 +390,8 @@
                                                 <ul class="space-y-2 mb-2">
                                                     <li class="flex items-center">
                                                         <input id="fungsi-{{ Str::slug($fungsi->nama) }}"
-                                                            type="checkbox" value="{{ $fungsi->nama }}"
+                                                            type="checkbox" name="fungsi"
+                                                            value="{{ $fungsi->nama }}"
                                                             class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-emerald-600 focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
                                                         <label for="fungsi-{{ Str::slug($fungsi->nama) }}"
                                                             class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $fungsi->nama }}</label>
@@ -509,7 +406,7 @@
                     </div>
                 </div>
 
-                <div class="flex-grow overflow-y-auto max-h-[525px]">
+                <div class="flex-grow overflow-y-auto max-h-[447px]">
                     {{-- Tabel Kehadiran --}}
                     <table class="min-w-full text-sm text-left text-gray-500">
                         <thead class="bg-gray-100 text-xs text-gray-700 uppercase">
@@ -555,7 +452,7 @@
                                                 {{ $item['user']->fungsi->nama ?? 'Umum' }}
                                             </a>
                                         </td>
-                                        <td class="px-4 py-3 text-black">
+                                        <td class="px-4 py-3">
                                             <div class="flex items-center">
                                                 <div
                                                     class="h-4 w-4 rounded-full inline-block mr-2 {{ $item['status_color'] }}">
@@ -572,7 +469,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="text-center text-gray-500 py-50">
+                                        <td colspan="7" class="text-center text-gray-500 pt-50">
                                             Belum ada pengguna yang absen...
                                         </td>
                                     </tr>
@@ -592,7 +489,7 @@
                                         <td class="px-4 py-3 text-black">{{ $absensi->tanggal ?? '-' }}</td>
                                         <td class="px-4 py-3 text-black">{{ $absensi->jam_masuk ?? '-' }}</td>
                                         <td class="px-4 py-3 text-black">{{ $absensi->jam_keluar ?? '-' }}</td>
-                                        <td class="px-4 py-3 text-black">
+                                        <td class="px-4 py-3">
                                             <div class="flex items-center">
                                                 <div
                                                     class="h-4 w-4 rounded-full inline-block mr-2 {{ $absensi->status->warna ?? 'bg-gray-300' }}">
@@ -625,7 +522,7 @@
                                 @empty
                                     <tr>
                                         <td colspan="8" class="text-center text-gray-500 py-50">
-                                            Belum ada data absensi untuk Anda...
+                                            Anda belum memiliki data absen hari ini...
                                         </td>
                                     </tr>
                                 @endforelse
@@ -787,15 +684,20 @@
         const checkedFunctions = Array.from(document.querySelectorAll('#fungsi-body input[type="checkbox"]:checked'))
             .map(cb => cb.value);
 
-        // Buat URL baru dengan parameter
-        const params = new URLSearchParams();
+        const params = new URLSearchParams(window.location.search);
 
-        checkedStatuses.forEach(status => params.append('status[]', status));
-        checkedFunctions.forEach(fungsi => params.append('fungsi[]', fungsi));
+        // Hapus parameter lama tanpa []
+        params.delete('status');
+        params.delete('fungsi');
+
+        // Tambahkan parameter status dan fungsi
+        checkedStatuses.forEach(status => params.append('status', status));
+        checkedFunctions.forEach(fungsi => params.append('fungsi', fungsi));
 
         const url = `${window.location.pathname}?${params.toString()}`;
         window.location.href = url;
     }
+
 
     // Event listener untuk tombol filter buka/tutup dropdown
     document.getElementById('filterDropdownButton').addEventListener('click', () => {

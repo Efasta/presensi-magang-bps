@@ -19,48 +19,86 @@ class DashboardController extends Controller
     public function index()
     {
         $filters = request()->only(['status', 'fungsi']);
-        $date = request('date') ? Carbon::parse(request('date')) : Carbon::today();
-
+        $range = request('range', 'today'); // 🔥 Ambil dari query string `?range=`
         $isAdmin = Auth::user()->is_admin;
         $userId = Auth::id();
 
         $absensisPaginated = null;
-        $defaultRange = 'today';
-
+        $defaultRange = $range;
         $processedUsers = [];
 
+        // 🎯 Tentukan tanggal awal & akhir berdasarkan range
+        switch ($range) {
+            case 'today':
+                $startDate = now()->startOfDay();
+                $endDate = now()->endOfDay();
+                break;
+            case 'yesterday':
+                $startDate = now()->subDay()->startOfDay();
+                $endDate = now()->subDay()->endOfDay();
+                break;
+            case '7':
+                $startDate = now()->subDays(6)->startOfDay();
+                $endDate = now()->endOfDay();
+                break;
+            case '30':
+                $startDate = now()->subDays(29)->startOfDay();
+                $endDate = now()->endOfDay();
+                break;
+            case '90':
+                $startDate = now()->subDays(89)->startOfDay();
+                $endDate = now()->endOfDay();
+                break;
+            case 'all':
+            default:
+                $startDate = $endDate = null;
+                break;
+        }
+
         if ($isAdmin) {
-            // ADMIN: lihat absensi semua user di tanggal itu
-            $users = User::with(['absensis' => function ($query) use ($date) {
-                $query->whereDate('tanggal', $date)->whereNotNull('status_id')->with('status');
+            /** ============================
+             * 👤 ADMIN MODE
+             * ============================ */
+            $userQuery = User::with(['absensis' => function ($query) use ($startDate, $endDate) {
+                $query->whereNotNull('status_id')->with('status');
+                if ($startDate && $endDate) {
+                    // Gunakan whereDate untuk membandingkan hanya tanggal tanpa waktu
+                    $query->whereDate('tanggal', '>=', $startDate->toDateString());
+                    $query->whereDate('tanggal', '<=', $endDate->toDateString());
+                }
             }, 'fungsi'])
-                ->whereHas('absensis', function ($query) use ($date) {
-                    $query->whereDate('tanggal', $date)->whereNotNull('status_id');
+                ->whereHas('absensis', function ($query) use ($startDate, $endDate) {
+                    $query->whereNotNull('status_id');
+                    if ($startDate && $endDate) {
+                        $query->whereDate('tanggal', '>=', $startDate->toDateString());
+                        $query->whereDate('tanggal', '<=', $endDate->toDateString());
+                    }
                 })
                 ->filter($filters)
-                ->orderBy('id', 'asc')
-                ->paginate(10)
-                ->withQueryString();
+                ->orderBy('id', 'asc');
 
-            // Pie chart dan statistik untuk semua user (di tanggal itu)
-            $absensis = Absensi::whereDate('tanggal', $date)->get();
+            $users = $userQuery->paginate(10)->withQueryString();
 
-            $statusCounts = Status::withCount(['absensis as user_count' => function ($query) use ($date) {
-                $query->whereDate('tanggal', $date)->select(DB::raw('count(distinct user_id)'));
-            }])->get();
+            // Pie chart data
+            $absensiQuery = Absensi::whereNotNull('status_id');
+            if ($startDate && $endDate) {
+                $absensiQuery->whereDate('tanggal', '>=', $startDate->toDateString());
+                $absensiQuery->whereDate('tanggal', '<=', $endDate->toDateString());
+            }
+            $absensis = $absensiQuery->get();
 
-            // Mulai dari tanggal 7 hari ke belakang hingga hari ini (atau bisa disesuaikan)
-            $startDate = now()->subDays(7);
-            $endDate = now();
-
-            $allUsers = User::with([
-                'absensis' => function ($query) use ($startDate, $endDate) {
-                    $query->whereBetween('tanggal', [$startDate, $endDate])->with('status');
-                },
-                'fungsi'
+            $statusCounts = Status::withCount([
+                'absensis as user_count' => function ($query) use ($startDate, $endDate) {
+                    $query->whereNotNull('status_id');
+                    if ($startDate && $endDate) {
+                        $query->whereDate('tanggal', '>=', $startDate->toDateString());
+                        $query->whereDate('tanggal', '<=', $endDate->toDateString());
+                    }
+                    $query->select(DB::raw('count(distinct user_id)'));
+                }
             ])->get();
 
-            $processedUsers = [];
+            $allUsers = $userQuery->get(); // re-use query
 
             foreach ($allUsers as $user) {
                 $absensisGrouped = $user->absensis->groupBy('status_id');
@@ -75,31 +113,48 @@ class DashboardController extends Controller
                 }
             }
         } else {
-            // USER: lihat SEMUA absensinya sendiri, tidak hanya hari ini
-            $users = User::with(['absensis' => function ($query) {
+            /** ============================
+             * 👤 USER MODE
+             * ============================ */
+            $user = User::with(['absensis' => function ($query) use ($startDate, $endDate) {
                 $query->whereNotNull('status_id')->with('status');
-            }, 'fungsi'])
-                ->where('id', $userId)
-                ->orderBy('id', 'asc')
-                ->paginate(10)
-                ->withQueryString();
+                if ($startDate && $endDate) {
+                    $query->whereDate('tanggal', '>=', $startDate->toDateString());
+                    $query->whereDate('tanggal', '<=', $endDate->toDateString());
+                }
+            }, 'fungsi'])->findOrFail($userId);
 
-            // Ambil seluruh absensi user ini saja untuk grafik
-            $absensis = Absensi::where('user_id', $userId)->whereDate('tanggal', $date)->whereNotNull('status_id')->get();
+            $users = collect([$user]);
 
-            $absensisPaginated = Absensi::where('user_id', $userId)
-                ->whereDate('tanggal', $date) // 🔥 tambahkan filter tanggal juga
-                ->whereNotNull('status_id')
+            $absensiQuery = Absensi::where('user_id', $userId)
+                ->whereNotNull('status_id');
+
+            if ($startDate && $endDate) {
+                $absensiQuery->whereDate('tanggal', '>=', $startDate->toDateString());
+                $absensiQuery->whereDate('tanggal', '<=', $endDate->toDateString());
+            }
+
+            $absensis = $absensiQuery->get();
+
+            $absensisPaginated = (clone $absensiQuery)
                 ->with(['status', 'user'])
                 ->orderBy('tanggal', 'desc')
                 ->paginate(7)
                 ->withQueryString();
 
-            $statusCounts = Status::withCount(['absensis as user_count' => function ($query) use ($userId, $date) {
-                $query->where('user_id', $userId)->whereDate('tanggal', $date)->whereNotNull('status_id');
-            }])->get();
+            $statusCounts = Status::withCount([
+                'absensis as user_count' => function ($query) use ($userId, $startDate, $endDate) {
+                    $query->where('user_id', $userId)
+                        ->whereNotNull('status_id');
+                    if ($startDate && $endDate) {
+                        $query->whereDate('tanggal', '>=', $startDate->toDateString());
+                        $query->whereDate('tanggal', '<=', $endDate->toDateString());
+                    }
+                }
+            ])->get();
         }
 
+        // Static data
         $statuses = Status::all();
         $fungsis = Fungsi::all();
 
@@ -111,15 +166,15 @@ class DashboardController extends Controller
             'absensisPaginated' => $absensisPaginated,
             'fungsis' => $fungsis,
             'statusCounts' => $statusCounts,
-            'selectedDate' => $date->format('Y-m-d'),
+            'selectedDate' => now()->format('Y-m-d'),
             'isAdmin' => $isAdmin,
-            'defaultRange' => $defaultRange,
-            'isAdmin' => $isAdmin,
+            'defaultRange' => $defaultRange, // ✅ Untuk Blade JS dropdown
             'totalAbsensi' => $isAdmin ? $absensis->count() : null,
             'hasData' => $statusCounts->sum('user_count') > 0,
-            'processedUsers' => $processedUsers, // ✅ Tambahkan ini
+            'processedUsers' => $processedUsers,
         ]);
     }
+
 
     public function getChartData($range)
     {
@@ -159,6 +214,9 @@ class DashboardController extends Controller
             $query->where('user_id', $userId);
         }
 
+        // Clone the query before it's modified by join
+        $totalAbsensi = (clone $query)->count();
+
         // hitung counts yang ada di range
         $counts = $query
             ->join('statuses', 'absensis.status_id', '=', 'statuses.id')
@@ -177,98 +235,10 @@ class DashboardController extends Controller
             ];
         });
 
-        return response()->json($result->values());
-    }
-
-    public function getTableData($range)
-    {
-        $isAdmin = Auth::user()->is_admin;
-        $userId = Auth::id();
-        $query = Absensi::query()->whereNotNull('status_id');
-
-        // filter tanggal seperti getChartData...
-        switch ($range) {
-            case 'today':
-                $query->whereDate('tanggal', today());
-                break;
-            case 'yesterday':
-                $query->whereDate('tanggal', today()->subDay());
-                break;
-            case '7':
-                $query->whereBetween('tanggal', [now()->subDays(7), now()]);
-                break;
-            case '30':
-                $query->whereBetween('tanggal', [now()->subDays(30), now()]);
-                break;
-            case '90':
-                $query->whereBetween('tanggal', [now()->subDays(90), now()]);
-                break;
-            case 'all':
-            default:
-                break;
-        }
-
-        if (!$isAdmin) {
-            $query->where('user_id', $userId);
-            $result = $query->with(['status', 'user'])->orderBy('tanggal', 'desc')->get();
-
-            $mapped = $result->map(function ($a) {
-                return [
-                    'tanggal' => $a->tanggal,
-                    'jam_masuk' => $a->jam_masuk,
-                    'jam_keluar' => $a->jam_keluar,
-                    'status_nama' => $a->status->nama ?? '-',
-                    'status_warna' => $a->status->warna ?? 'bg-gray-300',
-                    'judul' => $a->judul,
-                    'slug_keterangan' => $a->slug ?? null,
-                    'foto' => $a->user->foto ? asset('storage/' . $a->user->foto) : asset('img/Anonymous.png'),
-                    'nama' => $a->user->name,
-                    'slug_user' => $a->user->slug ?? null, // 🔧 tambahkan ini
-                ];
-            });
-
-
-            return response()->json($mapped);
-        }
-
-        // Untuk admin: ambil user dan absensinya dalam range
-        $startDate = $query->min('tanggal') ?? now()->subDays(7); // fallback
-        $endDate = $query->max('tanggal') ?? now();
-
-        $users = User::with([
-            'absensis' => function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('tanggal', [$startDate, $endDate])->with('status');
-            },
-            'fungsi'
-        ])->get();
-
-        $processedUsers = [];
-
-        foreach ($users as $user) {
-            $absensisGrouped = $user->absensis->groupBy('status_id');
-            foreach ($absensisGrouped as $statusGroup) {
-                $status = $statusGroup->first()->status;
-                $processedUsers[] = [
-                    'user' => [
-                        'id' => $user->id,
-                        'name' => $user->name,
-                        'user_slug' => $user->slug,
-                        'nim' => $user->nim,
-                        'fungsi' => $user->fungsi->nama ?? 'Umum',
-                        'fungsi_slug' => $user->fungsi->slug,
-                        'fungsi_warna' => $user->fungsi->warna ?? 'bg-gray-200',
-                        'foto' => $user->foto ? asset('storage/' . $user->foto) : asset('img/Anonymous.png'),
-                    ],
-                    'status' => [
-                        'nama' => $status->nama ?? '-',
-                        'warna' => $status->warna ?? 'bg-gray-300',
-                    ],
-                    'count' => $statusGroup->count(),
-                ];
-            }
-        }
-
-        return response()->json(collect($processedUsers));
+        return response()->json([
+            'statusCounts' => $result->values(),
+            'totalAbsensi' => $totalAbsensi
+        ]);
     }
 
     /**

@@ -5,6 +5,7 @@ use App\Models\Fungsi;
 use App\Models\Status;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\FungsiController;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CardUsersController;
@@ -37,49 +38,15 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/users', [CardUsersController::class, 'index'])->name('users.index');
+    Route::delete('/users/{user:slug}', [CardUsersController::class, 'destroy'])->name('users.destroy');
+    Route::get('/users/{user:slug}/edit', [CardUsersController::class, 'edit'] );
+    Route::patch('/users/{user:slug}', [CardUsersController::class, 'update'] )->name('users.update');
     Route::get('/users/{user:slug}', [CardUsersController::class, 'show']);
 });
 
-Route::get('/fungsi', function () {
-    $today = now()->toDateString(); // Gunakan tanggal sekarang (format Y-m-d)
-
-    $users = User::with(['absensis' => function ($query) use ($today) {
-        $query->where('tanggal', $today)  // filter absensi berdasarkan kolom 'tanggal'
-            ->with('status');
-    }, 'fungsi'])
-        ->whereHas('absensis', function ($query) use ($today) {
-            $query->where('tanggal', $today)
-                ->whereNotNull('status_id');
-        })->get();
-
-    $fungsis = Fungsi::all();
-    $statuses = Status::all();
-
-    $data = [];
-
-    foreach ($fungsis as $fungsi) {
-        $counts = [];
-
-        foreach ($statuses as $status) {
-            $counts[] = DB::table('users')
-                ->join('absensis', 'users.id', '=', 'absensis.user_id')
-                ->where('users.fungsi_id', $fungsi->id)
-                ->where('absensis.status_id', $status->id)
-                ->where('absensis.tanggal', $today) // pastikan filter tanggal juga di sini
-                ->count();
-        }
-
-        $data[$fungsi->slug] = $counts;
-    }
-
-    return view('fungsi', [
-        'title' => 'Fungsi',
-        'chartData' => $data,
-        'fungsis' => $fungsis,
-        'statuses' => $statuses,
-        'users' => $users
-    ]);
-})->middleware(['auth', 'verified'])->name('fungsi');
+Route::middleware('auth')->group(function () {
+    Route::get('/fungsi', [FungsiController::class, 'index'])->name('fungsi');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/pesan', [NotifikasiController::class, 'index'])->name('notifikasi.index');

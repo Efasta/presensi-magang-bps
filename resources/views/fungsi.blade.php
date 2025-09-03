@@ -62,7 +62,6 @@
                             </div>
                         </div>
 
-
                         <!-- Pie Chart -->
                         <div class="w-full md:w-1/2 pt-3 sm:pt-0 relative">
                             <!-- Tombol IPDS di pojok kanan atas -->
@@ -83,8 +82,92 @@
                             </h2>
 
                             <!-- Grafik -->
-                            <div id="pie-chart-canvas" class="w-full max-w-lg mx-auto"></div>
+                            @if (count($chartData) === 0)
+                                <p class="text-center text-gray-500 dark:text-gray-400 mt-10">Tidak ada data untuk
+                                    ditampilkan.</p>
+                            @else
+                                <div id="pie-chart-canvas" class="w-full max-w-lg mx-auto"></div>
+                            @endif
+
+                            <!-- 🔽 Dropdown Filter (Non-AJAX Version) -->
+                            <div class="grid grid-cols-1 items-center absolute sm:top-75 right-0">
+                                <div class="flex justify-between items-center pt-5">
+                                    <button id="dropdownDefaultButton" data-dropdown-toggle="lastDaysdropdown"
+                                        data-dropdown-placement="top"
+                                        class="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 text-center inline-flex items-center dark:hover:text-white"
+                                        type="button">
+                                        <span id="dropdownButtonText">
+                                            {{-- Tampilkan label berdasarkan request --}}
+                                            @php
+                                                $labels = [
+                                                    'today' => 'Hari ini',
+                                                    'yesterday' => 'Kemarin',
+                                                    '7' => '7 hari terakhir',
+                                                    '30' => '30 hari terakhir',
+                                                    '90' => '90 hari terakhir',
+                                                    'all' => 'Sepanjang waktu',
+                                                ];
+                                                $currentRange = request('range', 'today');
+                                            @endphp
+                                            {{ $labels[$currentRange] ?? 'Hari ini' }}
+                                        </span>
+                                        <svg class="w-2.5 m-2.5 ms-1.5" aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                                stroke-width="2" d="m1 1 4 4 4-4" />
+                                        </svg>
+                                    </button>
+                                    <div id="lastDaysdropdown"
+                                        class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700">
+                                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
+                                            aria-labelledby="dropdownDefaultButton">
+
+                                            <li>
+                                                <a href="#" data-range="today"
+                                                    class="range-option block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">
+                                                    Hari ini
+                                                </a>
+                                            </li>
+
+                                            @if ($isAdmin)
+                                                <li>
+                                                    <a href="#" data-range="yesterday"
+                                                        class="range-option block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">
+                                                        Kemarin
+                                                    </a>
+                                                </li>
+                                            @endif
+
+                                            <li>
+                                                <a href="#" data-range="7"
+                                                    class="range-option block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">
+                                                    7 hari terakhir
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#" data-range="30"
+                                                    class="range-option block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">
+                                                    30 hari terakhir
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#" data-range="90"
+                                                    class="range-option block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">
+                                                    90 hari terakhir
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#" data-range="all"
+                                                    class="range-option block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">
+                                                    Sepanjang waktu
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+
 
                     </div>
 
@@ -132,146 +215,122 @@
                                         <th scope="col" class="p-4">Jenis Kelamin</th>
                                         <th scope="col" class="p-4">Status</th>
                                         <th></th>
+                                        <th>Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($users as $user)
-                                        <tr data-status="{{ strtolower(optional($user->absensis->first()->status)->nama ?? '') }}"
-                                            data-fungsi="{{ strtolower($user->fungsi->slug) }}"
-                                            class="border-b border-gray-200 dark:border-gray-600 dark:hover:bg-gray-700">
-                                            <td class="px-4 py-3 font-medium text-gray-900">
-                                                {{ $loop->iteration }}</td>
-                                            <th scope="row"
-                                                class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                                <div class="flex items-center mr-3 gap-3">
-                                                    <img class="w-8 h-8 rounded-full"
-                                                        src="{{ $user->foto ? asset('storage/' . $user->foto) : asset('img/Anonymous.png') }}"
-                                                        alt="iMac Front Image" class="h-8 w-auto mr-3">
-                                                    {{ $user->name }}
-                                                </div>
-                                            </th>
-                                            <td class="px-6 py-4 font-medium text-gray-900">{{ $user->nim }}</td>
-                                            <td class="px-4 py-3">
-                                                <a href="/fungsi?fungsi={{ $user->fungsi->slug }}"
-                                                    class="{{ $user->fungsi->warna }} text-xs font-medium px-2 py-0.5 rounded dark:bg-emerald-900 dark:text-emerald-300 hover:underline">{{ $user->fungsi->nama }}</a>
-                                            </td>
-                                            <td class="px-4 py-3">{{ $user->jenis_kelamin }}</td>
-                                            <td
-                                                class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                                <div class="flex items-center">
-                                                    <div
-                                                        class="h-4 w-4 rounded-full inline-block mr-2 {{ optional($user->absensis->first()->status)->warna ?? '' }}">
-                                                    </div>
-                                                    {{ optional($user->absensis->first()->status)->nama ?? '' }}
-                                                </div>
-                                            </td>
-                                            <td class="px-4 py-3 flex items-center justify-self-end">
-                                                <button id="users-{{ $user->id }}-dropdown-button"
-                                                    data-dropdown-toggle="users-{{ $user->id }}-dropdown"
-                                                    class="inline-flex items-center text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 p-1.5 dark:hover-bg-gray-800 text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100"
-                                                    type="button">
-                                                    <svg class="w-5 h-5" aria-hidden="true" fill="currentColor"
-                                                        viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-                                                    </svg>
-                                                </button>
-                                                <div id="users-{{ $user->id }}-dropdown"
-                                                    class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
-                                                    <ul class="py-1 text-sm"
-                                                        aria-labelledby="users-{{ $user->id }}-dropdown-button">
-                                                        <li>
-                                                            <a href="/users/{{ $user->slug }}"
-                                                                class="flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-gray-700 dark:text-gray-200">
-                                                                <svg class="w-4 h-4 mr-2"
-                                                                    xmlns="http://www.w3.org/2000/svg"
-                                                                    viewbox="0 0 20 20" fill="currentColor"
-                                                                    aria-hidden="true">
-                                                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                                                        d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" />
-                                                                </svg>
-                                                                Lihat Detail
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button"
-                                                                data-modal-target="updateProductModal"
-                                                                data-modal-toggle="updateProductModal"
-                                                                class="flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-gray-700 dark:text-gray-200">
-                                                                <svg class="w-4 h-4 mr-2"
-                                                                    xmlns="http://www.w3.org/2000/svg"
-                                                                    viewbox="0 0 20 20" fill="currentColor"
-                                                                    aria-hidden="true">
-                                                                    <path
-                                                                        d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
-                                                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                                                        d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
-                                                                </svg>
-                                                                Edit
-                                                            </button>
-                                                        </li>
-                                                        <li>
-                                                            <button type="button" data-modal-target="deleteModal"
-                                                                data-modal-toggle="deleteModal"
-                                                                class="flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 text-red-500 dark:hover:text-red-400">
-                                                                <svg class="w-4 h-4 mr-2" viewbox="0 0 14 15"
-                                                                    fill="none" xmlns="http://www.w3.org/2000/svg"
-                                                                    aria-hidden="true">
-                                                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                                                        fill="currentColor"
-                                                                        d="M6.09922 0.300781C5.93212 0.30087 5.76835 0.347476 5.62625 0.435378C5.48414 0.523281 5.36931 0.649009 5.29462 0.798481L4.64302 2.10078H1.59922C1.36052 2.10078 1.13161 2.1956 0.962823 2.36439C0.79404 2.53317 0.699219 2.76209 0.699219 3.00078C0.699219 3.23948 0.79404 3.46839 0.962823 3.63718C1.13161 3.80596 1.36052 3.90078 1.59922 3.90078V12.9008C1.59922 13.3782 1.78886 13.836 2.12643 14.1736C2.46399 14.5111 2.92183 14.7008 3.39922 14.7008H10.5992C11.0766 14.7008 11.5344 14.5111 11.872 14.1736C12.2096 13.836 12.3992 13.3782 12.3992 12.9008V3.90078C12.6379 3.90078 12.8668 3.80596 13.0356 3.63718C13.2044 3.46839 13.2992 3.23948 13.2992 3.00078C13.2992 2.76209 13.2044 2.53317 13.0356 2.36439C12.8668 2.1956 12.6379 2.10078 12.3992 2.10078H9.35542L8.70382 0.798481C8.62913 0.649009 8.5143 0.523281 8.37219 0.435378C8.23009 0.347476 8.06631 0.30087 7.89922 0.300781H6.09922ZM4.29922 5.70078C4.29922 5.46209 4.39404 5.23317 4.56282 5.06439C4.73161 4.8956 4.96052 4.80078 5.19922 4.80078C5.43791 4.80078 5.66683 4.8956 5.83561 5.06439C6.0044 5.23317 6.09922 5.46209 6.09922 5.70078V11.1008C6.09922 11.3395 6.0044 11.5684 5.83561 11.7372C5.66683 11.906 5.43791 12.0008 5.19922 12.0008C4.96052 12.0008 4.73161 11.906 4.56282 11.7372C4.39404 11.5684 4.29922 11.3395 4.29922 11.1008V5.70078ZM8.79922 4.80078C8.56052 4.80078 8.33161 4.8956 8.16282 5.06439C7.99404 5.23317 7.89922 5.46209 7.89922 5.70078V11.1008C7.89922 11.3395 7.99404 11.5684 8.16282 11.7372C8.33161 11.906 8.56052 12.0008 8.79922 12.0008C9.03791 12.0008 9.26683 11.906 9.43561 11.7372C9.6044 11.5684 9.69922 11.3395 9.69922 11.1008V5.70078C9.69922 5.46209 9.6044 5.23317 9.43561 5.06439C9.26683 4.8956 9.03791 4.80078 8.79922 4.80078Z" />
-                                                                </svg>
-                                                                Delete
-                                                            </button>
-                                                        </li>
-                                                    </ul>
-                                                </div>
+                                    @if (count($processedUsers ?? []) === 0)
+                                        <tr>
+                                            <td colspan="8" class="text-center text-gray-500 py-6">
+                                                Tidak ada data pengguna untuk ditampilkan.
                                             </td>
                                         </tr>
-                                    @endforeach
+                                    @else
+                                        @foreach ($processedUsers as $item)
+                                            <tr data-status="{{ strtolower($item['status']) }}"
+                                                data-fungsi="{{ strtolower($item['user']->fungsi->slug ?? '') }}"
+                                                class="border-b">
+                                                <td class="px-4 py-3">{{ $loop->iteration }}</td>
+                                                <td class="px-4 py-3 text-black">
+                                                    <div class="flex items-center gap-3">
+                                                        <img class="w-8 h-8 rounded-full"
+                                                            src="{{ $item['user']->foto ? asset('storage/' . $item['user']->foto) : asset('img/Anonymous.png') }}"
+                                                            alt="{{ $item['user']->name }}">
+                                                        {{ $item['user']->name }}
+                                                    </div>
+                                                </td>
+                                                <td class="px-4 py-3 text-black">{{ $item['user']->nim ?? '-' }}</td>
+                                                <td class="px-4 py-3">
+                                                    <a href="/fungsi?fungsi={{ $item['user']->fungsi->slug ?? '' }}"
+                                                        class="{{ $item['user']->fungsi->warna ?? 'bg-gray-100' }} font-medium px-2 py-0.5 rounded hover:underline">
+                                                        {{ $item['user']->fungsi->nama ?? 'Umum' }}
+                                                    </a>
+                                                </td>
+                                                <td class="px-4 py-3">{{ $item['jenis_kelamin'] }}</td>
+                                                <td class="px-4 py-3">
+                                                    <div class="flex items-center">
+                                                        <div
+                                                            class="h-4 w-4 rounded-full inline-block mr-2 {{ $item['status_color'] }}">
+                                                        </div>
+                                                        {{ $item['status'] }}
+                                                    </div>
+                                                </td>
+                                                <td class="px-4 py-3 text-black">
+                                                    {{ $item['count'] }}x
+                                                </td>
+                                                <td class="px-4 py-3 flex items-center justify-self-end">
+                                                    <button id="users-{{ $item['id'] }}-dropdown-button"
+                                                        data-dropdown-toggle="users-{{ $item['id'] }}-dropdown"
+                                                        class="inline-flex items-center text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 p-1.5 dark:hover-bg-gray-800 text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100"
+                                                        type="button">
+                                                        <svg class="w-5 h-5" aria-hidden="true" fill="currentColor"
+                                                            viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                            <path
+                                                                d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+                                                        </svg>
+                                                    </button>
+                                                    <div id="users-{{ $item['id'] }}-dropdown"
+                                                        class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
+                                                        <ul class="py-1 text-sm"
+                                                            aria-labelledby="users-{{ $item['id'] }}-dropdown-button">
+                                                            <li>
+                                                                <a href="/users/{{ $item['slug'] }}"
+                                                                    class="flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-gray-700 dark:text-gray-200">
+                                                                    <svg class="w-4 h-4 mr-2"
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        viewbox="0 0 20 20" fill="currentColor"
+                                                                        aria-hidden="true">
+                                                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                                                        <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                            d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" />
+                                                                    </svg>
+                                                                    Lihat Detail
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button"
+                                                                    data-modal-target="updateProductModal"
+                                                                    data-modal-toggle="updateProductModal"
+                                                                    class="flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-gray-700 dark:text-gray-200">
+                                                                    <svg class="w-4 h-4 mr-2"
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        viewbox="0 0 20 20" fill="currentColor"
+                                                                        aria-hidden="true">
+                                                                        <path
+                                                                            d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                                                                        <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                            d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
+                                                                    </svg>
+                                                                    Edit
+                                                                </button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" data-modal-target="deleteModal"
+                                                                    data-modal-toggle="deleteModal"
+                                                                    class="flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 text-red-500 dark:hover:text-red-400">
+                                                                    <svg class="w-4 h-4 mr-2" viewbox="0 0 14 15"
+                                                                        fill="none"
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        aria-hidden="true">
+                                                                        <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                            fill="currentColor"
+                                                                            d="M6.09922 0.300781C5.93212 0.30087 5.76835 0.347476 5.62625 0.435378C5.48414 0.523281 5.36931 0.649009 5.29462 0.798481L4.64302 2.10078H1.59922C1.36052 2.10078 1.13161 2.1956 0.962823 2.36439C0.79404 2.53317 0.699219 2.76209 0.699219 3.00078C0.699219 3.23948 0.79404 3.46839 0.962823 3.63718C1.13161 3.80596 1.36052 3.90078 1.59922 3.90078V12.9008C1.59922 13.3782 1.78886 13.836 2.12643 14.1736C2.46399 14.5111 2.92183 14.7008 3.39922 14.7008H10.5992C11.0766 14.7008 11.5344 14.5111 11.872 14.1736C12.2096 13.836 12.3992 13.3782 12.3992 12.9008V3.90078C12.6379 3.90078 12.8668 3.80596 13.0356 3.63718C13.2044 3.46839 13.2992 3.23948 13.2992 3.00078C13.2992 2.76209 13.2044 2.53317 13.0356 2.36439C12.8668 2.1956 12.6379 2.10078 12.3992 2.10078H9.35542L8.70382 0.798481C8.62913 0.649009 8.5143 0.523281 8.37219 0.435378C8.23009 0.347476 8.06631 0.30087 7.89922 0.300781H6.09922ZM4.29922 5.70078C4.29922 5.46209 4.39404 5.23317 4.56282 5.06439C4.73161 4.8956 4.96052 4.80078 5.19922 4.80078C5.43791 4.80078 5.66683 4.8956 5.83561 5.06439C6.0044 5.23317 6.09922 5.46209 6.09922 5.70078V11.1008C6.09922 11.3395 6.0044 11.5684 5.83561 11.7372C5.66683 11.906 5.43791 12.0008 5.19922 12.0008C4.96052 12.0008 4.73161 11.906 4.56282 11.7372C4.39404 11.5684 4.29922 11.3395 4.29922 11.1008V5.70078ZM8.79922 4.80078C8.56052 4.80078 8.33161 4.8956 8.16282 5.06439C7.99404 5.23317 7.89922 5.46209 7.89922 5.70078V11.1008C7.89922 11.3395 7.99404 11.5684 8.16282 11.7372C8.33161 11.906 8.56052 12.0008 8.79922 12.0008C9.03791 12.0008 9.26683 11.906 9.43561 11.7372C9.6044 11.5684 9.69922 11.3395 9.69922 11.1008V5.70078C9.69922 5.46209 9.6044 5.23317 9.43561 5.06439C9.26683 4.8956 9.03791 4.80078 8.79922 4.80078Z" />
+                                                                    </svg>
+                                                                    Delete
+                                                                </button>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @endif
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
             </section>
-            <!-- Delete Modal -->
-            <div id="delete-modal" tabindex="-1"
-                class="fixed top-0 left-0 right-0 z-50 hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
-                <div class="relative w-full h-auto max-w-md max-h-full">
-                    <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-                        <button type="button"
-                            class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white"
-                            data-modal-toggle="delete-modal">
-                            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                            <span class="sr-only">Close modal</span>
-                        </button>
-                        <div class="p-6 text-center">
-                            <svg aria-hidden="true" class="mx-auto mb-4 text-gray-400 w-14 h-14 dark:text-gray-200"
-                                fill="none" stroke="currentColor" viewbox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Are you sure
-                                you want to
-                                delete this product?</h3>
-                            <button data-modal-toggle="delete-modal" type="button"
-                                class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2">Yes,
-                                I'm sure</button>
-                            <button data-modal-toggle="delete-modal" type="button"
-                                class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">No,
-                                cancel</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/datepicker.min.js"></script>
         </main>
@@ -280,7 +339,7 @@
         <section class="bg-white dark:bg-gray-900">
             <div class="py-8 px-4 mx-auto max-w-screen-xl lg:pt-40 lg:px-6">
                 <div class="mx-auto max-w-screen-sm text-center">
-                    <h1 class="mb-4 text-7xl tracking-tight font-extrabold lg:text-9xl text-blue-600 dark:text-red-500">
+                    <h1 class="mb-4 text-7xl tracking-tight font-extrabold lg:text-9xl text-red-600">
                         403</h1>
                     <p class="mb-4 text-3xl tracking-tight font-bold text-gray-900 md:text-4xl dark:text-white">Akses
                         Ditolak</p>
@@ -293,7 +352,7 @@
             </div>
         </section>
     @endif
-    
+
 </x-layout>
 <!-- Script Chart.js & Table Update -->
 <script>
@@ -414,5 +473,20 @@
 
         // Initial filter call
         filterAnggotaFungsi(initialFungsi);
+
+        document.querySelectorAll('.range-option').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                const selectedRange = this.getAttribute('data-range');
+                const selectedFungsi = document.querySelector('[data-fungsi].active')
+                    ?.getAttribute('data-fungsi') || initialFungsi;
+
+                // Update URL
+                const newUrl = `?fungsi=${selectedFungsi}&range=${selectedRange}`;
+                window.location.href = newUrl; // reload for now (recommended for easier sync)
+            });
+        });
+
     });
 </script>

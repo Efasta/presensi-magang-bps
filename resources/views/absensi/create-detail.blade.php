@@ -83,7 +83,7 @@
                     <a href="/dashboard"
                         class="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600 transition">Cancel</a>
                     <button type="submit"
-                        class="bg-emerald-600 text-white px-8 py-2 rounded-md hover:bg-emerald-700 transition font-semibold">Kirim</button>
+                        class="bg-emerald-600 text-white px-8 py-2 rounded-md hover:bg-emerald-700 transition font-semibold hover:cursor-pointer">Kirim</button>
                 </div>
             </form>
         </div>

@@ -18,7 +18,10 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $filters = request()->only(['status', 'fungsi']);
+        $filters = [
+            'status' => (array) request()->input('status', []),
+            'fungsi' => (array) request()->input('fungsi', []),
+        ];
         $range = request('range', 'today'); // 🔥 Ambil dari query string `?range=`
         $isAdmin = Auth::user()->is_admin;
         $userId = Auth::id();
@@ -127,7 +130,17 @@ class DashboardController extends Controller
             $users = collect([$user]);
 
             $absensiQuery = Absensi::where('user_id', $userId)
-                ->whereNotNull('status_id');
+                ->whereNotNull('status_id')
+                ->when(!empty($filters['status']), function ($query) use ($filters) {
+                    $query->whereHas('status', function ($q) use ($filters) {
+                        $q->whereIn('nama', $filters['status']);
+                    });
+                })
+                ->when(!empty($filters['fungsi']), function ($query) use ($filters) {
+                    $query->whereHas('user.fungsi', function ($q) use ($filters) {
+                        $q->whereIn('nama', $filters['fungsi']);
+                    });
+                });
 
             if ($startDate && $endDate) {
                 $absensiQuery->whereDate('tanggal', '>=', $startDate->toDateString());
@@ -174,7 +187,6 @@ class DashboardController extends Controller
             'processedUsers' => $processedUsers,
         ]);
     }
-
 
     public function getChartData($range)
     {

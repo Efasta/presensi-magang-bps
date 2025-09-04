@@ -28,8 +28,8 @@ class FungsiController extends Controller
             case '30':
                 $startDate = now()->subDays(29);
                 break;
-            case '90':
-                $startDate = now()->subDays(89);
+            case '60':
+                $startDate = now()->subDays(59);
                 break;
             case 'all':
                 $startDate = null;
@@ -45,32 +45,35 @@ class FungsiController extends Controller
             }
             $query->whereNotNull('status_id');
         })
-            ->with(['fungsi'])
-            ->get()
-            ->map(function ($user) use ($startDate, $endDate) {
-                $absensi = $user->absensis()
-                    ->whereNotNull('status_id')
-                    ->when($startDate, function ($query) use ($startDate, $endDate) {
-                        return $query->whereBetween('tanggal', [$startDate->toDateString(), $endDate->toDateString()]);
-                    })
-                    ->with('status')
-                    ->orderBy('tanggal', 'desc')
-                    ->first();
+            ->with(['fungsi', 'absensis.status'])
+            ->get();
 
-                return [
+        $processedUsers = [];
+
+        foreach ($users as $user) {
+            $filteredAbsensis = $user->absensis
+                ->filter(function ($absen) use ($startDate, $endDate) {
+                    if ($startDate) {
+                        return $absen->tanggal >= $startDate->toDateString() && $absen->tanggal <= $endDate->toDateString();
+                    }
+                    return true;
+                });
+
+            $grouped = $filteredAbsensis->groupBy('status_id');
+
+            foreach ($grouped as $statusId => $absens) {
+                $status = $absens->first()->status;
+
+                $processedUsers[] = [
                     'id' => $user->id,
                     'user' => $user,
-                    'slug' => $user->slug,
-                    'jenis_kelamin' => $user->jenis_kelamin,
-                    'status' => optional($absensi->status)->nama ?? '-',
-                    'status_color' => optional($absensi->status)->warna ?? 'bg-gray-300',
-                    'count' => $user->absensis()
-                        ->whereNotNull('status_id')
-                        ->when($startDate, function ($query) use ($startDate, $endDate) {
-                            return $query->whereBetween('tanggal', [$startDate->toDateString(), $endDate->toDateString()]);
-                        })->count(),
+                    'status' => $status->nama,
+                    'status_color' => $status->warna,
+                    'count' => $absens->count(),
                 ];
-            });
+            }
+        }
+
 
 
         // Buat data untuk chart
@@ -95,12 +98,15 @@ class FungsiController extends Controller
             $data[$fungsi->slug] = $counts;
         }
 
+        $initialFungsi = $request->get('fungsi', $fungsis->first()?->slug ?? '');
+
         return view('fungsi', [
             'title' => 'Fungsi',
             'chartData' => $data,
             'fungsis' => $fungsis,
             'statuses' => $statuses,
-            'processedUsers' => $users, // sekarang pakai variabel ini
+            'processedUsers' => $processedUsers,
+            'initialFungsi' => $initialFungsi, // ⬅️ ini kuncinya
         ]);
     }
 }

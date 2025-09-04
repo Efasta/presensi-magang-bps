@@ -48,8 +48,8 @@ class DashboardController extends Controller
                 $startDate = now()->subDays(29)->startOfDay();
                 $endDate = now()->endOfDay();
                 break;
-            case '90':
-                $startDate = now()->subDays(89)->startOfDay();
+            case '60':
+                $startDate = now()->subDays(59)->startOfDay();
                 $endDate = now()->endOfDay();
                 break;
             case 'all':
@@ -80,7 +80,7 @@ class DashboardController extends Controller
                 ->filter($filters)
                 ->orderBy('id', 'asc');
 
-            $users = $userQuery->paginate(10)->withQueryString();
+            $users = $userQuery->paginate(2)->withQueryString();
 
             // Pie chart data
             $absensiQuery = Absensi::whereNotNull('status_id');
@@ -152,7 +152,7 @@ class DashboardController extends Controller
             $absensisPaginated = (clone $absensiQuery)
                 ->with(['status', 'user'])
                 ->orderBy('tanggal', 'desc')
-                ->paginate(7)
+                ->paginate(10)
                 ->withQueryString();
 
             $statusCounts = Status::withCount([
@@ -214,8 +214,8 @@ class DashboardController extends Controller
             case '30':
                 $query->whereBetween('tanggal', [now()->subDays(30), now()]);
                 break;
-            case '90':
-                $query->whereBetween('tanggal', [now()->subDays(90), now()]);
+            case '60':
+                $query->whereBetween('tanggal', [now()->subDays(60), now()]);
                 break;
             case 'all':
             default:

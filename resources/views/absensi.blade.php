@@ -12,7 +12,7 @@
             <div class="mx-auto max-w-screen-2xl px-4 lg:px-12">
                 <div class="bg-white dark:bg-gray-800 relative border border-gray-200 rounded-lg">
                     <div class="flex items-center justify-between p-5">
-                        <p class="text-xl font-semibold text-gray-900 dark:text-white">From Absensi</p>
+                        <p class="text-xl font-semibold text-gray-900 dark:text-white">Data Absensi Hari ini</p>
                     </div>
                     <div
                         class="flex flex-col md:flex-row items-stretch md:items-center md:space-x-3 space-y-3 md:space-y-0 justify-between mx-4 py-4 border-t border-gray-200 dark:border-gray-700">
@@ -160,6 +160,7 @@
                                     <th scope="col" class="p-4">Status</th>
                                     <th scope="col" class="p-4">Keterangan</th>
                                     <th></th>
+                                    <th scope="col" class="p-4">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -170,7 +171,7 @@
                                     @endphp
                                     <tr data-status="{{ strtolower(optional($absensi->status)->nama) ?? 'belum-absen' }}"
                                         data-fungsi="{{ strtolower($user->fungsi->nama) }}"
-                                        class="border-b border-gray-200 dark:border-gray-600 dark:hover:bg-gray-700">
+                                        class="border-t border-gray-200 dark:border-gray-600 dark:hover:bg-gray-700">
                                         <td class="px-4 py-3 font-medium text-gray-900">{{ $loop->iteration }}</td>
                                         <th scope="row"
                                             class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
@@ -206,9 +207,13 @@
                                             $absensiToday = $user->absensis->first(); // ambil absensi pertama di koleksi absensis
                                         @endphp
                                         <td class="px-4 py-3">
-                                            <a href="/keterangan/{{ $absensiToday->slug }}" class="hover:underline">
-                                                {{ Str::limit($absensiToday->judul ?? $absensiToday->status->nama, 10) }}
-                                            </a>
+                                            @if (!empty($absensi->judul))
+                                                <a href="/keterangan/{{ $absensi->slug }}" class="hover:underline">
+                                                    {{ Str::limit($absensi->judul, 10) }}
+                                                </a>
+                                            @else
+                                                <span class="text-gray-500 italic">-</span>
+                                            @endif
                                         </td>
                                         <td class="px-4 py-3">
                                             @if ($absensi)
@@ -217,11 +222,14 @@
                                                 <span class="text-xs text-gray-400 italic">Tidak ada aksi</span>
                                             @endif
                                         </td>
+                                        <td class="px-4 py-3">
+                                            <x-dropdown-action :user="$user" :rowId="$loop->iteration" />
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
                                         <td colspan="9" class="text-center py-4 text-gray-500 italic">
-                                            Tidak ada data pengguna atau absensi hari ini.
+                                            Belum ada pengguna yang absen hari ini...
                                         </td>
                                     </tr>
                                 @endforelse

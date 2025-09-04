@@ -261,9 +261,15 @@ class AbsensiController extends Controller
 
     public function showDetail(User $user)
     {
+        $absensis = $user->absensis()
+            ->with('status')
+            ->orderBy('tanggal', 'desc')
+            ->paginate(12);
+
         return view('absensi.view-detail', [
             'title' => 'Detail Absensi',
             'user' => $user,
+            'absensis' => $absensis,
         ]);
     }
 

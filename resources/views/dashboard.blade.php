@@ -87,7 +87,7 @@
         $isAdmin = Auth::user()->is_admin;
         $isOwner = false;
     @endphp
-    <div class="flex flex-col justify-start gap-x-15 mx-7 max-h-107 mt-3">
+    <div class="flex flex-col justify-start gap-x-15 mx-7 max-h-107 mt-2">
         @if (!$isAdmin)
             <div class="mb-3 w-full mt-4.5 flex flex-col sm:flex-row gap-3">
                 <!-- Tombol Absen Sekarang -->
@@ -222,9 +222,9 @@
                                         $labels = [
                                             'today' => 'Hari ini',
                                             'yesterday' => 'Kemarin',
-                                            '7' => '7 hari terakhir',
-                                            '30' => '30 hari terakhir',
-                                            '90' => '90 hari terakhir',
+                                            '7' => '1 minggu terakhir',
+                                            '30' => '1 bulan terakhir',
+                                            '60' => '2 bulan terakhir',
                                             'all' => 'Sepanjang waktu',
                                         ];
                                         $currentRange = request('range', 'today');
@@ -261,19 +261,19 @@
                                     <li>
                                         <a href="?range=7"
                                             class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">
-                                            7 hari terakhir
+                                            1 minggu terakhir
                                         </a>
                                     </li>
                                     <li>
                                         <a href="?range=30"
                                             class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">
-                                            30 hari terakhir
+                                            1 bulan terakhir
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="?range=90"
+                                        <a href="?range=60"
                                             class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">
-                                            90 hari terakhir
+                                            2 bulan terakhir
                                         </a>
                                     </li>
                                     <li>
@@ -406,20 +406,18 @@
                     </div>
                 </div>
 
-                <div class="flex-grow overflow-y-auto max-h-[447px]">
+                <div class="flex-grow overflow-y-auto max-h-[500px]">
                     {{-- Tabel Kehadiran --}}
                     <table class="min-w-full text-sm text-left text-gray-500">
                         <thead class="bg-gray-100 text-xs text-gray-700 uppercase">
                             <tr>
                                 @if (!$isAdmin)
                                     <th class="p-4">ID</th>
-                                    <th class="p-4">Nama</th>
                                     <th class="p-4">Tanggal</th>
                                     <th class="p-4">Jam Masuk</th>
                                     <th class="p-4">Jam Keluar</th>
                                     <th class="p-4">Status</th>
                                     <th class="p-4">Keterangan</th>
-                                    <th class="p-4">Aksi</th>
                                 @else
                                     <th class="p-4">ID</th>
                                     <th class="p-4">Nama</th>
@@ -432,7 +430,7 @@
                             </tr>
                         </thead>
 
-                        <tbody class="divide-y divide-gray-200" id="recap-body">
+                        <tbody class="divide-y divide-gray-200">
                             @if ($isAdmin)
                                 @forelse ($processedUsers as $index => $item)
                                     <tr class="border-b">
@@ -463,8 +461,8 @@
                                         <td class="px-4 py-3 text-black">
                                             {{ $item['count'] }}x
                                         </td>
-                                        <td class="px-4 py-3">
-                                            <x-dropdown-action :user="$item['user']" />
+                                        <td class="px-4 py-3 items-center">
+                                            <x-dropdown-action :user="$item['user']" :rowId="$loop->iteration" />
                                         </td>
                                     </tr>
                                 @empty
@@ -476,16 +474,8 @@
                                 @endforelse
                             @else
                                 @forelse ($absensisPaginated as $absensi)
-                                    <tr class="border-b">
+                                    <tr>
                                         <td class="px-4 py-3">{{ $loop->iteration }}</td>
-                                        <td class="px-4 py-3">
-                                            <div class="flex items-center gap-3 text-black">
-                                                <img class="w-8 h-8 rounded-full"
-                                                    src="{{ $absensi->user->foto ? asset('storage/' . $absensi->user->foto) : asset('img/Anonymous.png') }}"
-                                                    alt="{{ $absensi->user->name }}">
-                                                {{ $absensi->user->name }}
-                                            </div>
-                                        </td>
                                         <td class="px-4 py-3 text-black">{{ $absensi->tanggal ?? '-' }}</td>
                                         <td class="px-4 py-3 text-black">{{ $absensi->jam_masuk ?? '-' }}</td>
                                         <td class="px-4 py-3 text-black">{{ $absensi->jam_keluar ?? '-' }}</td>
@@ -505,18 +495,6 @@
                                             @else
                                                 <span class="text-gray-500 italic">-</span>
                                             @endif
-                                        </td>
-                                        <td class="px-4 py-3">
-                                            <a href="/users/{{ $absensi->user->slug }}"
-                                                class="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline gap-1.5">
-                                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg"
-                                                    fill="currentColor" viewBox="0 0 20 20">
-                                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                                        d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" />
-                                                </svg>
-                                                <span class="text-sm font-medium">Lihat</span>
-                                            </a>
                                         </td>
                                     </tr>
                                 @empty
@@ -648,7 +626,7 @@
                         'testimonial-card bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200';
                     div.innerHTML = `
             <div class="flex items-center mb-2">
-                <img class="w-8 h-8 rounded-full" src="${testimonial.img}" alt="${testimonial.name}">
+                <img class="w-8 h-8 rounded-full" src="${testimonial.img    }" alt="${testimonial.name}">
                 <a class="pl-2 text-green-700 dark:text-green-500 font-semibold hover:underline" href="${testimonial.slug}">
                     ${testimonial.name}
                 </a>

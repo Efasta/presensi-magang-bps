@@ -80,7 +80,7 @@ class DashboardController extends Controller
                 ->filter($filters)
                 ->orderBy('id', 'asc');
 
-            $users = $userQuery->paginate(2)->withQueryString();
+            $users = $userQuery->paginate(5)->withQueryString();
 
             // Pie chart data
             $absensiQuery = Absensi::whereNotNull('status_id');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Fungsi;
 use App\Models\Status;
@@ -91,20 +92,27 @@ class AbsensiController extends Controller
         $user = auth()->user();
         $today = now()->toDateString();
 
+        // ✅ Validasi waktu absen masuk
+        $now = Carbon::now('Asia/Makassar');
+        $hour = $now->hour; 
+        if ($hour < 7 || $hour >= 16) {
+            return redirect('/dashboard')->with('error', 'Absen masuk hanya bisa dilakukan antara pukul 07:00 hingga 16:00 WITA.');
+        }
+
         // Cek apakah user sudah absen Hadir
         $alreadyAbsenHadir = Absensi::where('user_id', $user->id)
             ->where('tanggal', $today)
-            ->where('status_id', 1) // 1 = Hadir
+            ->where('status_id', 1)
             ->exists();
 
         if ($alreadyAbsenHadir) {
             return redirect('/dashboard')->with('error', 'Kamu sudah absen hari ini!');
         }
 
-        // ✅ Cek apakah sudah izin atau sakit
+        // Cek apakah sudah izin atau sakit
         $sudahIzinAtauSakit = Absensi::where('user_id', $user->id)
             ->where('tanggal', $today)
-            ->whereIn('status_id', [2, 3]) // 2 = Izin, 3 = Sakit (pastikan ini sesuai di database kamu)
+            ->whereIn('status_id', [2, 3])
             ->exists();
 
         if ($sudahIzinAtauSakit) {
@@ -114,8 +122,8 @@ class AbsensiController extends Controller
         Absensi::create([
             'user_id' => $user->id,
             'tanggal' => $today,
-            'jam_masuk' => now()->format('H:i'),
-            'status_id' => 1, // Hadir
+            'jam_masuk' => $now->format('H:i'),
+            'status_id' => 1,
             'keterangan' => 'Tepat waktu',
         ]);
 
@@ -212,17 +220,18 @@ class AbsensiController extends Controller
 
     public function pulang(Request $request)
     {
-        // $request->validate([
-        //     'latitude' => 'required|numeric', //Sementara nullable ->('required')
-        //     'longitude' => 'required|numeric',
-        // ]);
-
-        // Set manual koordinat (contoh koordinat kantor) sementara set longlat :)
+        // Set manual koordinat (contoh koordinat kantor)
         $manualLatitude = -5.147665;
         $manualLongitude = 119.432731;
 
         $user = auth()->user();
         $today = now()->toDateString();
+
+        $now = Carbon::now('Asia/Makassar');
+        $hour = $now->hour;
+        if ($hour < 16 || $hour >= 24) {
+            return redirect('/dashboard')->with('error', 'Absen pulang hanya bisa dilakukan antara pukul 16:00 hingga 00:00 WITA.');
+        }
 
         $absensi = Absensi::where('user_id', $user->id)
             ->where('tanggal', $today)
@@ -237,13 +246,14 @@ class AbsensiController extends Controller
         }
 
         $absensi->update([
-            'jam_keluar' => now()->format('H:i'),
+            'jam_keluar' => $now->format('H:i'),
             'latitude' => $manualLatitude,
             'longitude' => $manualLongitude,
         ]);
 
         return redirect('/dashboard')->with('success', 'Absen pulang berhasil!');
     }
+
 
     /**
      * Display the specified resource.

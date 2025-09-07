@@ -105,6 +105,47 @@
         }
 
         window.onload = () => getUserLocation();
+
+        function isWithinAllowedTime() {
+            const now = new Date();
+            const makassarTime = new Date(now.toLocaleString("en-US", {
+                timeZone: "Asia/Makassar"
+            }));
+
+            const hour = makassarTime.getHours();
+            const minute = makassarTime.getMinutes();
+
+            // Jam 07:00 - 23:59 => valid
+            return (hour >= 7 && hour <= 23);
+        }
+
+        function showBlockedAlert() {
+            alert("Absensi hanya dapat dilakukan antara pukul 07:00 hingga 00:00 WITA.");
+        }
+
+        // Intercept submit jika di luar waktu
+        document.addEventListener('DOMContentLoaded', () => {
+            const absenMasukBtn = document.getElementById('btnAbsenMasuk');
+            const absenPulangBtn = document.getElementById('btnAbsenPulang');
+
+            if (absenMasukBtn) {
+                absenMasukBtn.closest('form').addEventListener('submit', function(e) {
+                    if (!isWithinAllowedTime()) {
+                        e.preventDefault();
+                        showBlockedAlert();
+                    }
+                });
+            }
+
+            if (absenPulangBtn) {
+                absenPulangBtn.closest('form').addEventListener('submit', function(e) {
+                    if (!isWithinAllowedTime()) {
+                        e.preventDefault();
+                        showBlockedAlert();
+                    }
+                });
+            }
+        });
     </script>
 
 </x-layout>

@@ -2,7 +2,7 @@
     @if (Session::has('success'))
         <div class="flex justify-center">
             <div id="toast-success"
-                class="absolute top-[5rem] flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800"
+                class="absolute top-[4.5rem] z-10 flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800"
                 role="alert">
                 <div
                     class="inline-flex items-center justify-center shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">
@@ -44,7 +44,7 @@
     @if (Session::has('error'))
         <div class="flex justify-center">
             <div id="toast-error"
-                class="absolute top-[4.5rem] flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800"
+                class="absolute top-[4.5rem] z-10 flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800"
                 role="alert">
                 <div class="inline-flex items-center justify-center w-8 h-8 bg-red-100 rounded-lg dark:bg-red-800">
                     <div class="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
@@ -324,7 +324,7 @@
                                                     <button type="button"
                                                         data-modal-target="deleteModal-{{ $user->id }}"
                                                         data-modal-toggle="deleteModal-{{ $user->id }}"
-                                                        class="flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 text-red-500 dark:hover:text-red-400">
+                                                        class="flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 text-red-500 dark:hover:text-red-400 hover:cursor-pointer">
                                                         <svg class="w-4 h-4 mr-2" viewbox="0 0 14 15" fill="none"
                                                             xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                                             <path fill-rule="evenodd" clip-rule="evenodd"

@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([StatusSeeder::class, FungsiSeeder::class, UserSeeder::class, NotifSeeder::class]);
 
-        User::factory(97)->recycle([
+        User::factory(20)->recycle([
             Status::all(), 
             Fungsi::all()
         ])->create();

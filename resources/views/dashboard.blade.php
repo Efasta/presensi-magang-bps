@@ -2,7 +2,7 @@
     @if (Session::has('success'))
         <div class="flex justify-center">
             <div id="toast-success"
-                class="absolute top-[5rem] flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800"
+                class="absolute top-[4.5rem] z-10 flex items-center w-full max-w-lg p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800"
                 role="alert">
                 <div
                     class="inline-flex items-center justify-center shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">
@@ -37,13 +37,13 @@
                             toast.remove();
                         }, 500);
                     }
-                }, 5000);
+                }, 3000);
             </script>
         </div>
     @elseif(Session::has('error'))
         <div class="flex justify-center">
             <div id="toast-error"
-                class="absolute top-[4.5rem] flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800"
+                class="absolute top-[4.5rem] z-10 flex items-center w-full max-w-lg p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800"
                 role="alert">
                 <div class="inline-flex items-center justify-center w-8 h-8 bg-red-100 rounded-lg dark:bg-red-800">
                     <div class="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
@@ -79,9 +79,10 @@
                                 toast.remove();
                             }, 500);
                         }
-                    }, 5000);
+                    }, 3000);
                 </script>
             </div>
+        </div>
     @endif
     @php
         $isAdmin = Auth::user()->is_admin;
@@ -369,37 +370,39 @@
                                         </div>
                                     </div>
 
-                                    <!-- Fungsi -->
-                                    <h2 id="fungsi-heading">
-                                        <button type="button"
-                                            class="flex items-center justify-between w-full py-2 px-1.5 text-sm font-medium text-left text-gray-500 border-gray-300 dark:border-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
-                                            data-accordion-target="#fungsi-body" aria-expanded="true"
-                                            aria-controls="fungsi-body">
-                                            <span>Fungsi</span>
-                                            <svg aria-hidden="true" data-accordion-icon=""
-                                                class="w-5 h-5 rotate-180 shrink-0" fill="currentColor"
-                                                viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd" clip-rule="evenodd"
-                                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-                                            </svg>
-                                        </button>
-                                    </h2>
-                                    <div id="fungsi-body" class="hidden" aria-labelledby="fungsi-heading">
-                                        <div class="py-2 font-light border-gray-300 dark:border-gray-600">
-                                            @foreach ($fungsis as $fungsi)
-                                                <ul class="space-y-2 mb-2">
-                                                    <li class="flex items-center">
-                                                        <input id="fungsi-{{ Str::slug($fungsi->nama) }}"
-                                                            type="checkbox" name="fungsi"
-                                                            value="{{ $fungsi->nama }}"
-                                                            class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-emerald-600 focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                                        <label for="fungsi-{{ Str::slug($fungsi->nama) }}"
-                                                            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $fungsi->nama }}</label>
-                                                    </li>
-                                                </ul>
-                                            @endforeach
+                                    @if ($isAdmin)
+                                        <!-- Fungsi -->
+                                        <h2 id="fungsi-heading">
+                                            <button type="button"
+                                                class="flex items-center justify-between w-full py-2 px-1.5 text-sm font-medium text-left text-gray-500 border-gray-300 dark:border-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                                data-accordion-target="#fungsi-body" aria-expanded="true"
+                                                aria-controls="fungsi-body">
+                                                <span>Fungsi</span>
+                                                <svg aria-hidden="true" data-accordion-icon=""
+                                                    class="w-5 h-5 rotate-180 shrink-0" fill="currentColor"
+                                                    viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                                                </svg>
+                                            </button>
+                                        </h2>
+                                        <div id="fungsi-body" class="hidden" aria-labelledby="fungsi-heading">
+                                            <div class="py-2 font-light border-gray-300 dark:border-gray-600">
+                                                @foreach ($fungsis as $fungsi)
+                                                    <ul class="space-y-2 mb-2">
+                                                        <li class="flex items-center">
+                                                            <input id="fungsi-{{ Str::slug($fungsi->nama) }}"
+                                                                type="checkbox" name="fungsi"
+                                                                value="{{ $fungsi->nama }}"
+                                                                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-emerald-600 focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                                                            <label for="fungsi-{{ Str::slug($fungsi->nama) }}"
+                                                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $fungsi->nama }}</label>
+                                                        </li>
+                                                    </ul>
+                                                @endforeach
+                                            </div>
                                         </div>
-                                    </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>

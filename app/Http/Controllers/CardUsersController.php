@@ -7,6 +7,7 @@ use App\Models\Fungsi;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 
 class CardUsersController extends Controller
 {
@@ -146,13 +147,32 @@ class CardUsersController extends Controller
      */
     public function destroy(User $user)
     {
-        // Contoh: Cegah user menghapus diri sendiri
         if (auth()->user()->slug === $user->slug) {
             return redirect()->route('users.index')->with('error', 'Kamu tidak bisa menghapus diri sendiri.');
         }
 
+        if ($user->is_admin) {
+            return redirect()->route('users.index')->with('error', 'Tidak bisa menghapus sesama admin.');
+        }
+
+        // Backup dulu ke tabel deleted_users
+        DB::table('deleted_users')->insert([
+            'original_user_id'     => $user->id,
+            'name'                 => $user->name,
+            'email'                => $user->email,
+            'slug'                 => $user->slug,
+            'is_admin'             => $user->is_admin,
+            'tanggal_keluar'       => $user->tanggal_keluar,
+            'full_data'            => json_encode($user),
+            'deleted_by_admin_id'  => auth()->id(),
+            'deleted_by_admin_at'  => now('Asia/Makassar'),
+            'created_at'           => now(),
+            'updated_at'           => now(),
+        ]);
+
+        // Hapus user dari tabel users
         $user->delete();
 
-        return redirect()->route('users.index')->with('success', 'User berhasil dihapus.');
+        return redirect()->route('users.index')->with('success', 'User berhasil dihapus dan dicatat di log.');
     }
 }

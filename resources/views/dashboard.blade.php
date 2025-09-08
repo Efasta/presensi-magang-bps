@@ -88,9 +88,9 @@
         $isAdmin = Auth::user()->is_admin;
         $isOwner = false;
     @endphp
-    <div class="flex flex-col justify-start gap-x-15 mx-7 max-h-107 mt-2">
+    <div class="flex flex-col justify-start gap-x-15 mx-7 max-h-107 @if(!$isAdmin) mt-2 @else mt-13 @endif">
         @if (!$isAdmin)
-            <div class="mb-3 w-full mt-4.5 flex flex-col sm:flex-row gap-3">
+            <div class="mb-3 w-full mt-5.5 flex flex-col sm:flex-row gap-3">
                 <!-- Tombol Absen Sekarang -->
                 <a href="/absensi/{{ Auth::user()->slug }}"
                     class="inline-flex justify-center items-center w-full sm:w-1/2 py-2 text-white text-sm bg-emerald-600 hover:bg-emerald-800 focus:ring-4 focus:ring-emerald-300 font-medium rounded-lg shadow focus:outline-none">
@@ -531,158 +531,43 @@
 
             </div>
         </div>
-        <!-- Start block -->
-        @if ($isAdmin)
-            <section class="pt-4 pb-20 antialiased">
-                <div class="mx-auto">
-                    <div class="bg-white relative border border-gray-200 sm:rounded-lg overflow-hidden">
-                        <div class="flex items-center justify-between p-5 border-b border-gray-200">
-                            <p class="text-xl font-semibold text-gray-900 dark:text-white">Aktivitas Terkini</p>
-                        </div>
-
-                        <!-- Container marquee dengan wrapper -->
-                        <div id="marquee-wrapper">
-                            <div id="marquee" class="flex gap-6 pt-4 pb-4">
-                                <!-- Cards injected by JS -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        @endif
-
-        <style>
-            #marquee-wrapper {
-                overflow: hidden;
-                position: relative;
-                width: 100%;
-                height: auto;
-            }
-
-            #marquee {
-                display: flex;
-                gap: 1rem;
-                animation: scroll-marquee 20s linear infinite;
-                will-change: transform;
-            }
-
-            #marquee:hover {
-                animation-play-state: paused;
-            }
-
-            @keyframes scroll-marquee {
-                0% {
-                    transform: translateX(100%);
-                }
-
-                100% {
-                    transform: translateX(-100%);
-                }
-            }
-
-            .testimonial-card {
-                min-width: 250px;
-                max-width: 300px;
-                flex-shrink: 0;
-                border-radius: 12px;
-                transition: border-color 0.3s ease;
-            }
-
-            .testimonial-card:hover {
-                border-color: #065f46;
-            }
-
-            .empty-message {
-                text-align: center;
-                padding: 2rem;
-                color: #6b7280;
-                font-size: 0.875rem;
-                width: 100%;
-            }
-        </style>
-
-        <script>
-            const testimonials = [];
-            const marquee = document.getElementById('marquee');
-
-            @if ($users->isEmpty())
-                marquee.style.animation = 'none';
-                marquee.style.justifyContent = 'center';
-
-                const emptyMessage = document.createElement('p');
-                emptyMessage.className = 'empty-message';
-                emptyMessage.textContent = 'Belum ada pengguna yang absen saat ini.';
-                marquee.appendChild(emptyMessage);
-            @else
-                @foreach ($users as $user)
-                    testimonials.push({
-                        img: "{{ $user->foto ? asset('storage/' . $user->foto) : asset('img/Anonymous.png') }}",
-                        slug: "/users/{{ $user->slug }}",
-                        name: "{{ $user->name }}",
-                        text: "{{ $user->name }} Absen Tepat waktu! 🎊🎉"
-                    });
-                @endforeach
-
-                function createCard(testimonial) {
-                    const div = document.createElement('div');
-                    div.className =
-                        'testimonial-card bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200';
-                    div.innerHTML = `
-            <div class="flex items-center mb-2">
-                <img class="w-8 h-8 rounded-full" src="${testimonial.img    }" alt="${testimonial.name}">
-                <a class="pl-2 text-green-700 dark:text-green-500 font-semibold hover:underline" href="${testimonial.slug}">
-                    ${testimonial.name}
-                </a>
-            </div>
-            <p class="text-gray-800 dark:text-gray-300 text-sm leading-relaxed">${testimonial.text}</p>
-        `;
-                    return div;
-                }
-
-                // Isi konten utama
-                testimonials.forEach(t => marquee.appendChild(createCard(t)));
-
-                // Duplikat konten agar animasi bisa loop tanpa jeda
-            @endif
-        </script>
     </div>
 
-
-
-
+    @push('script')
+    <script>
+        function resetFilter() {
+            window.location.href = window.location.pathname;
+        }
+    
+        function applyFilter() {
+            const checkedStatuses = Array.from(document.querySelectorAll('#kehadiran-body input[type="checkbox"]:checked'))
+                .map(cb => cb.value);
+    
+            const checkedFunctions = Array.from(document.querySelectorAll('#fungsi-body input[type="checkbox"]:checked'))
+                .map(cb => cb.value);
+    
+            const params = new URLSearchParams(window.location.search);
+    
+            // Hapus parameter lama tanpa []
+            params.delete('status');
+            params.delete('fungsi');
+    
+            // Tambahkan parameter status dan fungsi
+            checkedStatuses.forEach(status => params.append('status', status));
+            checkedFunctions.forEach(fungsi => params.append('fungsi', fungsi));
+    
+            const url = `${window.location.pathname}?${params.toString()}`;
+            window.location.href = url;
+        }
+    
+    
+        // Event listener untuk tombol filter buka/tutup dropdown
+        document.getElementById('filterDropdownButton').addEventListener('click', () => {
+            const dd = document.getElementById('filterDropdown');
+            dd.classList.toggle('hidden');
+        });
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/datepicker.min.js"></script>
+    @endpush
 </x-layout>
 
-<script>
-    function resetFilter() {
-        window.location.href = window.location.pathname;
-    }
-
-    function applyFilter() {
-        const checkedStatuses = Array.from(document.querySelectorAll('#kehadiran-body input[type="checkbox"]:checked'))
-            .map(cb => cb.value);
-
-        const checkedFunctions = Array.from(document.querySelectorAll('#fungsi-body input[type="checkbox"]:checked'))
-            .map(cb => cb.value);
-
-        const params = new URLSearchParams(window.location.search);
-
-        // Hapus parameter lama tanpa []
-        params.delete('status');
-        params.delete('fungsi');
-
-        // Tambahkan parameter status dan fungsi
-        checkedStatuses.forEach(status => params.append('status', status));
-        checkedFunctions.forEach(fungsi => params.append('fungsi', fungsi));
-
-        const url = `${window.location.pathname}?${params.toString()}`;
-        window.location.href = url;
-    }
-
-
-    // Event listener untuk tombol filter buka/tutup dropdown
-    document.getElementById('filterDropdownButton').addEventListener('click', () => {
-        const dd = document.getElementById('filterDropdown');
-        dd.classList.toggle('hidden');
-    });
-</script>

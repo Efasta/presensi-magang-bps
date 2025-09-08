@@ -95,8 +95,8 @@ class AbsensiController extends Controller
         // ✅ Validasi waktu absen masuk
         $now = Carbon::now('Asia/Makassar');
         $hour = $now->hour; 
-        if ($hour < 7 || $hour >= 16) {
-            return redirect('/dashboard')->with('error', 'Absen masuk hanya bisa dilakukan antara pukul 07:00 hingga 16:00 WITA.');
+        if ($hour < 7 || $hour >= 12) {
+            return redirect('/dashboard')->with('error', 'Absen masuk hanya bisa dilakukan antara pukul 07:00 hingga 12:00 WITA.');
         }
 
         // Cek apakah user sudah absen Hadir

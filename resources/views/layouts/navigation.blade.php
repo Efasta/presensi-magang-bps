@@ -16,52 +16,57 @@
 
             <div class="hidden sm:flex sm:items-center sm:ms-6 space-x-4">
                 <!-- Notifikasi -->
-                <div x-data="{ isNotifOpen: false }" class="relative mr-1" @click.away="isNotifOpen = false">
-                    <button @click="isNotifOpen = !isNotifOpen"
-                        class="relative p-1 rounded hover:bg-gray-100 transition">
-                        <!-- Icon Bell -->
-                        <div class="relative">
-                            <svg class="w-7 h-7 text-gray-700" fill="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    d="M17.133 12.632v-1.8a5.406 5.406 0 0 0-4.154-5.262.955.955 0 0 0 .021-.106V3.1a1 1 0 0 0-2 0v2.364a.955.955 0 0 0 .021.106 5.406 5.406 0 0 0-4.154 5.262v1.8C6.867 15.018 5 15.614 5 16.807 5 17.4 5 18 5.538 18h12.924C19 18 19 17.4 19 16.807c0-1.193-1.867-1.789-1.867-4.175ZM8.823 19a3.453 3.453 0 0 0 6.354 0H8.823Z" />
-                            </svg>
+                @php
+                    $isAdmin = Auth::user()->is_admin;
+                @endphp
+                @if (!$isAdmin)
+                    <div x-data="{ isNotifOpen: false }" class="relative mr-1" @click.away="isNotifOpen = false">
+                        <button @click="isNotifOpen = !isNotifOpen"
+                            class="relative p-1 rounded hover:bg-gray-100 transition">
+                            <!-- Icon Bell -->
+                            <div class="relative">
+                                <svg class="w-7 h-7 text-gray-700" fill="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        d="M17.133 12.632v-1.8a5.406 5.406 0 0 0-4.154-5.262.955.955 0 0 0 .021-.106V3.1a1 1 0 0 0-2 0v2.364a.955.955 0 0 0 .021.106 5.406 5.406 0 0 0-4.154 5.262v1.8C6.867 15.018 5 15.614 5 16.807 5 17.4 5 18 5.538 18h12.924C19 18 19 17.4 19 16.807c0-1.193-1.867-1.789-1.867-4.175ZM8.823 19a3.453 3.453 0 0 0 6.354 0H8.823Z" />
+                                </svg>
 
-                            @if ($unreadCount > 0)
-                                <span
-                                    class="absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
-                                    {{ $unreadCount }}
-                                </span>
-                            @endif
+                                @if ($unreadCount > 0)
+                                    <span
+                                        class="absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                                        {{ $unreadCount }}
+                                    </span>
+                                @endif
+                            </div>
+                        </button>
+
+                        <!-- Dropdown Notifikasi -->
+                        <div x-show="isNotifOpen" x-transition
+                            class="absolute right-0 mt-2 w-80 max-h-96 overflow-y-auto bg-white border border-gray-100 rounded-lg shadow-lg z-50">
+                            <ul>
+                                @forelse ($recentNotifs as $notif)
+                                    <li class="border-b border-gray-100">
+                                        <a href="/pesan/{{ $notif->slug }}" class="flex px-4 py-3 hover:bg-gray-50">
+                                            <img class="me-3 rounded-full w-10 h-10" src="{{ asset($notif->foto) }}"
+                                                alt="{{ $notif->nama }}">
+                                            <div>
+                                                <p class="text-sm text-gray-500">
+                                                    Pesan baru dari <span
+                                                        class="font-medium text-gray-900">{{ $notif->nama }}</span>
+                                                </p>
+                                                <span
+                                                    class="text-xs text-blue-600">{{ $notif->created_at->diffForHumans() }}</span>
+                                            </div>
+                                        </a>
+                                    </li>
+                                @empty
+                                    <li class="w-full px-4 py-6 text-center text-gray-500 text-sm">
+                                        Notifikasi kamu kosong
+                                    </li>
+                                @endforelse
+                            </ul>
                         </div>
-                    </button>
-
-                    <!-- Dropdown Notifikasi -->
-                    <div x-show="isNotifOpen" x-transition
-                        class="absolute right-0 mt-2 w-80 max-h-96 overflow-y-auto bg-white border border-gray-100 rounded-lg shadow-lg z-50">
-                        <ul>
-                            @forelse ($recentNotifs as $notif)
-                                <li class="border-b border-gray-100">
-                                    <a href="/pesan/{{ $notif->slug }}" class="flex px-4 py-3 hover:bg-gray-50">
-                                        <img class="me-3 rounded-full w-10 h-10" src="{{ asset($notif->foto) }}"
-                                            alt="{{ $notif->nama }}">
-                                        <div>
-                                            <p class="text-sm text-gray-500">
-                                                Pesan baru dari <span
-                                                    class="font-medium text-gray-900">{{ $notif->nama }}</span>
-                                            </p>
-                                            <span
-                                                class="text-xs text-blue-600">{{ $notif->created_at->diffForHumans() }}</span>
-                                        </div>
-                                    </a>
-                                </li>
-                            @empty
-                                <li class="w-full px-4 py-6 text-center text-gray-500 text-sm">
-                                    Notifikasi kamu kosong
-                                </li>
-                            @endforelse
-                        </ul>
                     </div>
-                </div>
+                @endif
 
                 <!-- Settings Dropdown -->
                 <div class="sm:flex sm:items-center">

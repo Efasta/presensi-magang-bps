@@ -26,26 +26,3 @@ class NotifFactory extends Factory
         ];
     }
 }
-    // public function definition()
-    // {
-    //     // Jam notifikasi yang sudah ditentukan
-    //     $jamList = ['7:30', '7:35', '7:40', '7:45', '7:50', '7:55', '8:00'];
-
-    //     // Pilih jam secara acak dari daftar jam
-    //     $jam = $this->faker->randomElement($jamList);
-
-    //     $pesan = "Halo, sekarang udah jam $jam nih, yuk absen sebelum terlambat!";
-
-    //     if ($jam === '8:00') {
-    //         $pesan = 'Halo, sekarang udah jam 8:00 nih, yuk cepet absen! kalo gak absen kamu dinyatain ga hadir loh!!';
-    //     }
-
-    //     return [
-    //         'user_id' => User::inRandomOrder()->first()->id, // Ambil ID user secara acak
-    //         'foto' => 'img/BPS_Chatbot.jpg',
-    //         'nama' => 'Chatbot BPS ABSEN ' . date('Y'),
-    //         'slug' => 'chatbot-bps-absen-' . uniqid(), // Unik slug untuk setiap notifikasi
-    //         'pesan' => $pesan,
-    //         'is_read' => false,
-    //     ];
-    // }

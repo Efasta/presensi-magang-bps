@@ -22,6 +22,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('user:auto-delete')
             ->dailyAt('00:05')
             ->timezone('Asia/Makassar');
+
+        $schedule->command('user:morning-absen-reminder')
+            ->everyFiveMinutes()
+            ->between('07:00', '08:00')
+            ->timezone('Asia/Makassar');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

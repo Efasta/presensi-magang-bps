@@ -4,6 +4,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Str;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -24,7 +25,7 @@ Artisan::command('absensi:auto-mark-absent', function () {
             ->whereDate('tanggal', $yesterday)
             ->exists();
 
-        if (! $sudahAbsen) {
+        if (!$sudahAbsen) {
             // Kalau belum absen kemarin, tandai absen otomatis
             DB::table('absensis')->insert([
                 'user_id' => $userId,
@@ -72,3 +73,44 @@ Artisan::command('user:auto-delete', function () {
 
     $this->info("[$deletedCount] user dihapus otomatis & dicatat ke deleted_users.");
 });
+
+Artisan::command('user:morning-absen-reminder', function () {
+    $now = \Carbon\Carbon::now('Asia/Makassar');
+    $jam = $now->format('H:i');
+
+    // Validasi waktu (07:00 - 08:00 WITA)
+    if ($now->lt($now->copy()->setTime(7, 0)) || $now->gt($now->copy()->setTime(8, 0))) {
+        $this->info("Command dijalankan di luar jam 07:00-08:00. Dibatalkan.");
+        return;
+    }
+
+    $pesan = "Halo, sekarang udah jam {$jam} nih, yuk absen sebelum terlambat!";
+
+    $users = DB::table('users')->where('is_admin', '!=', 1)->get();
+    $jumlahDikirim = 0;
+
+    foreach ($users as $user) {
+        $notifSudahAda = DB::table('notifs')
+            ->where('user_id', $user->id)
+            ->where('pesan', $pesan)
+            ->whereDate('created_at', $now->toDateString())
+            ->exists();
+
+        if (!$notifSudahAda) {
+            DB::table('notifs')->insert([
+                'user_id'    => $user->id,
+                'foto'       => 'img/BPS_Chatbot.jpg',
+                'nama'       => 'Chatbot BPS ABSEN 2025',
+                'slug'       => \Illuminate\Support\Str::uuid(),
+                'pesan'      => $pesan,
+                'is_read'    => 0,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+            $jumlahDikirim++;
+        }
+    }
+
+    $this->info("{$jumlahDikirim} notifikasi dikirim ke user non-admin pada {$jam}.");
+})->purpose('Kirim notifikasi absen pagi setiap 5 menit antara jam 07:00 - 08:00 WITA');
+

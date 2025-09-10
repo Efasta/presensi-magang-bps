@@ -29,7 +29,7 @@
                                     </div>
                                     <input type="search" id="simple-search" placeholder="Cari user..."
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-emerald-500 dark:focus:border-emerald-500"
-                                        autocomplete="off" autofocus name="search">
+                                        autocomplete="off" name="search">
                                 </div>
                             </form>
                         </div>
@@ -153,10 +153,10 @@
                                     <th scope="col" class="p-4">Id
                                     </th>
                                     <th scope="col" class="p-4">Nama</th>
-                                    <th scope="col" class="p-4">Fungsi</th>
+                                    <th scope="col" class="p-4 pl-6">Fungsi</th>
                                     <th scope="col" class="p-4">Tanggal</th>
-                                    <th scope="col" class="p-4">Jam Masuk</th>
-                                    <th scope="col" class="p-4">Jam Keluar</th>
+                                    <th scope="col" class="p-4 whitespace-nowrap">Jam Masuk</th>
+                                    <th scope="col" class="p-4 whitespace-nowrap">Jam Keluar</th>
                                     <th scope="col" class="p-4">Status</th>
                                     <th scope="col" class="p-4">Keterangan</th>
                                     <th></th>
@@ -175,20 +175,20 @@
                                         <td class="px-4 py-3 font-medium text-gray-900">{{ $loop->iteration }}</td>
                                         <th scope="row"
                                             class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                            <div class="flex items-center gap-3">
+                                            <div class="flex items-center gap-3 whitespace-nowrap">
                                                 <img class="w-8 h-8 rounded-full"
                                                     src="{{ $user->foto ? asset('storage/' . $user->foto) : asset('img/Anonymous.png') }}"
                                                     alt="{{ $user->name }}">
                                                 {{ $user->name }}
                                             </div>
                                         </th>
-                                        <td class="px-4 py-3">
+                                        <td class="pl-6 py-3 whitespace-nowrap">
                                             <a href="/fungsi?fungsi={{ $user->fungsi->slug }}"
                                                 class="{{ $user->fungsi->warna }} text-xs font-medium px-2 py-0.5 rounded hover:underline">
                                                 {{ $user->fungsi->nama }}
                                             </a>
                                         </td>
-                                        <td class="px-4 py-3">{{ $absensi?->tanggal ?? '-' }}</td>
+                                        <td class="px-4 py-3 whitespace-nowrap">{{ $absensi?->tanggal ?? '-' }}</td>
                                         <td class="px-4 py-3">{{ $absensi?->jam_masuk ?? '-' }}</td>
                                         <td class="px-4 py-3">{{ $absensi?->jam_keluar ?? '-' }}</td>
                                         <td class="px-4 py-3">
@@ -247,7 +247,7 @@
     @else
         {{-- Optional: Jika kamu mau tampilkan pesan untuk non-admin --}}
         <section class="bg-white dark:bg-gray-900">
-            <div class="py-8 px-4 mx-auto max-w-screen-xl lg:pt-40 lg:px-6">
+            <div class="py-8 px-4 mx-auto max-w-screen-xl lg:pt-40 pt-50 lg:px-6">
                 <div class="mx-auto max-w-screen-sm text-center">
                     <h1
                         class="mb-4 text-7xl tracking-tight font-extrabold lg:text-9xl text-red-600">

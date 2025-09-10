@@ -107,7 +107,7 @@
                                     </div>
                                     <input type="search" id="simple-search" placeholder="Cari user..."
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-emerald-500 dark:focus:border-emerald-500"
-                                        autocomplete="off" autofocus name="search">
+                                        autocomplete="off" name="search">
                                 </div>
                             </form>
                         </div>
@@ -115,7 +115,7 @@
                             class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
                             <form method="GET" action="{{ route('users.index') }}" id="filterForm">
                                 <button id="filterDropdownButton" data-dropdown-toggle="filterDropdown"
-                                    class="flex items-center justify-center text-gray-900 bg-white border border-gray-200 hover:bg-gray-100 hover:text-emerald-700 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-4 py-2 dark:bg-emerald-600 dark:hover:bg-emerald-700 focus:outline-none dark:focus:ring-emerald-800"
+                                    class="flex items-center justify-center text-gray-900 bg-white border border-gray-200 hover:bg-gray-100 hover:text-emerald-700 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-4 py-2 dark:bg-emerald-600 dark:hover:bg-emerald-700 focus:outline-none dark:focus:ring-emerald-800 w-full"
                                     type="button">
                                     <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
                                         class="h-4 w-4 mr-1.5 -ml-1" viewbox="0 0 20 20" fill="currentColor">
@@ -237,7 +237,7 @@
                                 <th scope="col" class="p-4">Nama</th>
                                 <th scope="col" class="p-4">NIM/NISN</th>
                                 <th scope="col" class="p-4">Fungsi</th>
-                                <th scope="col" class="p-4">Jenis Kelamin</th>
+                                <th scope="col" class="p-4 whitespace-nowrap">Jenis Kelamin</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -257,7 +257,7 @@
                                         </div>
                                     </th>
                                     <td class="px-4 py-3">{{ $user->nim }}</td>
-                                    <td class="px-4 py-3">
+                                    <td class="px-4 py-3 whitespace-nowrap">
                                         <a href="/fungsi?fungsi={{ $user->fungsi->slug }}"
                                             class="{{ $user->fungsi->warna }} text-xs font-medium px-2 py-0.5 rounded hover:underline">{{ $user->fungsi->nama }}</a>
                                     </td>
@@ -432,7 +432,7 @@
     @else
         {{-- Optional: Jika kamu mau tampilkan pesan untuk non-admin --}}
         <section class="bg-white dark:bg-gray-900">
-            <div class="py-8 px-4 mx-auto max-w-screen-xl lg:pt-40 lg:px-6">
+            <div class="py-8 px-4 mx-auto max-w-screen-xl lg:pt-40 pt-50 lg:px-6">
                 <div class="mx-auto max-w-screen-sm text-center">
                     <h1 class="mb-4 text-7xl tracking-tight font-extrabold lg:text-9xl text-red-600">
                         403</h1>

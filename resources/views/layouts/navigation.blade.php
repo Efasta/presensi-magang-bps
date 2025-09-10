@@ -14,16 +14,16 @@
                 </div>
             </div>
 
-            <div class="hidden sm:flex sm:items-center sm:ms-6 space-x-4">
-                <!-- Notifikasi -->
+            <div class="flex items-center justify-end w-full gap-1">
                 @php
                     $isAdmin = Auth::user()->is_admin;
                 @endphp
+
                 @if (!$isAdmin)
-                    <div x-data="{ isNotifOpen: false }" class="relative mr-1" @click.away="isNotifOpen = false">
+                    <!-- Notifikasi -->
+                    <div x-data="{ isNotifOpen: false }" class="relative">
                         <button @click="isNotifOpen = !isNotifOpen"
                             class="relative p-1 rounded hover:bg-gray-100 transition">
-                            <!-- Icon Bell -->
                             <div class="relative">
                                 <svg class="w-7 h-7 text-gray-700" fill="currentColor" viewBox="0 0 24 24">
                                     <path
@@ -60,7 +60,7 @@
                                     </li>
                                 @empty
                                     <li class="w-full px-4 py-6 text-center text-gray-500 text-sm">
-                                        Notifikasi kamu kosong
+                                        Notifikasi kamu lagi kosong nih...
                                     </li>
                                 @endforelse
                             </ul>
@@ -68,12 +68,12 @@
                     </div>
                 @endif
 
-                <!-- Settings Dropdown -->
-                <div class="sm:flex sm:items-center">
+                <!-- Dropdown User -->
+                <div class="hidden sm:flex sm:items-center">
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
                             <button
-                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-hidden transition ease-in-out duration-150">
+                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 transition ease-in-out duration-150">
                                 <div>
                                     <span class="sr-only">Open user menu</span>
                                     <img class="w-8 h-8 rounded-full"
@@ -99,7 +99,7 @@
                             </x-dropdown-link>
 
                             <a href="/users/{{ Auth::user()->slug }}"
-                                class = 'block w-full px-4 py-2 text-start text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 transition duration-150 ease-in-out'>
+                                class='block w-full px-4 py-2 text-start text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 transition duration-150 ease-in-out'>
                                 {{ __('Card Anda') }}
                             </a>
 
@@ -113,15 +113,15 @@
 
                                 <x-dropdown-link :href="route('logout')"
                                     onclick="event.preventDefault();
-                                                this.closest('form').submit();">
+                                    this.closest('form').submit();">
                                     {{ __('Log Out') }}
                                 </x-dropdown-link>
                             </form>
                         </x-slot>
                     </x-dropdown>
                 </div>
-
             </div>
+
             <!-- Hamburger -->
             <div class="-me-2 flex items-center sm:hidden">
                 <button @click="open = ! open"

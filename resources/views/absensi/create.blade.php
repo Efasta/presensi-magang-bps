@@ -17,7 +17,12 @@
             </p>
 
             <!-- Form absensi -->
-            @if (!$absensi)
+            @if ($absensi && in_array($absensi->status_id, ['3', '2']))
+                <!-- Sudah mengajukan izin atau sakit -->
+                <button type="button" class="bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed" disabled>
+                    Kamu Sudah {{ $absensi->status->nama }} Hari Ini
+                </button>
+            @elseif (!$absensi)
                 <!-- Belum absen masuk -->
                 <form action="{{ url('/absensi') }}" method="POST">
                     @csrf

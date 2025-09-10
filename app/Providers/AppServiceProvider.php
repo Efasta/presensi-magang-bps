@@ -37,9 +37,16 @@ class AppServiceProvider extends ServiceProvider
         // Kirim data notifikasi ke semua view navbar
         View::composer('*', function ($view) {
             if (Auth::check()) {
-                $unreadCount = Notif::where('is_read', false)->count();
-                $recentNotifs = Notif::where('is_read', false)
+                $userId = Auth::id();
+
+                $unreadCount = Notif::where('user_id', $userId)
+                    ->where('is_read', false)
+                    ->count();
+
+                $recentNotifs = Notif::where('user_id', $userId)
+                    ->where('is_read', false)
                     ->orderBy('created_at', 'desc')
+                    ->take(10) // misalnya batasi 10 terakhir
                     ->get();
 
                 $view->with(compact('unreadCount', 'recentNotifs'));

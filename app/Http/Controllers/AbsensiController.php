@@ -229,7 +229,7 @@ class AbsensiController extends Controller
 
         $now = Carbon::now('Asia/Makassar');
         $hour = $now->hour;
-        if ($hour < 16 || $hour >= 24) {
+        if ($hour < 7 || $hour >= 24) {
             return redirect('/dashboard')->with('error', 'Absen pulang hanya bisa dilakukan antara pukul 16:00 hingga 00:00 WITA.');
         }
 

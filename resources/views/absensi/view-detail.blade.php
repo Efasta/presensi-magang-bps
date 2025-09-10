@@ -1,5 +1,5 @@
 <x-layout :title="$title">
-    <div class="p-4">
+    <div class="mt-5 mx-5 mb-23">
         <div class="rounded-lg py-3 mb-4 border w-full border-gray-200 flex flex-col min-h-[700px]">
             <div class="flex flex-row items-center justify-between border-b border-gray-200 pb-3 px-4">
                 <div class="text-center font-semibold text-base">Detail Absensi {{ $user->name }}</div>
@@ -11,8 +11,8 @@
                         <tr>
                             <th class="p-4">ID</th>
                             <th class="p-4">Tanggal</th>
-                            <th class="p-4">Jam Masuk</th>
-                            <th class="p-4">Jam Keluar</th>
+                            <th class="p-4 whitespace-nowrap">Jam Masuk</th>
+                            <th class="p-4 whitespace-nowrap">Jam Keluar</th>
                             <th class="p-4">Status</th>
                             <th class="p-4">Keterangan</th>
                         </tr>
@@ -21,7 +21,7 @@
                         @forelse ($absensis as $index => $absensi)
                             <tr>
                                 <td class="px-4 py-3">{{ $index + 1 }}</td>
-                                <td class="px-4 py-3 text-black">{{ $absensi->tanggal ?? '-' }}</td>
+                                <td class="px-4 py-3 text-black whitespace-nowrap">{{ $absensi->tanggal ?? '-' }}</td>
                                 <td class="px-4 py-3 text-black">{{ $absensi->jam_masuk ?? '-' }}</td>
                                 <td class="px-4 py-3 text-black">{{ $absensi->jam_keluar ?? '-' }}</td>
                                 <td class="px-4 py-3">

@@ -2,7 +2,7 @@
     @push('style')
         <link href="https://unpkg.com/filepond@^4/dist/filepond.css" rel="stylesheet" />
     @endpush
-    <div class="flex justify-center items-start mt-4.5">
+    <div class="flex justify-center items-start sm:mt-[19px] sm:mb-0 mt-4.5 mb-22 sm:mx-0 mx-4">
         <div class="w-full max-w-4xl bg-white p-8 rounded-lg border border-gray-200">
             <h2 class="text-3xl font-bold text-emerald-700 mb-5 text-center">
                 Formulir Pengajuan Izin / Sakit

@@ -2,20 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Notif;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class NotifikasiController extends Controller
 {
     // Method untuk menampilkan halaman pesan
     public function index()
     {
-        $notifs = Notif::all();
-        return view('pesan', ['title' => 'Pesan', 'notifs' => $notifs]);
+        $userId = Auth::id(); // Ambil ID user yang sedang login
+        $notifs = Notif::where('user_id', $userId)->latest()->get(); // Filter berdasarkan user_id
+
+        return view('pesan', [
+            'title' => 'Pesan',
+            'notifs' => $notifs
+        ]);
     }
 
     public function show(Notif $notif)
     {
+        if ($notif->user_id !== Auth::id()) {
+            abort(403); // atau redirect dengan pesan error
+        }
+
         if (! $notif->is_read) {
             $notif->is_read = true;
             $notif->save();
@@ -26,6 +36,7 @@ class NotifikasiController extends Controller
             'notif' => $notif,
         ]);
     }
+
 
     // Update notifikasi jadi read
     public function markRead(Request $request)

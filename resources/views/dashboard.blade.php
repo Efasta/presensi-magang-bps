@@ -88,7 +88,8 @@
         $isAdmin = Auth::user()->is_admin;
         $isOwner = false;
     @endphp
-    <div class="flex flex-col justify-start gap-x-15 mx-7 max-h-107 @if(!$isAdmin) mt-2 @else mt-13 @endif">
+    <div
+        class="flex flex-col justify-start gap-x-15 mx-7 max-h-107 mt-6 @if (!$isAdmin) sm:mt-2  @else sm:mt-13 @endif">
         @if (!$isAdmin)
             <div class="mb-3 w-full mt-5.5 flex flex-col sm:flex-row gap-3">
                 <!-- Tombol Absen Sekarang -->
@@ -291,7 +292,8 @@
                 </div>
             </div>
 
-            <div class="rounded-lg py-3 mt-1 sm:mt-0 mb-1.5 border w-full border-gray-200 flex flex-col min-h-[600px]">
+            <div
+                class="rounded-lg py-3 sm:mt-0 sm:mb-[7px] mt-3 mb-23.5 border w-full border-gray-200 flex flex-col min-h-[600px]">
                 <div class="flex flex-row items-center justify-between border-b border-gray-200 pb-3 px-4">
                     <!-- Tengah (Judul) -->
                     @if (!$isAdmin)
@@ -409,108 +411,117 @@
                     </div>
                 </div>
 
-                <div class="flex-grow overflow-y-auto max-h-[500px]">
+                <div class="flex-grow overflow-y-auto overflow-x-auto max-h-[500px] ">
                     {{-- Tabel Kehadiran --}}
-                    <table class="min-w-full text-sm text-left text-gray-500">
-                        <thead class="bg-gray-100 text-xs text-gray-700 uppercase">
-                            <tr>
-                                @if (!$isAdmin)
-                                    <th class="p-4">ID</th>
-                                    <th class="p-4">Tanggal</th>
-                                    <th class="p-4">Jam Masuk</th>
-                                    <th class="p-4">Jam Keluar</th>
-                                    <th class="p-4">Status</th>
-                                    <th class="p-4">Keterangan</th>
-                                @else
-                                    <th class="p-4">ID</th>
-                                    <th class="p-4">Nama</th>
-                                    <th class="p-4">NIM/NISN</th>
-                                    <th class="p-4">Fungsi</th>
-                                    <th class="p-4">Status</th>
-                                    <th class="p-4"></th>
-                                    <th class="p-4">Aksi</th>
-                                @endif
-                            </tr>
-                        </thead>
+                    <div class="w-full overflow-x-auto">
+                        <table class="min-w-full text-sm text-left text-gray-500">
+                            <thead class="bg-gray-100 text-xs text-gray-700 uppercase">
+                                <tr>
+                                    @if (!$isAdmin)
+                                        <th class="p-4 whitespace-nowrap">ID</th>
+                                        <th class="p-4 whitespace-nowrap">Tanggal</th>
+                                        <th class="p-4 whitespace-nowrap">Jam Masuk</th>
+                                        <th class="p-4 whitespace-nowrap">Jam Keluar</th>
+                                        <th class="p-4 whitespace-nowrap">Status</th>
+                                        <th class="p-4 whitespace-nowrap">Keterangan</th>
+                                    @else
+                                        <th class="p-4 whitespace-nowrap">ID</th>
+                                        <th class="p-4 whitespace-nowrap">Nama</th>
+                                        <th class="p-4 whitespace-nowrap">NIM/NISN</th>
+                                        <th class="p-4 whitespace-nowrap">Fungsi</th>
+                                        <th class="p-4 whitespace-nowrap">Status</th>
+                                        <th class="p-4 whitespace-nowrap"></th>
+                                        <th class="p-4 text-center whitespace-nowrap">Aksi</th>
+                                    @endif
+                                </tr>
+                            </thead>
 
-                        <tbody class="divide-y divide-gray-200">
-                            @if ($isAdmin)
-                                @forelse ($processedUsers as $index => $item)
-                                    <tr class="border-b">
-                                        <td class="px-4 py-3">{{ $index + 1 }}</td>
-                                        <td class="px-4 py-3">
-                                            <div class="flex items-center gap-3 text-black">
-                                                <img class="w-8 h-8 rounded-full"
-                                                    src="{{ $item['user']->foto ? asset('storage/' . $item['user']->foto) : asset('img/Anonymous.png') }}"
-                                                    alt="{{ $item['user']->name }}">
-                                                {{ $item['user']->name }}
-                                            </div>
-                                        </td>
-                                        <td class="px-4 py-3 text-black">{{ $item['user']->nim ?? '-' }}</td>
-                                        <td class="px-4 py-3">
-                                            <a href="/fungsi?fungsi={{ $item['user']->fungsi->slug ?? '' }}"
-                                                class="{{ $item['user']->fungsi->warna ?? 'bg-gray-100' }} font-medium px-2 py-0.5 rounded hover:underline">
-                                                {{ $item['user']->fungsi->nama ?? 'Umum' }}
-                                            </a>
-                                        </td>
-                                        <td class="px-4 py-3">
-                                            <div class="flex items-center">
-                                                <div
-                                                    class="h-4 w-4 rounded-full inline-block mr-2 {{ $item['status_color'] }}">
+                            <tbody class="divide-y divide-gray-200">
+                                @if ($isAdmin)
+                                    @forelse ($processedUsers as $index => $item)
+                                        <tr class="border-b">
+                                            <td class="px-4 py-3 whitespace-nowrap text-center">
+                                                {{ $loop->iteration }}</td>
+                                            <td class="px-4 py-3 whitespace-nowrap">
+                                                <div class="flex items-center gap-3 text-black">
+                                                    <img class="w-8 h-8 rounded-full"
+                                                        src="{{ $item['user']->foto ? asset('storage/' . $item['user']->foto) : asset('img/Anonymous.png') }}"
+                                                        alt="{{ $item['user']->name }}">
+                                                    {{ $item['user']->name }}
                                                 </div>
-                                                {{ $item['status'] }}
-                                            </div>
-                                        </td>
-                                        <td class="px-4 py-3 text-black">
-                                            {{ $item['count'] }}x
-                                        </td>
-                                        <td class="px-4 py-3 items-center">
-                                            <x-dropdown-action :user="$item['user']" :rowId="$loop->iteration" />
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="7" class="text-center text-gray-500 pt-50">
-                                            Belum ada pengguna yang absen...
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            @else
-                                @forelse ($absensisPaginated as $absensi)
-                                    <tr>
-                                        <td class="px-4 py-3">{{ $loop->iteration }}</td>
-                                        <td class="px-4 py-3 text-black">{{ $absensi->tanggal ?? '-' }}</td>
-                                        <td class="px-4 py-3 text-black">{{ $absensi->jam_masuk ?? '-' }}</td>
-                                        <td class="px-4 py-3 text-black">{{ $absensi->jam_keluar ?? '-' }}</td>
-                                        <td class="px-4 py-3">
-                                            <div class="flex items-center">
-                                                <div
-                                                    class="h-4 w-4 rounded-full inline-block mr-2 {{ $absensi->status->warna ?? 'bg-gray-300' }}">
-                                                </div>
-                                                {{ $absensi->status->nama ?? '-' }}
-                                            </div>
-                                        </td>
-                                        <td class="px-4 py-3 text-black">
-                                            @if (!empty($absensi->judul))
-                                                <a href="/keterangan/{{ $absensi->slug }}" class="hover:underline">
-                                                    {{ Str::limit($absensi->judul, 10) }}
+                                            </td>
+                                            <td class="pl-6 py-3 whitespace-nowrap text-black">
+                                                {{ $item['user']->nim ?? '-' }}
+                                            </td>
+                                            <td class="px-4 py-3 whitespace-nowrap">
+                                                <a href="/fungsi?fungsi={{ $item['user']->fungsi->slug ?? '' }}"
+                                                    class="{{ $item['user']->fungsi->warna ?? 'bg-gray-100' }} font-medium px-2 py-0.5 rounded hover:underline">
+                                                    {{ $item['user']->fungsi->nama ?? 'Umum' }}
                                                 </a>
-                                            @else
-                                                <span class="text-gray-500 italic">-</span>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="8" class="text-center text-gray-500 py-50">
-                                            Anda belum memiliki data absen hari ini...
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            @endif
-
-                        </tbody>
-                    </table>
+                                            </td>
+                                            <td class="px-4 py-3 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <div
+                                                        class="h-4 w-4 rounded-full inline-block mr-2 {{ $item['status_color'] }}">
+                                                    </div>
+                                                    {{ $item['status'] }}
+                                                </div>
+                                            </td>
+                                            <td class="py-3 whitespace-nowrap text-black">
+                                                {{ $item['count'] }}x
+                                            </td>
+                                            <td class="py-3 whitespace-nowrap text-center">
+                                                <x-dropdown-action :user="$item['user']" :rowId="$loop->iteration" />
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="7" class="text-center text-gray-500 pt-50">
+                                                Belum ada pengguna yang absen...
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                @else
+                                    @forelse ($absensisPaginated as $absensi)
+                                        <tr>
+                                            <td class="px-4 py-3 whitespace-nowrap">
+                                                {{ $loop->iteration }}</td>
+                                            <td class="px-4 py-3 whitespace-nowrap text-black">
+                                                {{ $absensi->tanggal ?? '-' }}</td>
+                                            <td class="px-4 py-3 whitespace-nowrap text-black">
+                                                {{ $absensi->jam_masuk ?? '-' }}</td>
+                                            <td class="px-4 py-3 whitespace-nowrap text-black">
+                                                {{ $absensi->jam_keluar ?? '-' }}</td>
+                                            <td class="px-4 py-3 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <div
+                                                        class="h-4 w-4 rounded-full inline-block mr-2 {{ $absensi->status->warna ?? 'bg-gray-300' }}">
+                                                    </div>
+                                                    {{ $absensi->status->nama ?? '-' }}
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-3 whitespace-nowrap text-black">
+                                                @if (!empty($absensi->judul))
+                                                    <a href="/keterangan/{{ $absensi->slug }}"
+                                                        class="hover:underline">
+                                                        {{ Str::limit($absensi->judul, 10) }}
+                                                    </a>
+                                                @else
+                                                    <span class="text-gray-500 italic">-</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="8" class="text-center text-gray-500 py-50">
+                                                Anda belum memiliki data absen hari ini...
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
                     <script>
                         // Kirim info role ke JS agar bisa digunakan saat rendering
                         window.isAdmin = @json($isAdmin);
@@ -534,40 +545,39 @@
     </div>
 
     @push('script')
-    <script>
-        function resetFilter() {
-            window.location.href = window.location.pathname;
-        }
-    
-        function applyFilter() {
-            const checkedStatuses = Array.from(document.querySelectorAll('#kehadiran-body input[type="checkbox"]:checked'))
-                .map(cb => cb.value);
-    
-            const checkedFunctions = Array.from(document.querySelectorAll('#fungsi-body input[type="checkbox"]:checked'))
-                .map(cb => cb.value);
-    
-            const params = new URLSearchParams(window.location.search);
-    
-            // Hapus parameter lama tanpa []
-            params.delete('status');
-            params.delete('fungsi');
-    
-            // Tambahkan parameter status dan fungsi
-            checkedStatuses.forEach(status => params.append('status', status));
-            checkedFunctions.forEach(fungsi => params.append('fungsi', fungsi));
-    
-            const url = `${window.location.pathname}?${params.toString()}`;
-            window.location.href = url;
-        }
-    
-    
-        // Event listener untuk tombol filter buka/tutup dropdown
-        document.getElementById('filterDropdownButton').addEventListener('click', () => {
-            const dd = document.getElementById('filterDropdown');
-            dd.classList.toggle('hidden');
-        });
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/datepicker.min.js"></script>
+        <script>
+            function resetFilter() {
+                window.location.href = window.location.pathname;
+            }
+
+            function applyFilter() {
+                const checkedStatuses = Array.from(document.querySelectorAll('#kehadiran-body input[type="checkbox"]:checked'))
+                    .map(cb => cb.value);
+
+                const checkedFunctions = Array.from(document.querySelectorAll('#fungsi-body input[type="checkbox"]:checked'))
+                    .map(cb => cb.value);
+
+                const params = new URLSearchParams(window.location.search);
+
+                // Hapus parameter lama tanpa []
+                params.delete('status');
+                params.delete('fungsi');
+
+                // Tambahkan parameter status dan fungsi
+                checkedStatuses.forEach(status => params.append('status', status));
+                checkedFunctions.forEach(fungsi => params.append('fungsi', fungsi));
+
+                const url = `${window.location.pathname}?${params.toString()}`;
+                window.location.href = url;
+            }
+
+
+            // Event listener untuk tombol filter buka/tutup dropdown
+            document.getElementById('filterDropdownButton').addEventListener('click', () => {
+                const dd = document.getElementById('filterDropdown');
+                dd.classList.toggle('hidden');
+            });
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/datepicker.min.js"></script>
     @endpush
 </x-layout>
-

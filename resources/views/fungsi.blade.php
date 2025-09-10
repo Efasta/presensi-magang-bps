@@ -8,32 +8,43 @@
         <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
         <script src="https://unpkg.com/flowbite@1.6.5/dist/flowbite.min.js"></script>
 
-        <main class="pt-3 pb-17.5 lg:pb-15">
+        <main class="mt-6 mb-20 lg:pb-15">
             <div class=" px-4 2xl:px-0 mx-auto max-w-screen-2xl">
                 <article class="mx-auto w-full">
 
                     <!-- Tabel & Chart Container -->
                     <div
-                        class="flex flex-col lg:flex-row bg-white dark:bg-gray-800 p-6 rounded-lg border-1 border-gray-200">
+                        class="flex flex-col lg:flex-row gap-6 bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200">
 
-                        <div class="w-full md:w-1/2">
+                        <!-- Tabel Kehadiran -->
+                        <div class="w-full lg:w-1/2">
                             <div class="flex justify-between items-center mb-4">
                                 <h2 id="tabelKehadiranTitle" class="text-xl font-semibold text-gray-800 dark:text-white">
-                                    Tabel
-                                    Kehadiran:</h2>
+                                    Tabel Kehadiran:
+                                </h2>
 
-                                <!-- Dropdown Filter Fungsi -->
-                                <div class="relative inline-block text-left">
+                                <!-- Dropdown Fungsi -->
+                                <div class="relative">
+                                    <button id="fungsiDropdownButton" data-dropdown-toggle="fungsiDropdownMenu"
+                                        type="button"
+                                        class="text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 inline-flex items-center">
+                                        <span id="fungsiDropdownLabel">IPDS</span>
+                                        <svg class="w-3 h-3 ml-2" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                            viewBox="0 0 10 6">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                                stroke-width="2" d="M1 1l4 4 4-4" />
+                                        </svg>
+                                    </button>
 
-                                    <!-- Dropdown List -->
+                                    <!-- Menu Dropdown -->
                                     <div id="fungsiDropdownMenu"
-                                        class="z-20 hidden bg-white dark:bg-gray-700 divide-y divide-gray-100 rounded-lg shadow w-44 mt-2">
+                                        class="z-20 hidden absolute right-0 mt-2 w-44 bg-white dark:bg-gray-700 divide-y divide-gray-100 rounded-lg shadow">
                                         <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
                                             aria-labelledby="fungsiDropdownButton">
                                             @foreach ($fungsis as $fungsi)
                                                 <li>
                                                     <a href="#" data-fungsi="{{ $fungsi->slug }}"
-                                                        class="block px-4 py-2 hover:bg-gray-100 ">
+                                                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
                                                         {{ $fungsi->nama }}
                                                     </a>
                                                 </li>
@@ -43,10 +54,8 @@
                                 </div>
                             </div>
 
-                            <!-- Tabel Kehadiran -->
+                            <!-- Tabel -->
                             <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
-
-
                                 <table class="min-w-full text-sm text-left h-[300px] text-gray-600 dark:text-gray-300">
                                     <thead
                                         class="text-xs uppercase bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
@@ -63,48 +72,20 @@
                         </div>
 
                         <!-- Pie Chart -->
-                        <div class="w-full md:w-1/2 pt-3 sm:pt-0 relative">
-                            <!-- Tombol IPDS di pojok kanan atas -->
-                            <button id="fungsiDropdownButton" data-dropdown-toggle="fungsiDropdownMenu" type="button"
-                                class=" absolute z-10 sm:top-0 right-0 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 inline-flex items-center shadow-sm">
-                                <span id="fungsiDropdownLabel">IPDS</span>
-                                <svg class="w-3 h-3 ml-2" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                    viewBox="0 0 10 6">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="2" d="M1 1l4 4 4-4" />
-                                </svg>
-                            </button>
+                        <div class="w-full lg:w-1/2 flex flex-col relative space-y-4">
 
-                            <!-- Judul di atas grafik, rata tengah -->
-                            <h2
-                                class="text-xl font-semibold mt-11 2xl:mt-1.5 mb-4 text-gray-800 dark:text-white text-center">
-                                Grafik Kehadiran
-                            </h2>
+                            <!-- Header: Judul + Dropdown (Responsif & Sejajar) -->
+                            <div
+                                class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-2 space-y-2 sm:space-y-0">
+                                <h2
+                                    class="text-xl font-semibold text-gray-800 dark:text-white text-center sm:text-left">
+                                    Grafik Kehadiran
+                                </h2>
 
-                            <!-- Grafik -->
-                            <div id="empty-piechart-state"
-                                class="absolute pointer-events-none inset-0 flex flex-col items-center justify-center text-gray-500 text-sm text-center {{ array_sum($chartData[$initialFungsi] ?? []) > 0 ? 'hidden' : '' }}">
-                                <svg class="w-6 h-6 text-gray-800 dark:text-white mb-2"
-                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M5 1v3m5-3v3m5-3v3M1 7h18M5 11h10M2 3h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" />
-                                </svg>
-                                Belum ada data absensi untuk ditampilkan.
-                            </div>
-
-                            <div id="pie-chart-canvas"
-                                class="w-full max-w-lg mx-auto {{ array_sum($chartData[$initialFungsi] ?? []) === 0 ? 'hidden' : '' }}">
-                            </div>
-
-
-                            <!-- 🔽 Dropdown Filter (Non-AJAX Version) -->
-                            <div class="grid grid-cols-1 items-center absolute sm:top-75 right-0">
-                                <div class="flex justify-between items-center pt-5">
+                                <!-- Dropdown Range -->
+                                <div class="relative text-center sm:text-right">
                                     <button id="dropdownDefaultButton" data-dropdown-toggle="lastDaysdropdown"
-                                        data-dropdown-placement="top"
-                                        class="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 text-center inline-flex items-center dark:hover:text-white"
-                                        type="button">
+                                        class="z-10 relative text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white inline-flex items-center">
                                         <span id="dropdownButtonText">
                                             {{-- Tampilkan label berdasarkan request --}}
                                             @php
@@ -120,65 +101,68 @@
                                             @endphp
                                             {{ $labels[$currentRange] ?? 'Hari ini' }}
                                         </span>
-                                        <svg class="w-2.5 m-2.5 ms-1.5" aria-hidden="true"
+                                        <svg class="w-2.5 h-2.5 ml-2.5" aria-hidden="true"
                                             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                                stroke-width="2" d="m1 1 4 4 4-4" />
+                                                stroke-width="2" d="M1 1l4 4 4-4" />
                                         </svg>
                                     </button>
+
+                                    <!-- Dropdown Menu -->
                                     <div id="lastDaysdropdown"
-                                        class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700">
-                                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
+                                        class="z-10 hidden absolute right-0 mt-2 w-44 bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-700">
+                                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200 text-start"
                                             aria-labelledby="dropdownDefaultButton">
-
-                                            <li>
-                                                <a href="#" data-range="today"
-                                                    class="range-option block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">
-                                                    Hari ini
-                                                </a>
-                                            </li>
-
+                                            <li><a href="#" data-range="today"
+                                                    class="range-option block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">Hari
+                                                    ini</a></li>
                                             @if ($isAdmin)
-                                                <li>
-                                                    <a href="#" data-range="yesterday"
-                                                        class="range-option block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">
-                                                        Kemarin
-                                                    </a>
+                                                <li><a href="#" data-range="yesterday"
+                                                        class="range-option block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">Kemarin</a>
                                                 </li>
                                             @endif
-
-                                            <li>
-                                                <a href="#" data-range="7"
-                                                    class="range-option block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">
-                                                    1 minggu terakhir
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#" data-range="30"
-                                                    class="range-option block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">
-                                                    1 bulan terakhir
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#" data-range="60"
-                                                    class="range-option block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">
-                                                    2 bulan terakhir
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#" data-range="all"
-                                                    class="range-option block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">
-                                                    Sepanjang waktu
-                                                </a>
-                                            </li>
+                                            <li><a href="#" data-range="7"
+                                                    class="range-option block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">1
+                                                    minggu terakhir</a></li>
+                                            <li><a href="#" data-range="30"
+                                                    class="range-option block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">1
+                                                    bulan terakhir</a></li>
+                                            <li><a href="#" data-range="60"
+                                                    class="range-option block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">2
+                                                    bulan terakhir</a></li>
+                                            <li><a href="#" data-range="all"
+                                                    class="range-option block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">Sepanjang
+                                                    waktu</a></li>
                                         </ul>
                                     </div>
+                                </div>
+                            </div>
+
+                            <!-- Grafik Pie (kalau ada data) -->
+                            <div class="relative w-full max-w-lg min-h-[300px] mx-auto">
+                                <div id="pie-chart-canvas"
+                                    class="{{ array_sum($chartData[$initialFungsi] ?? []) === 0 ? 'hidden' : '' }}">
+                                    <!-- Chart akan muncul di sini -->
+                                </div>
+
+                                <!-- State kosong (centered) -->
+                                <div id="empty-piechart-state"
+                                    class="absolute inset-0 flex flex-col items-center justify-center text-gray-500 text-sm text-center {{ array_sum($chartData[$initialFungsi] ?? []) > 0 ? 'hidden' : '' }}">
+                                    <svg class="w-6 h-6 text-gray-800 dark:text-white mb-2"
+                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M5 1v3m5-3v3m5-3v3M1 7h18M5 11h10M2 3h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" />
+                                    </svg>
+                                    Belum ada data absensi untuk ditampilkan.
                                 </div>
                             </div>
                         </div>
 
 
+
                     </div>
+
 
                 </article>
             </div>
@@ -207,7 +191,7 @@
                                         </div>
                                         <input type="search" id="simple-search" placeholder="Cari user..."
                                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-emerald-500 dark:focus:border-emerald-500"
-                                            autocomplete="off" autofocus name="search">
+                                            autocomplete="off" name="search">
                                     </div>
                                 </form>
                             </div>
@@ -221,7 +205,7 @@
                                         <th scope="col" class="p-4">Nama</th>
                                         <th scope="col" class="p-4">Nim/Nisn</th>
                                         <th scope="col" class="p-4">Fungsi</th>
-                                        <th scope="col" class="p-4">Jenis Kelamin</th>
+                                        <th scope="col" class="p-4 whitespace-nowrap">Jenis Kelamin</th>
                                         <th scope="col" class="p-4">Status</th>
                                         <th scope="col" class="p-4"></th>
                                         <th scope="col" class="p-4">Aksi</th>
@@ -230,18 +214,19 @@
                                 <tbody id="anggotaFungsiTableBody">
                                     @foreach ($processedUsers as $item)
                                         <tr data-status="{{ strtolower($item['status']) }}"
-                                            data-fungsi="{{ strtolower($item['user']->fungsi->slug ?? '') }}" class="border-t">
+                                            data-fungsi="{{ strtolower($item['user']->fungsi->slug ?? '') }}"
+                                            class="border-t">
                                             <td class="px-4 py-3">{{ $loop->iteration }}</td>
                                             <td class="px-4 py-3 text-black">
-                                                <div class="flex items-center gap-3">
+                                                <div class="flex items-center gap-3 whitespace-nowrap">
                                                     <img class="w-8 h-8 rounded-full"
                                                         src="{{ $item['user']->foto ? asset('storage/' . $item['user']->foto) : asset('img/Anonymous.png') }}"
                                                         alt="{{ $item['user']->name }}">
                                                     {{ $item['user']->name }}
                                                 </div>
                                             </td>
-                                            <td class="px-4 py-3 text-black">{{ $item['user']->nim ?? '-' }}</td>
-                                            <td class="px-4 py-3">
+                                            <td class="pl-6 py-3 text-black">{{ $item['user']->nim ?? '-' }}</td>
+                                            <td class="px-4 py-3 whitespace-nowrap">
                                                 <a href="/fungsi?fungsi={{ $item['user']->fungsi->slug ?? '' }}"
                                                     class="{{ $item['user']->fungsi->warna ?? 'bg-gray-100' }} font-medium px-2 py-0.5 rounded hover:underline">
                                                     {{ $item['user']->fungsi->nama ?? 'Umum' }}
@@ -275,7 +260,7 @@
     @else
         {{-- Optional: Jika kamu mau tampilkan pesan untuk non-admin --}}
         <section class="bg-white dark:bg-gray-900">
-            <div class="py-8 px-4 mx-auto max-w-screen-xl lg:pt-40 lg:px-6">
+            <div class="py-8 px-4 mx-auto max-w-screen-xl lg:pt-40 pt-50 lg:px-6">
                 <div class="mx-auto max-w-screen-sm text-center">
                     <h1 class="mb-4 text-7xl tracking-tight font-extrabold lg:text-9xl text-red-600">
                         403</h1>

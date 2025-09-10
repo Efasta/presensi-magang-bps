@@ -79,7 +79,7 @@ Artisan::command('user:morning-absen-reminder', function () {
     $jam = $now->format('H:i');
 
     // Validasi waktu (07:00 - 08:00 WITA)
-    if ($now->lt($now->copy()->setTime(7, 0)) || $now->gt($now->copy()->setTime(15, 0))) {
+    if ($now->lt($now->copy()->setTime(7, 0)) || $now->gt($now->copy()->setTime(8, 0))) {
         $this->info("Command dijalankan di luar jam 07:00-08:00. Dibatalkan.");
         return;
     }

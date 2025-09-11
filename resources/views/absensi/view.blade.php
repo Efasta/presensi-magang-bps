@@ -1,5 +1,5 @@
 <x-layout :title="$title">
-    <div class="max-w-3xl sm:max-w-6xl sm:mx-auto mx-2 mt-6.5 bg-white rounded-lg border border-gray-200 p-6">
+    <div class="max-w-3xl sm:max-w-6xl sm:mx-auto mx-2 mt-25 bg-white rounded-lg border border-gray-200 p-6">
         <div class="flex items-center mb-5 space-x-5">
             <img src="{{ $absensi->user && $absensi->user->foto ? asset('storage/' . $absensi->user->foto) : asset('img/Anonymous.png') }}"
                 alt="{{ $absensi->user->name ?? 'Anonymous' }}" class="w-20 h-20 rounded-full object-cover">
@@ -15,7 +15,10 @@
                     {{ $absensi->user && $absensi->user->fungsi ? $absensi->user->fungsi->nama : '-' }}
                 </span>
                 <p class="text-gray-500 mt-0.5 text-sm">
-                    {{ \Carbon\Carbon::parse($absensi->created_at)->translatedFormat('d F Y, H:i') }}
+                    {{ \Carbon\Carbon::parse($absensi->tanggal)->translatedFormat('d F Y') }}
+                    -
+                    {{ \Carbon\Carbon::parse($absensi->tanggal_selesai)->translatedFormat('d F Y') }},
+                    {{ \Carbon\Carbon::parse($absensi->created_at)->translatedFormat('H:i') }}
                 </p>
             </div>
         </div>
@@ -89,13 +92,7 @@
                 }
             </style>
         @elseif(!$absensi->gambar)
-            <p class="text-sm text-gray-500 italic mt-4">Tidak ada bukti file yang diunggah.</p>
-            <div class="mt-8">
-                <a href="/absensi"
-                    class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 font-semibold text-sm transition">
-                    ← Kembali
-                </a>
-            </div>
+            <p class="text-sm text-gray-500 italic mt-4 mb-7">Tidak ada bukti file yang diunggah.</p>
         @endif
 
         @php
@@ -115,8 +112,20 @@
                     </a>
         @endif
 
+        @if (
+            !$isAdmin &&
+                now()->toDateString() > \Carbon\Carbon::parse($absensi->tanggal)->toDateString() &&
+                \Carbon\Carbon::parse($absensi->tanggal_selesai)->toDateString() >= now()->toDateString())
+            <form action="{{ route('absensi.stop', $absensi) }}" method="POST"
+                onsubmit="return confirm('Yakin ingin menghentikan izin mulai hari ini?')" class="inline-block">
+                @csrf
+                <button type="submit"
+                    class="cursor-pointer bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 font-semibold text-sm transition ml-2">
+                    Hentikan Rentang Waktu
+                </button>
+            </form>
+        @endif
+
+
     </div>
 </x-layout>
-
-
-{{-- uploads/gambar/Y0roKmgY65ozjw5T2mMRHuzrVPJKlZnLi8H6IgQE.pdf --}}

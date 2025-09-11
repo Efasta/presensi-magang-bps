@@ -94,7 +94,7 @@ class AbsensiController extends Controller
 
         // ✅ Validasi waktu absen masuk
         $now = Carbon::now('Asia/Makassar');
-        $hour = $now->hour; 
+        $hour = $now->hour;
         if ($hour < 7 || $hour >= 12) {
             return redirect('/dashboard')->with('error', 'Absen masuk hanya bisa dilakukan antara pukul 07:00 hingga 12:00 WITA.');
         }
@@ -137,28 +137,25 @@ class AbsensiController extends Controller
             'keterangan' => 'required|string',
             'status_id' => 'required|exists:statuses,id',
             'gambar_path' => 'nullable|string',
+            'tanggal_selesai' => 'required|date|after_or_equal:' . now()->toDateString() . '|before_or_equal:' . now()->addDays(30)->toDateString(),
         ], [
             'judul.required' => 'Judul wajib diisi.',
             'judul.max' => 'Judul tidak boleh lebih dari 255 karakter.',
             'keterangan.required' => 'Keterangan wajib diisi.',
             'status_id.required' => 'Status wajib dipilih.',
             'status_id.exists' => 'Status tidak valid.',
+            'tanggal_selesai.required' => 'Tanggal selesai wajib diisi.',
+            'tanggal_selesai.after_or_equal' => 'Tanggal selesai tidak boleh sebelum hari ini.',
+            'tanggal_selesai.before_or_equal' => 'Tanggal selesai tidak boleh lebih dari 30 hari ke depan.',
         ]);
 
         $user = auth()->user();
         $today = now()->toDateString();
+        $tanggalSelesai = $request->input('tanggal_selesai');
 
-        // Cek apakah user sudah absen hadir hari ini
-        $sudahHadir = Absensi::where('user_id', $user->id)
-            ->where('tanggal', $today)
-            ->where('status_id', 1) // 1 = Hadir
-            ->exists();
+        $periode = Carbon::parse($today)->diffInDays(Carbon::parse($tanggalSelesai)) + 1;
 
-        if ($sudahHadir) {
-            return redirect('/dashboard')->with('error', 'Anda sudah absen hari ini!');
-        }
-
-        // Upload gambar jika ada
+        // Upload gambar (seperti sebelumnya)
         $gambarPath = null;
         if ($request->filled('gambar_path')) {
             $from = storage_path('app/public/' . $request->gambar_path);
@@ -174,19 +171,29 @@ class AbsensiController extends Controller
             }
         }
 
-        // Buat slug dari judul + uniqid
         $slug = Str::slug($request->judul) . uniqid();
 
-        // Simpan data izin/sakit dengan slug
-        Absensi::create([
-            'user_id' => $user->id,
-            'tanggal' => $today,
-            'status_id' => $request->status_id,
-            'judul' => $request->judul,
-            'slug' => $slug,
-            'keterangan' => $request->keterangan,
-            'gambar' => $gambarPath,
-        ]);
+        for ($i = 0; $i < $periode; $i++) {
+            $tanggal = Carbon::parse($today)->addDays($i)->toDateString();
+
+            // Jangan duplikat kalau sudah ada absensi di tanggal itu
+            $sudahAda = Absensi::where('user_id', $user->id)
+                ->where('tanggal', $tanggal)
+                ->exists();
+
+            if (!$sudahAda) {
+                Absensi::create([
+                    'user_id' => $user->id,
+                    'tanggal' => $tanggal,
+                    'tanggal_selesai' => $tanggalSelesai,
+                    'status_id' => $request->status_id,
+                    'judul' => $request->judul,
+                    'slug' => $slug,
+                    'keterangan' => $request->keterangan,
+                    'gambar' => $gambarPath,
+                ]);
+            }
+        }
 
         return redirect('/dashboard')->with('success', 'Pengajuan berhasil dikirim!');
     }
@@ -282,6 +289,49 @@ class AbsensiController extends Controller
             'absensis' => $absensis,
         ]);
     }
+
+    public function stopRange(Request $request, Absensi $absensi)
+    {
+        $user = auth()->user();
+        $today = now()->toDateString();
+
+        // Pastikan user hanya bisa menghapus absensinya sendiri
+        if ($absensi->user_id !== $user->id) {
+            abort(403, 'Unauthorized');
+        }
+
+        // Ambil slug untuk identifikasi grup absensi izin/sakit
+        $slug = $absensi->slug;
+
+        // Hapus semua absensi dari hari ini sampai tanggal_selesai yang slug-nya sama
+        Absensi::where('user_id', $user->id)
+            ->where('slug', $slug)
+            ->whereDate('tanggal', '>=', $today)
+            ->delete();
+
+        // Cari absensi yang masih tersisa dengan slug sama
+        $sisaAbsensi = Absensi::where('user_id', $user->id)
+            ->where('slug', $slug)
+            ->orderBy('tanggal', 'asc')
+            ->get();
+
+        // Jika masih ada sisa absensi, update tanggal_selesai-nya ke tanggal terakhir
+        if ($sisaAbsensi->isNotEmpty()) {
+            $tanggalTerakhir = $sisaAbsensi->max('tanggal');
+            $absensiUtama = $sisaAbsensi->first(); // record pertama (biasanya jadi referensi)
+
+            $absensiUtama->update([
+                'tanggal_selesai' => $tanggalTerakhir,
+            ]);
+        }
+
+        if ($sisaAbsensi->isEmpty()) {
+            $absensi->delete();
+        }
+
+        return redirect('/dashboard')->with('success', 'Rentang waktu berhasil dihentikan mulai hari ini.');
+    }
+
 
     /**
      * Show the form for editing the specified resource.

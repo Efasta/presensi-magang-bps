@@ -27,6 +27,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensis.index');
     Route::get('/keterangan/{absensi:slug}', [AbsensiController::class, 'show']);
     Route::get('/absensi-detail/{user:slug}', [AbsensiController::class, 'showDetail']);
+    Route::post('/absensi/{absensi}/stop', [AbsensiController::class, 'stopRange'])->name('absensi.stop');
     Route::post('/absensi/pulang', [AbsensiController::class, 'pulang']);
     Route::post('/absensi', [AbsensiController::class, 'store']);
     Route::get('/absensi/{user:slug}', [AbsensiController::class, 'create']);

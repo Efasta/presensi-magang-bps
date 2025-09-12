@@ -175,26 +175,7 @@
                                 Anggota Fungsi:</p>
                         </div>
                         <div
-                            class="flex flex-col md:flex-row items-stretch md:items-center md:space-x-3 space-y-3 md:space-y-0 justify-between mx-4 py-4 border-t border-gray-200 dark:border-gray-700">
-                            <div class="w-full md:w-1/2">
-                                <form class="flex items-center">
-                                    <label for="simple-search" class="sr-only">Search</label>
-                                    <div class="relative w-full">
-                                        <div
-                                            class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                            <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400"
-                                                fill="currentColor" viewbox="0 0 20 20"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd" clip-rule="evenodd"
-                                                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" />
-                                            </svg>
-                                        </div>
-                                        <input type="search" id="simple-search" placeholder="Cari user..."
-                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-emerald-500 dark:focus:border-emerald-500"
-                                            autocomplete="off" name="search">
-                                    </div>
-                                </form>
-                            </div>
+                            class="flex flex-col md:flex-row items-stretch md:items-center md:space-x-3 space-y-3 md:space-y-0 justify-between border-t border-gray-200 dark:border-gray-700">
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -339,18 +320,12 @@
     }
 
     function filterAnggotaFungsi(selectedFungsi) {
-        const searchValue = document.getElementById('simple-search').value.toLowerCase();
         const rows = document.querySelectorAll('tbody tr[data-fungsi]');
         let visibleCount = 0;
 
         rows.forEach(row => {
             const rowFungsi = row.getAttribute('data-fungsi');
-            const name = row.querySelector('th, td')?.innerText.toLowerCase() || '';
-
-            const matchFungsi = rowFungsi === selectedFungsi.toLowerCase();
-            const matchSearch = name.includes(searchValue);
-
-            const shouldShow = matchFungsi && matchSearch;
+            const shouldShow = rowFungsi === selectedFungsi.toLowerCase();
             row.style.display = shouldShow ? '' : 'none';
 
             if (shouldShow) visibleCount++;
@@ -360,7 +335,6 @@
         const existingEmptyRow = document.getElementById('empty-message-row');
 
         if (visibleCount === 0) {
-            // Jika belum ada baris kosong, tambahkan
             if (!existingEmptyRow) {
                 const colCount = document.querySelectorAll('thead tr th').length;
                 const emptyRow = document.createElement('tr');
@@ -371,12 +345,12 @@
                 tbody.appendChild(emptyRow);
             }
         } else {
-            // Hapus baris kosong jika ada baris yang ditampilkan
             if (existingEmptyRow) {
                 existingEmptyRow.remove();
             }
         }
     }
+
 
     document.addEventListener('DOMContentLoaded', () => {
         renderPieChart(pieChartDataByfungsi[initialFungsi]);
@@ -426,13 +400,6 @@
 
                 filterAnggotaFungsi(selectedFungsi);
             });
-        });
-
-        // Event input search
-        document.getElementById('simple-search').addEventListener('input', function() {
-            const selectedFungsi = document.querySelector('[data-fungsi].active')?.getAttribute(
-                'data-fungsi') || initialFungsi;
-            filterAnggotaFungsi(selectedFungsi);
         });
 
         // Initial filter call

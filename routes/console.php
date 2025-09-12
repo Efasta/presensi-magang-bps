@@ -112,5 +112,5 @@ Artisan::command('user:morning-absen-reminder', function () {
     }
 
     $this->info("{$jumlahDikirim} notifikasi dikirim ke user non-admin pada {$jam}.");
-})->purpose('Kirim notifikasi absen pagi setiap 5 menit antara jam 07:00 - 08:00 WITA s');
+})->purpose('Kirim notifikasi absen pagi setiap 5 menit antara jam 07:00 - 08:00 WITA');
 

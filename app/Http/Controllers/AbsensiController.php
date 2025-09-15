@@ -290,7 +290,7 @@ class AbsensiController extends Controller
         ]);
     }
 
-    public function stopRange(Request $request, Absensi $absensi)
+    public function stopRange( Absensi $absensi)
     {
         $user = auth()->user();
         $today = now()->toDateString();

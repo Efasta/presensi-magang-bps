@@ -47,10 +47,7 @@
                 </svg>
                 <span class="flex-1 ms-3 whitespace-nowrap">Fungsi</span>
             </x-side-link>
-            @php
-                $isAdmin = Auth::user()->is_admin;
-            @endphp
-            @if (!$isAdmin)
+            
                 <x-side-link href="/pesan" :current="request()->is('pesan')">
                     <svg class="shrink-0 w-5 h-5 transition duration-75" aria-hidden="true"
                         xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
@@ -59,7 +56,6 @@
                     </svg>
                     <span class="flex-1 ms-3 whitespace-nowrap">Pesan</span>
                 </x-side-link>
-            @endif
             <li>
                 <form method="POST"action="/logout">
                     @csrf

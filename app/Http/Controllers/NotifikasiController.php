@@ -12,7 +12,7 @@ class NotifikasiController extends Controller
     public function index()
     {
         $userId = Auth::id(); // Ambil ID user yang sedang login
-        $notifs = Notif::where('user_id', $userId)->latest()->get(); // Filter berdasarkan user_id
+        $notifs = Notif::where('user_id', $userId)->latest()->paginate(6); // Filter berdasarkan user_id
 
         return view('pesan', [
             'title' => 'Pesan',

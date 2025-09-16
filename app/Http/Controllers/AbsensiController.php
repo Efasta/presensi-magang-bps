@@ -171,7 +171,7 @@ class AbsensiController extends Controller
             }
         }
 
-        $slug = Str::slug($request->judul) . uniqid();
+        $slug = Str::slug($request->judul) . '-' . uniqid();
 
         for ($i = 0; $i < $periode; $i++) {
             $tanggal = Carbon::parse($today)->addDays($i)->toDateString();

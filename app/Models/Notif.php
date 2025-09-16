@@ -11,6 +11,17 @@ class Notif extends Model
     /** @use HasFactory<\Database\Factories\NotifFactory> */
     use HasFactory;
 
+    protected $fillable = [
+        'user_id',
+        'foto',
+        'nama',
+        'slug',
+        'pesan',
+        'is_read',
+        'created_at',
+        'updated_at',
+    ];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Notif;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -66,5 +68,78 @@ class NotifikasiController extends Controller
             Notif::whereIn('id', $ids)->delete();
         }
         return response()->json(['status' => 'success']);
+    }
+
+    public function create()
+    {
+        return view('pesan.create', [
+            'title' => 'Pesan',
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'nama' => 'required|string|max:255',
+            'pesan' => 'required|string',
+        ], [
+            'nama.required' => 'Nama wajib diisi.',
+            'pesan.required' => 'Pesan wajib diisi.',
+            'nama.max' => 'Nama tidak boleh lebih dari 255 karakter.'
+        ]);
+
+        $users = User::all(); // ambil semua user
+
+        foreach ($users as $user) {
+            Notif::create([
+                'user_id' => $user->id,
+                'foto' => 'img/BPS_Chatbot.jpg', // default path atau ambil dari config
+                'nama' => $validated['nama'],
+                'slug' => Str::slug($validated['nama']) . '-' . uniqid(), // pakai UUID agar unik
+                'pesan' => $validated['pesan'],
+                'is_read' => false,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        return redirect('/pesan')->with('success', 'Pesan berhasil dikirim ke semua user!');
+    }
+
+    public function destroy(Notif $notif)
+    {
+        Notif::where('nama', $notif->nama)
+            ->where('pesan', $notif->pesan)
+            ->delete();
+
+        return redirect('/pesan')->with(['success' => 'Pesan broadcast berhasil dihapus dari semua user!']);
+    }
+
+    public function edit(Notif $notif)
+    {
+        return view('pesan.edit', ['title' => 'Pesan', 'notif' => $notif]);
+    }
+
+    public function update(Request $request, Notif $notif)
+    {
+        $validated = $request->validate([
+            'nama' => 'required|string|max:255|unique:notifs,nama' . $notif->id,
+            'pesan' => 'required|string',
+        ], [
+            'nama.required' => 'Nama wajib diisi.',
+            'pesan.required' => 'Pesan wajib diisi.',
+            'nama.max' => 'Nama tidak boleh lebih dari 255 karakter.'
+        ]);
+
+        // Update semua pesan broadcast yang identik
+        Notif::where('nama', $notif->nama)
+            ->where('pesan', $notif->pesan)
+            ->update([
+                'nama' => $validated['nama'],
+                'pesan' => $validated['pesan'],
+                'updated_at' => now(),
+            ]);
+
+        return redirect('/pesan')->with(['success' => 'Pesan broadcast berhasil diupdate untuk semua user!']);
     }
 }

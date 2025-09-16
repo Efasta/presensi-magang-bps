@@ -51,10 +51,15 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/pesan', [NotifikasiController::class, 'index'])->name('notifikasi.index');
-    Route::get('/pesan/{notif:slug}', [NotifikasiController::class, 'show']);
+    Route::post('/pesan', [NotifikasiController::class, 'store']);
+    Route::get('/pesan/admin/create', [NotifikasiController::class, 'create']);
+    Route::delete('/pesan/{notif:slug}', [NotifikasiController::class, 'destroy']);
+    Route::get('/pesan/{notif:slug}/edit', [NotifikasiController::class, 'edit']);
+    Route::patch('/pesan/{notif:slug}', [NotifikasiController::class, 'update']);
     Route::post('/notifikasi/read', [NotifikasiController::class, 'markRead'])->name('notifikasi.read');
     Route::post('/notifikasi/unread', [NotifikasiController::class, 'markUnread'])->name('notifikasi.unread');
     Route::post('/notifikasi/delete', [NotifikasiController::class, 'delete'])->name('notifikasi.delete');
+    Route::get('/pesan/{notif:slug}', [NotifikasiController::class, 'show']);
 });
 
 Route::middleware('auth')->group(function () {

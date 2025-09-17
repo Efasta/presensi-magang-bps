@@ -159,7 +159,7 @@
 
                     {{-- List pesan --}}
                     <div class="divide-y divide-gray-200 dark:divide-gray-700">
-                        @foreach ($notifs as $notif)
+                        @forelse ($notifs as $notif)
                             <div
                                 class="flex items-center py-3 px-5 border-b border-gray-300 {{ $notif->is_read ? 'bg-gray-100' : 'bg-white' }}">
                                 <input type="checkbox" class="mr-4 message-checkbox" data-id="{{ $notif->id }}" />
@@ -174,7 +174,11 @@
                                     {{ $notif->created_at->format('M d, H:i') }}
                                 </p>
                             </div>
-                        @endforeach
+                        @empty
+                            <p class="text-center text-gray-500 py-50">
+                                Anda belum menerima pesan apapun...
+                            </p>
+                        @endforelse
 
                     </div>
                 </div>

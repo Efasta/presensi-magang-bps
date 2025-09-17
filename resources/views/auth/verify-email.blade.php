@@ -2,6 +2,11 @@
     <div class="mb-4 text-sm text-gray-600">
         {{ __('Terima kasih telah mendaftar! Sebelum memulai, bisakah Anda memverifikasi alamat email Anda dengan mengeklik tautan yang baru saja kami kirimkan? Jika Anda tidak menerima email tersebut, kami akan dengan senang hati mengirimkan email baru.') }}
     </div>
+    
+    <a href="{{ route('profile.edit') }}"
+        class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+        {{ __('Klik di sini jika email salah.') }}
+    </a>
 
     @if (session('status') == 'verification-link-sent')
         <div class="mb-4 font-medium text-sm text-green-600">

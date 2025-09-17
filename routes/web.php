@@ -23,7 +23,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Route::get('/absensi/table/{range}', [DashboardController::class, 'getTableData']); ❌ BISA DIHAPUS
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensis.index');
     Route::get('/keterangan/{absensi:slug}', [AbsensiController::class, 'show']);
     Route::get('/absensi-detail/{user:slug}', [AbsensiController::class, 'showDetail']);
@@ -37,7 +37,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/revert-absensi', [AbsensiController::class, 'revert']);
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/users', [CardUsersController::class, 'index'])->name('users.index');
     Route::delete('/users/{user:slug}', [CardUsersController::class, 'destroy'])->name('users.destroy');
     Route::get('/users/{user:slug}/edit', [CardUsersController::class, 'edit'] );
@@ -45,11 +45,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/users/{user:slug}', [CardUsersController::class, 'show']);
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/fungsi', [FungsiController::class, 'index'])->name('fungsi');
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/pesan', [NotifikasiController::class, 'index'])->name('notifikasi.index');
     Route::post('/pesan', [NotifikasiController::class, 'store']);
     Route::get('/pesan/admin/create', [NotifikasiController::class, 'create']);
@@ -62,7 +62,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/pesan/{notif:slug}', [NotifikasiController::class, 'show']);
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

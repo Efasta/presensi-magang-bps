@@ -34,7 +34,7 @@ class NotifikasiController extends Controller
         }
 
         return view('pesan.view', [
-            'title' => 'Detail Pesan',
+            'title' => 'Pesan',
             'notif' => $notif,
         ]);
     }

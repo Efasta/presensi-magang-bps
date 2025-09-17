@@ -10,13 +10,6 @@
         <div id="map" class="w-full h-[661px] rounded-lg border pointer-events-auto"></div>
 
         <!-- Tombol Absen -->
-        @php
-            use Carbon\Carbon;
-
-            $hariIni = Carbon::now('Asia/Makassar');
-            $isWeekend = in_array($hariIni->dayOfWeek, [Carbon::SATURDAY, Carbon::SUNDAY]);
-            $namaHari = $hariIni->translatedFormat('l'); // Format "Sabtu", "Minggu"
-        @endphp
         <div
             class="absolute bottom-10 left-10 bg-white shadow-lg py-4 px-[30px] rounded-lg z-[999] flex flex-col space-y-2">
             <p class="text-sm text-gray-600 max-w-sm">

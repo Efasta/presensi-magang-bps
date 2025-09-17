@@ -51,7 +51,10 @@ class AbsensiController extends Controller
         $user = auth()->user();
         $today = now()->toDateString();
 
-        // Ambil data absen hari ini milik user
+        $now = Carbon::now('Asia/Makassar');
+        $isWeekend = in_array($now->dayOfWeek, [Carbon::SATURDAY, Carbon::SUNDAY]);
+        $namaHari = $now->translatedFormat('l'); // contoh: "Senin", "Selasa"
+
         $absensiToday = Absensi::where('user_id', $user->id)
             ->where('tanggal', $today)
             ->first();
@@ -59,6 +62,8 @@ class AbsensiController extends Controller
         return view('absensi.create', [
             'title' => 'Absensi',
             'absensi' => $absensiToday,
+            'isWeekend' => $isWeekend,
+            'namaHari' => $namaHari,
         ]);
     }
 
@@ -73,7 +78,7 @@ class AbsensiController extends Controller
             ->first();
 
         return view('absensi.create-detail', [
-            'title' => 'Detail Presensi',
+            'title' => 'Absensi',
             'absensi' => $absensiToday,
             'user' => $user,
         ]);
@@ -239,7 +244,7 @@ class AbsensiController extends Controller
 
         $now = Carbon::now('Asia/Makassar');
         $hour = $now->hour;
-        if ($hour < 7 || $hour >= 24) {
+        if ($hour < 16 || $hour >= 24) {
             return redirect('/dashboard')->with('error', 'Absen pulang hanya bisa dilakukan antara pukul 16:00 hingga 00:00 WITA.');
         }
 
@@ -287,7 +292,7 @@ class AbsensiController extends Controller
             ->paginate(12);
 
         return view('absensi.view-detail', [
-            'title' => 'Detail Absensi',
+            'title' => 'Absensi',
             'user' => $user,
             'absensis' => $absensis,
         ]);

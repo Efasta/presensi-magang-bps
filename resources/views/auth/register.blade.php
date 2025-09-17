@@ -67,7 +67,7 @@
             <!-- Tanggal Masuk -->
             <div>
                 <x-input-label for="tanggal_masuk" :value="__('Tanggal Masuk')" />
-                <x-text-input id="tanggal_masuk" class="block mt-1 w-full text-gray-500" type="date"
+                <x-text-input id="tanggal_masuk" class="block mt-1 w-full" type="date"
                     name="tanggal_masuk" :value="old('tanggal_masuk')" autocomplete="tanggal_masuk" />
                 <x-input-error :messages="$errors->get('tanggal_masuk')" class="mt-2" />
                     <p class="text-gray-400 pt-1">*formatnya (bulan-tanggal-tahun)</p>
@@ -76,7 +76,7 @@
             <!-- Tanggal Keluar -->
             <div>
                 <x-input-label for="tanggal_keluar" :value="__('Tanggal Keluar')" />
-                <x-text-input id="tanggal_keluar" class="block mt-1 w-full text-gray-500" type="date"
+                <x-text-input id="tanggal_keluar" class="block mt-1 w-full" type="date"
                     name="tanggal_keluar" :value="old('tanggal_keluar')" autocomplete="tanggal_keluar" />
                 <x-input-error :messages="$errors->get('tanggal_keluar')" class="mt-2" />
             </div>

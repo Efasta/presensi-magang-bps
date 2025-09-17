@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([StatusSeeder::class, FungsiSeeder::class, UserSeeder::class, NotifSeeder::class]);
+        $this->call([StatusSeeder::class, FungsiSeeder::class, UserSeeder::class]);
 
         User::factory(20)->recycle([
             Status::all(), 

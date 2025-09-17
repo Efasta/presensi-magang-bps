@@ -164,5 +164,18 @@
                 labelFileRemoveError: 'Gagal menghapus file',
             });
         </script>
+        <script>
+            const tanggalSelesai = document.getElementById('tanggal_selesai');
+
+            tanggalSelesai.addEventListener('change', function() {
+                const selectedDate = new Date(this.value);
+                const day = selectedDate.getUTCDay(); // 0 = Minggu, 6 = Sabtu
+
+                if (day === 0 || day === 6) {
+                    alert("Anda tidak bisa memilih hari Sabtu atau Minggu sebagai tanggal selesai.");
+                    this.value = ''; // Clear input
+                }
+            });
+        </script>
     @endpush
 </x-layout>

@@ -91,9 +91,12 @@ class AbsensiController extends Controller
 
         $user = auth()->user();
         $today = now()->toDateString();
-
-        // ✅ Validasi waktu absen masuk
         $now = Carbon::now('Asia/Makassar');
+        // ✅ Validasi hari Sabtu/Minggu
+        if (in_array($now->dayOfWeek, [Carbon::SATURDAY, Carbon::SUNDAY])) {
+            return redirect('/dashboard')->with('error', 'Kamu gak bisa absen di hari Sabtu atau Minggu!');
+        }
+
         $hour = $now->hour;
         if ($hour < 7 || $hour >= 12) {
             return redirect('/dashboard')->with('error', 'Absen masuk hanya bisa dilakukan antara pukul 07:00 hingga 12:00 WITA.');
@@ -290,7 +293,7 @@ class AbsensiController extends Controller
         ]);
     }
 
-    public function stopRange( Absensi $absensi)
+    public function stopRange(Absensi $absensi)
     {
         $user = auth()->user();
         $today = now()->toDateString();

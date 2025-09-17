@@ -11,7 +11,16 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Artisan::command('absensi:auto-mark-absent', function () {
-    $yesterday = Carbon::yesterday()->toDateString();
+    $yesterday = Carbon::yesterday('Asia/Makassar');
+
+    // Cek apakah hari kemarin Sabtu (6) atau Minggu (0)
+    if (in_array($yesterday->dayOfWeek, [0, 6])) {
+        $this->info("Hari kemarin adalah {$yesterday->format('l')} ({$yesterday->toDateString()}), tidak ada absen otomatis.");
+        return;
+    }
+
+    // Ambil tanggal sebagai string
+    $yesterdayStr = $yesterday->toDateString();
 
     // Ambil semua user ID yang bukan admin
     $userIds = DB::table('users')
@@ -22,25 +31,26 @@ Artisan::command('absensi:auto-mark-absent', function () {
         // Cek apakah user ini sudah absen di tanggal kemarin
         $sudahAbsen = DB::table('absensis')
             ->where('user_id', $userId)
-            ->whereDate('tanggal', $yesterday)
+            ->whereDate('tanggal', $yesterdayStr)
             ->exists();
 
         if (!$sudahAbsen) {
             // Kalau belum absen kemarin, tandai absen otomatis
             DB::table('absensis')->insert([
                 'user_id' => $userId,
-                'tanggal' => $yesterday,
+                'tanggal' => $yesterdayStr,
                 'status_id' => 4, // Asumsikan 4 = Absen
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
 
-            $this->info("User ID $userId ditandai absen pada $yesterday.");
+            $this->info("User ID $userId ditandai absen pada $yesterdayStr.");
         }
     }
 
     $this->info('Selesai tandai absen otomatis.');
 });
+
 
 Artisan::command('user:auto-delete', function () {
     $today = \Illuminate\Support\Carbon::now('Asia/Makassar')->toDateString();
@@ -78,7 +88,13 @@ Artisan::command('user:morning-absen-reminder', function () {
     $now = \Carbon\Carbon::now('Asia/Makassar');
     $jam = $now->format('H:i');
 
-    // Validasi waktu (07:00 - 08:00 WITA)
+    // ✅ Validasi jika hari ini Sabtu (6) atau Minggu (0)
+    if (in_array($now->dayOfWeek, [0, 6])) {
+        $this->info("Hari ini adalah {$now->format('l')} ({$now->toDateString()}), tidak ada pengiriman notifikasi absen.");
+        return;
+    }
+
+    // ✅ Validasi waktu (07:00 - 08:00 WITA)
     if ($now->lt($now->copy()->setTime(7, 0)) || $now->gt($now->copy()->setTime(8, 0))) {
         $this->info("Command dijalankan di luar jam 07:00-08:00. Dibatalkan.");
         return;
@@ -114,3 +130,13 @@ Artisan::command('user:morning-absen-reminder', function () {
     $this->info("{$jumlahDikirim} notifikasi dikirim ke user non-admin pada {$jam}.");
 })->purpose('Kirim notifikasi absen pagi setiap 5 menit antara jam 07:00 - 08:00 WITA');
 
+Artisan::command('notif:auto-cleanup', function () {
+    $batasWaktu = \Carbon\Carbon::now('Asia/Makassar')->subDay(); // Lebih dari 1 hari
+    $totalDihapus = DB::table('notifs')
+        ->where('is_read', 0)
+        ->where('pesan', 'like', 'Halo, sekarang udah jam%yuk absen%') // format pesan reminder
+        ->where('created_at', '<', $batasWaktu)
+        ->delete();
+
+    $this->info("Berhasil menghapus $totalDihapus notifikasi reminder yang belum dibaca dan sudah lewat 1 hari.");
+})->purpose('Hapus notifikasi reminder otomatis yang tidak dibaca user setelah 1 hari');

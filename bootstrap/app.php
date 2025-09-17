@@ -27,6 +27,10 @@ return Application::configure(basePath: dirname(__DIR__))
             ->everyFiveMinutes()
             ->between('07:00', '08:00')
             ->timezone('Asia/Makassar');
+
+        $schedule->command('notif:auto-cleanup')
+            ->dailyAt('00:10')
+            ->timezone('Asia/Makassar');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

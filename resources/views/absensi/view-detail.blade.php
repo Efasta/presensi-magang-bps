@@ -1,5 +1,5 @@
 <x-layout :title="$title">
-    <div class=" mx-5 mb-23 sm:mb-0 my-9">
+    <div class=" mx-5 mb-23 sm:mb-23 mt-6">
         <div class="rounded-lg py-3 mb-4 border w-full border-gray-200 flex flex-col min-h-[700px]">
             <div class="flex flex-row items-center justify-between border-b border-gray-200 pb-3 px-4">
                 <div class="text-center font-semibold text-base">Detail Absensi {{ $user->name }}</div>

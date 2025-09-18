@@ -5,7 +5,7 @@
                 <!-- Header -->
                 <div class="relative border-b-2 border-gray-400 dark:border-gray-700 pb-2 mb-4">
                     <h2 class="text-2xl font-bold text-gray-900 dark:text-white text-center">
-                        Message Details
+                        Detail Pesan
                     </h2>
                 </div>
 

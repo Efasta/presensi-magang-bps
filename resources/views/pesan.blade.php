@@ -383,7 +383,7 @@
             }
         </style>
     @else
-        <section class="p-5 antialiased">
+        <section class="mt-5 mb-22.5 antialiased">
             <div class="mx-auto px-4">
                 <div class="bg-white dark:bg-gray-800 relative border rounded-lg overflow-hidden">
                     <div class="flex flex-row items-center justify-between space-y-0 space-x-4 p-4">
@@ -421,8 +421,8 @@
                                             class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                             {{ $loop->iteration }}
                                         </th>
-                                        <td class="px-4 py-3">{{ $notif->nama }}</td>
-                                        <td class="px-4 py-3 whitespace-nowrap">{{ Str::limit($notif->pesan, 15) }}
+                                        <td class="px-4 py-3 whitespace-nowrap">{{ $notif->nama }}</td>
+                                        <td class="px-4 py-3 whitespace-nowrap">{{ Str::limit($notif->pesan, 20) }}
                                         </td>
                                         <td class="px-4 py-3 max-w-[12rem] truncate">
                                             {{ $notif->created_at->diffForHumans() }}</td>
@@ -543,7 +543,9 @@
                             </tbody>
                         </table>
                     </div>
-                    {{ $notifs->links() }}
+                    @if ($notifs->hasPages())
+                        {{ $notifs->onEachSide(0)->links('components.pagination.custom') }}
+                    @endif
                 </div>
             </div>
         </section>

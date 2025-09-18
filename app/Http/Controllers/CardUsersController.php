@@ -131,7 +131,7 @@ class CardUsersController extends Controller
             'email' => $validated['email'],
             'jurusan' => $validated['jurusan'],
             'universitas' => $validated['universitas'],
-            'no_telp' => $validated['no_telp'],
+            'telepon' => $validated['telepon'],
             'alamat' => $validated['alamat'],
             'tanggal_masuk' => $validated['tanggal_masuk'],
             'tanggal_keluar' => $validated['tanggal_keluar'],

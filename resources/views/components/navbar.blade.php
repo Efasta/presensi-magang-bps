@@ -16,7 +16,7 @@
                 </button>
                 <a href="/dashboard" class="flex ms-2 md:me-24">
                     <img src="{{ asset('img/Lambang_BPS.png') }}" class="h-8 me-3" alt="BPSAbsen Provsulsel" />
-                    <span class="self-center text-lg font-bold sm:text-2xl whitespace-nowrap dark:text-white">BPS
+                    <span class="self-center text-sm font-bold sm:text-2xl whitespace-nowrap dark:text-white">BPS
                         Provinsi Sulawesi Selatan</span>
                 </a>
             </div>

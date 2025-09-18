@@ -59,11 +59,11 @@ class ProfileController extends Controller
         // ========== UPLOAD FOTO (BARU) ==========
         if ($request->foto) {
             if (!empty($request->user()->foto)) {
-                Storage::disk('public')->delete($request->user()->foto);
+                Storage::disk(config('filesystems.default_public_disk'))->delete($request->user()->foto);
             }
 
             $newFileName = Str::after($request->foto, 'tmp/');
-            Storage::disk('public')->move($request->foto, "img/$newFileName");
+            Storage::disk(config('filesystems.default_public_disk'))->move($request->foto, "img/$newFileName");
 
             $validated['foto'] = "img/$newFileName";
         }
@@ -76,7 +76,7 @@ class ProfileController extends Controller
     public function upload(Request $request)
     {
         if ($request->hasFile('foto')) {
-            $path = $request->file('foto')->store('tmp', 'public');
+            $path = $request->file('foto')->store('tmp', config('filesystems.default_public_disk'));
         }
 
         return $path;
@@ -90,7 +90,7 @@ class ProfileController extends Controller
 
         // Pastikan hanya file di direktori tmp yang bisa dihapus
         if (str_starts_with($request->path, 'tmp/')) {
-            Storage::disk('public')->delete($request->path);
+            Storage::disk(config('filesystems.default_public_disk'))->delete($request->path);
             return response()->noContent(); // 204 success
         }
 

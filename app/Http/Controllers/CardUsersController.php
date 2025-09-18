@@ -157,17 +157,18 @@ class CardUsersController extends Controller
 
         // Backup dulu ke tabel deleted_users
         DB::table('deleted_users')->insert([
-            'original_user_id'     => $user->id,
-            'name'                 => $user->name,
-            'email'                => $user->email,
-            'slug'                 => $user->slug,
-            'is_admin'             => $user->is_admin,
-            'tanggal_keluar'       => $user->tanggal_keluar,
-            'full_data'            => json_encode($user),
-            'deleted_by_admin_id'  => auth()->id(),
-            'deleted_by_admin_at'  => now('Asia/Makassar'),
-            'created_at'           => now(),
-            'updated_at'           => now(),
+            'original_user_id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'slug' => $user->slug,
+            'is_admin' => $user->is_admin,
+            'fungsi_id' => $user->fungsi_id,
+            'tanggal_keluar' => $user->tanggal_keluar,
+            'full_data' => json_encode($user),
+            'deleted_by_admin_id' => auth()->id(),
+            'deleted_by_admin_at' => now('Asia/Makassar'),
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         // Hapus user dari tabel users

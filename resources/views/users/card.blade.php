@@ -72,7 +72,12 @@
                     </a>
                     @endif
 
+                    @php
+                        $isAdmin = Auth::user()->is_admin;
+                    @endphp
+
                     {{-- Tombol Edit & Delete (dalam flex) --}}
+                    @if(!$isAdmin)
                     <div class="flex space-x-3 ml-auto">
                         {{-- Edit --}}
                         <a href="/profile"
@@ -98,6 +103,7 @@
                             Delete
                         </a>
                     </div>
+                    @endif
 
                 </div>
             </div>

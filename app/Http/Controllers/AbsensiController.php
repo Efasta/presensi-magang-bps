@@ -9,6 +9,7 @@ use App\Models\Status;
 use App\Models\Absensi;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class AbsensiController extends Controller
 {
@@ -166,16 +167,13 @@ class AbsensiController extends Controller
         // Upload gambar (seperti sebelumnya)
         $gambarPath = null;
         if ($request->filled('gambar_path')) {
-            $from = storage_path('app/public/' . $request->gambar_path);
-            $toDir = storage_path('app/public/uploads/gambar');
-            if (file_exists($from)) {
-                if (!file_exists($toDir)) {
-                    mkdir($toDir, 0755, true);
-                }
-                $fileName = basename($from);
-                $to = $toDir . '/' . $fileName;
-                rename($from, $to);
-                $gambarPath = 'uploads/gambar/' . $fileName;
+            $fileName = basename($request->gambar_path);
+            $from = $request->gambar_path; // contoh: tmp/xxxx.png
+            $to = "uploads/gambar/$fileName";
+
+            if (Storage::disk(config('filesystems.default_public_disk'))->exists($from)) {
+                Storage::disk(config('filesystems.default_public_disk'))->move($from, $to);
+                $gambarPath = $to;
             }
         }
 
@@ -210,28 +208,25 @@ class AbsensiController extends Controller
     public function upload(Request $request)
     {
         if ($request->hasFile('gambar')) {
-            $path = $request->file('gambar')->store('tmp', 'public');
+            $path = $request->file('gambar')->store('tmp', config('filesystems.default_public_disk'));
+            return $path;
         }
-
-        return $path;
+        return null;
     }
 
     public function revert(Request $request)
     {
-        $filename = $request->input('filename');
+        $filename = basename($request->input('filename'));+
+        $filePath = "tmp/$filename";
 
-        if ($filename) {
-            // Pastikan path benar
-            $filePath = storage_path('app/public/tmp/' . basename($filename));
-
-            if (file_exists($filePath)) {
-                unlink($filePath); // Hapus file
-                return response()->json(['message' => 'File berhasil dihapus.']);
-            }
+        if (Storage::disk(config('filesystems.default_public_disk'))->exists($filePath)) {
+            Storage::disk(config('filesystems.default_public_disk'))->delete($filePath);
+            return response()->json(['message' => 'File berhasil dihapus.']);
         }
 
         return response()->json(['message' => 'File tidak ditemukan.'], 404);
     }
+
 
     public function pulang(Request $request)
     {

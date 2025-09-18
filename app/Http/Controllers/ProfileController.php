@@ -33,9 +33,6 @@ class ProfileController extends Controller
     {
         $validated = $request->validated();
 
-        // Simpan foto lama sebelum diubah
-        // $oldFoto = $request->user()->foto;
-
         if ($request->name !== $request->user()->name) {
             $slug = Str::slug($request->name);
             $originalSlug = $slug;
@@ -71,21 +68,6 @@ class ProfileController extends Controller
             $validated['foto'] = "img/$newFileName";
         }
 
-        // ========== UPLOAD FOTO (LAMA - dikomentari) ==========
-        /*
-    if ($request->hasFile('foto')) {
-        // Hapus foto lama dulu
-        if (!empty($oldFoto)) {
-            Storage::disk('public')->delete($oldFoto);
-        }
-
-        // Simpan foto baru dan tambahkan ke array validated
-        $path = $request->file('foto')->store('img', 'public');
-        $validated['foto'] = $path;
-    }
-    */
-
-        // Simpan perubahan ke database (termasuk foto baru jika ada)
         $request->user()->update($validated);
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');

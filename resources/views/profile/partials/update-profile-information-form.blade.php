@@ -191,15 +191,15 @@
                 $isAdmin = Auth::user()->is_admin;
             @endphp
             @if (!$isAdmin)
-            <a href="/users/{{ $user->slug }}"
-                class="inline-flex items-center text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-semibold rounded-lg text-sm px-4 py-2 text-center dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900 uppercase">
-                Back to Card
-            </a>
+                <a href="/users/{{ $user->slug }}"
+                    class="inline-flex items-center text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-semibold rounded-lg text-sm px-4 py-2 text-center dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900 uppercase">
+                    Back to Card
+                </a>
             @else
-            <a href="/users"
-                class="inline-flex items-center text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-semibold rounded-lg text-sm px-4 py-2 text-center dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900 uppercase">
-                Cancel
-            </a>
+                <a href="/users"
+                    class="inline-flex items-center text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-semibold rounded-lg text-sm px-4 py-2 text-center dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900 uppercase">
+                    Cancel
+                </a>
             @endif
 
             @if (session('status') === 'profile-updated')
@@ -244,34 +244,32 @@
 
         const inputElement = document.querySelector('#foto');
         const pond = FilePond.create(inputElement, {
-            acceptedFileTypes: ['image/jpeg, image/jpg, image/png'],
+            acceptedFileTypes: ['image/jpeg', 'image/jpg', 'image/png'],
             maxFileSize: '1MB',
             imageResizeTargetWidth: '600',
             imageResizeMode: 'contain',
             imageResizeUpscale: false,
             server: {
-                url: '/upload-profile',
                 process: {
-                    url: '/',
+                    url: '/upload-profile',
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
-                    onload: response => response, // path file dikembalikan
+                    onload: response => response,
                     onerror: response => response
                 },
                 revert: (filename, load) => {
                     fetch('/revert-profile', {
-                            method: 'DELETE',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            },
-                            body: JSON.stringify({
-                                path: filename
-                            }),
-                        })
-                        .then(res => res.ok ? load() : null);
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        },
+                        body: JSON.stringify({
+                            path: filename
+                        }),
+                    }).then(res => res.ok ? load() : null);
                 }
             },
             labelIdle: 'Drag & drop foto Anda atau <span class="filepond--label-action">Telusuri</span>',

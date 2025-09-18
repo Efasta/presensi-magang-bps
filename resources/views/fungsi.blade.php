@@ -6,8 +6,6 @@
     <!-- Chart.js & Flowbite CDN -->
     @if ($isAdmin)
         <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-        <script src="https://unpkg.com/flowbite@1.6.5/dist/flowbite.min.js"></script>
-
         <main class="mt-6 mb-20 lg:pb-15">
             <div class=" px-4 2xl:px-0 mx-auto max-w-screen-2xl">
                 <article class="mx-auto w-full">

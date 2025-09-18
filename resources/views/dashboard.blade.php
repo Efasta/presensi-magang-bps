@@ -526,7 +526,6 @@
                         // Kirim info role ke JS agar bisa digunakan saat rendering
                         window.isAdmin = @json($isAdmin);
                     </script>
-                    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
                 </div>
 
                 {{-- Pagination --}}

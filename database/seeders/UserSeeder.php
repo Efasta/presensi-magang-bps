@@ -21,14 +21,5 @@ class UserSeeder extends Seeder
             'jenis_kelamin' => 'Laki-laki',
             'password' => Hash::make('admin$%^!@#')
         ]);
-
-        User::factory()->create([
-            'name' => 'Ahmad Fakhri Pratama',
-            'slug' => 'ahmad-fakhri-pratama',
-            'is_admin' => false,
-            'email' => 'fialfakhri08@gmail.com',
-            'jenis_kelamin' => 'Laki-laki',
-            'foto' => 'img/foto saya.jpeg',
-        ]);
     }
 }

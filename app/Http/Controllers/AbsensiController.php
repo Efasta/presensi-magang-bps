@@ -268,22 +268,17 @@ class AbsensiController extends Controller
         $today = now()->toDateString();
         $now = Carbon::now('Asia/Makassar');
 
-        // Lokasi kantor
-        $kantorLat = -5.1488763012991425;
-        $kantorLng = 119.41054079290649;
-        $radius = 50; // meter
-
-        // Hitung jarak
-        $distance = $this->haversine($request->latitude, $request->longitude, $kantorLat, $kantorLng);
-
-        if ($distance > $radius) {
-            return redirect('/dashboard')->with('error', 'Kamu berada di luar area kantor (max 50m).');
-        }
-
         // Validasi jam pulang
-        $hour = $now->hour;
-        if ($hour < 16 || $hour >= 24) {
-            return redirect('/dashboard')->with('error', 'Absen pulang hanya bisa dilakukan antara pukul 16:00 hingga 00:00 WITA.');
+        if ($now->isFriday()) {
+            // Jumat: mulai jam 16:30
+            if ($now->lt(Carbon::createFromTime(16, 30, 0, 'Asia/Makassar')) || $now->hour >= 24) {
+                return redirect('/dashboard')->with('error', 'Absen pulang hari Jumat hanya bisa dilakukan antara pukul 16:30 hingga 00:00 WITA.');
+            }
+        } else {
+            // Senin-Kamis: mulai jam 16:00
+            if ($now->lt(Carbon::createFromTime(16, 0, 0, 'Asia/Makassar')) || $now->hour >= 24) {
+                return redirect('/dashboard')->with('error', 'Absen pulang hanya bisa dilakukan antara pukul 16:00 hingga 00:00 WITA.');
+            }
         }
 
         // Pastikan sudah absen masuk
@@ -301,13 +296,14 @@ class AbsensiController extends Controller
 
         $absensi->update([
             'jam_keluar' => $now->format('H:i'),
-            // optional: simpan lokasi saat pulang
             'latitude' => $request->latitude,
             'longitude' => $request->longitude,
         ]);
 
         return redirect('/dashboard')->with('success', 'Absen pulang berhasil!');
     }
+
+
 
 
 

@@ -133,6 +133,22 @@
             alert("Absensi hanya dapat dilakukan antara pukul 07:00 hingga 00:00 WITA.");
         }
 
+        function getDistance(lat1, lng1, lat2, lng2) {
+            const R = 6371000; // radius bumi dalam meter
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLng = (lng2 - lng1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLng / 2) * Math.sin(dLng / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
+        }
+
+        function isInsideRadius(userLat, userLng) {
+            const distance = getDistance(userLat, userLng, kantorLat, kantorLng);
+            return distance <= radius;
+        }
+
         // Intercept submit jika di luar waktu
         document.addEventListener('DOMContentLoaded', () => {
             const absenMasukBtn = document.getElementById('btnAbsenMasuk');
@@ -140,18 +156,30 @@
 
             if (absenMasukBtn) {
                 absenMasukBtn.closest('form').addEventListener('submit', function(e) {
+                    const lat = parseFloat(document.getElementById("latInput").value);
+                    const lng = parseFloat(document.getElementById("lngInput").value);
+
                     if (!isWithinAllowedTime()) {
                         e.preventDefault();
                         showBlockedAlert();
+                    } else if (!isInsideRadius(lat, lng)) {
+                        e.preventDefault();
+                        alert("Kamu berada di luar radius kantor (50m).");
                     }
                 });
             }
 
             if (absenPulangBtn) {
                 absenPulangBtn.closest('form').addEventListener('submit', function(e) {
+                    const lat = parseFloat(document.getElementById("latInput").value);
+                    const lng = parseFloat(document.getElementById("lngInput").value);
+
                     if (!isWithinAllowedTime()) {
                         e.preventDefault();
                         showBlockedAlert();
+                    } else if (!isInsideRadius(lat, lng)) {
+                        e.preventDefault();
+                        alert("Kamu berada di luar radius kantor (50m).");
                     }
                 });
             }

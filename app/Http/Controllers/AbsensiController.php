@@ -98,6 +98,19 @@ class AbsensiController extends Controller
         $user = auth()->user();
         $today = now()->toDateString();
         $now = Carbon::now('Asia/Makassar');
+
+        // Lokasi kantor
+        $kantorLat = -5.1488763012991425;
+        $kantorLng = 119.41054079290649;
+        $radius = 50; // meter
+
+        // Hitung jarak
+        $distance = $this->haversine($request->latitude, $request->longitude, $kantorLat, $kantorLng);
+
+        if ($distance > $radius) {
+            return redirect('/dashboard')->with('error', 'Kamu berada di luar area kantor (max 50m).');
+        }
+
         // ✅ Validasi hari Sabtu/Minggu
         if (in_array($now->dayOfWeek, [Carbon::SATURDAY, Carbon::SUNDAY])) {
             return redirect('/dashboard')->with('error', 'Kamu gak bisa absen di hari Sabtu atau Minggu!');
@@ -138,6 +151,22 @@ class AbsensiController extends Controller
 
         return redirect('/dashboard')->with('success', 'Absen berhasil!');
     }
+
+    // Fungsi haversine untuk hitung jarak dalam meter
+    private function haversine($lat1, $lng1, $lat2, $lng2)
+    {
+        $earthRadius = 6371000; // meter
+        $dLat = deg2rad($lat2 - $lat1);
+        $dLng = deg2rad($lng2 - $lng1);
+
+        $a = sin($dLat / 2) * sin($dLat / 2) +
+            cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+            sin($dLng / 2) * sin($dLng / 2);
+
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+        return $earthRadius * $c;
+    }
+
 
     public function storeDetail(Request $request)
     {
@@ -216,8 +245,8 @@ class AbsensiController extends Controller
 
     public function revert(Request $request)
     {
-        $filename = basename($request->input('filename'));+
-        $filePath = "tmp/$filename";
+        $filename = basename($request->input('filename'));
+        +$filePath = "tmp/$filename";
 
         if (Storage::disk(config('filesystems.default_public_disk'))->exists($filePath)) {
             Storage::disk(config('filesystems.default_public_disk'))->delete($filePath);

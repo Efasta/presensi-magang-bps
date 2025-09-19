@@ -191,13 +191,23 @@ class AbsensiController extends Controller
         $today = now()->toDateString();
         $tanggalSelesai = $request->input('tanggal_selesai');
 
+        // ✅ Cek apakah user sudah pernah ajukan izin/sakit di rentang tanggal itu
+        $sudahAdaPengajuan = Absensi::where('user_id', $user->id)
+            ->whereBetween('tanggal', [$today, $tanggalSelesai])
+            ->whereIn('status_id', [2, 3]) // 2 = izin, 3 = sakit
+            ->exists();
+
+        if ($sudahAdaPengajuan) {
+            return redirect('/dashboard')->with('error', 'Kamu sudah mengajukan izin/sakit di periode ini!');
+        }
+
         $periode = Carbon::parse($today)->diffInDays(Carbon::parse($tanggalSelesai)) + 1;
 
         // Upload gambar (seperti sebelumnya)
         $gambarPath = null;
         if ($request->filled('gambar_path')) {
             $fileName = basename($request->gambar_path);
-            $from = $request->gambar_path; // contoh: tmp/xxxx.png
+            $from = $request->gambar_path;
             $to = "uploads/gambar/$fileName";
 
             if (Storage::disk(config('filesystems.default_public_disk'))->exists($from)) {
@@ -211,7 +221,6 @@ class AbsensiController extends Controller
         for ($i = 0; $i < $periode; $i++) {
             $tanggal = Carbon::parse($today)->addDays($i)->toDateString();
 
-            // Jangan duplikat kalau sudah ada absensi di tanggal itu
             $sudahAda = Absensi::where('user_id', $user->id)
                 ->where('tanggal', $tanggal)
                 ->exists();
@@ -232,7 +241,6 @@ class AbsensiController extends Controller
 
         return redirect('/dashboard')->with('success', 'Pengajuan berhasil dikirim!');
     }
-
 
     public function upload(Request $request)
     {

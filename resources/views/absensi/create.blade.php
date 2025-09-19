@@ -31,8 +31,8 @@
                 <!-- Belum absen masuk -->
                 <form action="{{ url('/absensi') }}" method="POST">
                     @csrf
-                    <input type="hidden" name="latitude" id="latInput" value="0">
-                    <input type="hidden" name="longitude" id="lngInput" value="0">
+                    <input type="hidden" name="latitude" id="latInput">
+                    <input type="hidden" name="longitude" id="lngInput">
                     <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
                         Absen Sekarang
                     </button>
@@ -41,8 +41,8 @@
                 <!-- Sudah absen masuk tapi belum absen pulang -->
                 <form action="{{ url('/absensi/pulang') }}" method="POST">
                     @csrf
-                    <input type="hidden" name="latitude" id="latInput" value="0">
-                    <input type="hidden" name="longitude" id="lngInput" value="0">
+                    <input type="hidden" name="latitude" id="latInput">
+                    <input type="hidden" name="longitude" id="lngInput">
                     <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
                         Absen Pulang
                     </button>

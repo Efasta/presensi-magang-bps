@@ -259,19 +259,34 @@ class AbsensiController extends Controller
 
     public function pulang(Request $request)
     {
-        // Set manual koordinat (contoh koordinat kantor)
-        $manualLatitude = -5.147665;
-        $manualLongitude = 119.432731;
+        $request->validate([
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+        ]);
 
         $user = auth()->user();
         $today = now()->toDateString();
-
         $now = Carbon::now('Asia/Makassar');
+
+        // Lokasi kantor
+        $kantorLat = -5.1488763012991425;
+        $kantorLng = 119.41054079290649;
+        $radius = 50; // meter
+
+        // Hitung jarak
+        $distance = $this->haversine($request->latitude, $request->longitude, $kantorLat, $kantorLng);
+
+        if ($distance > $radius) {
+            return redirect('/dashboard')->with('error', 'Kamu berada di luar area kantor (max 50m).');
+        }
+
+        // Validasi jam pulang
         $hour = $now->hour;
         if ($hour < 16 || $hour >= 24) {
             return redirect('/dashboard')->with('error', 'Absen pulang hanya bisa dilakukan antara pukul 16:00 hingga 00:00 WITA.');
         }
 
+        // Pastikan sudah absen masuk
         $absensi = Absensi::where('user_id', $user->id)
             ->where('tanggal', $today)
             ->first();
@@ -286,12 +301,14 @@ class AbsensiController extends Controller
 
         $absensi->update([
             'jam_keluar' => $now->format('H:i'),
-            'latitude' => $manualLatitude,
-            'longitude' => $manualLongitude,
+            // optional: simpan lokasi saat pulang
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
         ]);
 
         return redirect('/dashboard')->with('success', 'Absen pulang berhasil!');
     }
+
 
 
     /**

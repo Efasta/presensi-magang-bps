@@ -91,15 +91,23 @@
         <section class="bg-white dark:bg-gray-900 antialiased">
             <div class="max-w-screen-xl px-4 py-8 mx-auto lg:px-6 sm:py-16 lg:py-24">
                 <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-6">
-                    <div class="relative border-b-2 border-gray-400 dark:border-gray-700 pb-2 mb-4">
-                        <div class="absolute left-0 top-1/2 -translate-y-1/2 flex items-center px-5">
-                            <input type="checkbox" id="select_all" class="mr-2 cursor-pointer" />
-                            <label for="select_all" class="text-gray-700 dark:text-gray-500 cursor-pointer select-none">
-                                Select All
-                            </label>
+                    <div class="border-b-2 border-gray-400 dark:border-gray-700 pb-4 mb-4">
 
-                            <!-- Action buttons -->
-                            <div id="action_buttons" class="ml-4 flex gap-2 hidden">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white text-center mb-4">
+                            Inbox
+                        </h2>
+
+                        <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between px-5">
+                            <div class="flex items-center">
+                                <input type="checkbox" id="select_all" class="mr-2 cursor-pointer" />
+                                <label for="select_all"
+                                    class="text-gray-700 dark:text-gray-500 cursor-pointer select-none">
+                                    Select All
+                                </label>
+                            </div>
+
+                            <div id="action_buttons" class="flex gap-2 hidden">
+                                <!-- Action buttons -->
                                 <button id="btn_read"
                                     class="px-3 py-1 text-sm text-gray-800 bg-gray-100 border border-gray-300 rounded hover:bg-gray-200 flex items-center gap-1">
                                     <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
@@ -148,13 +156,10 @@
                                     </svg>
                                 </div>
                             </div>
-
                         </div>
-
-                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white text-center">
-                            Inbox
-                        </h2>
                     </div>
+
+
 
 
                     {{-- List pesan --}}

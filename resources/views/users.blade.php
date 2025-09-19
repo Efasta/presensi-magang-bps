@@ -141,8 +141,9 @@
                                             <h6 class="text-sm font-medium text-black dark:text-white">Filters</h6>
                                             <div class="flex items-center space-x-3">
                                                 <button type="submit"
-                                                    class="text-sm font-medium text-emerald-600 dark:text-emerald-500 hover:underline"
-                                                    onclick="applyFilter()">Terapkan</button>
+                                                    class="text-sm font-medium text-emerald-600 dark:text-emerald-500 hover:underline">
+                                                    Terapkan
+                                                </button>
                                                 <a href="{{ route('users.index') }}"
                                                     class="text-sm font-medium text-emerald-600 dark:text-emerald-500 hover:underline">
                                                     Reset filter
@@ -152,38 +153,6 @@
                                         <div id="accordion-flush" data-accordion="collapse"
                                             data-active-classes="text-black dark:text-white"
                                             data-inactive-classes="text-gray-500 dark:text-gray-400">
-
-                                            <!-- Fungsi -->
-                                            <h2 id="fungsi-heading">
-                                                <button type="button"
-                                                    class="flex items-center justify-between w-full py-2 px-1.5 text-sm font-medium text-left text-gray-500 border-gray-200 dark:border-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 border-b"
-                                                    data-accordion-target="#fungsi-body" aria-expanded="true"
-                                                    aria-controls="fungsi-body">
-                                                    <span>Fungsi</span>
-                                                    <svg aria-hidden="true" data-accordion-icon=""
-                                                        class="w-5 h-5 rotate-180 shrink-0" fill="currentColor"
-                                                        viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                        <path fill-rule="evenodd" clip-rule="evenodd"
-                                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-                                                    </svg>
-                                                </button>
-                                            </h2>
-                                            <div id="fungsi-body" class="hidden" aria-labelledby="fungsi-heading">
-                                                <div class="py-2 font-light border-gray-300 dark:border-gray-600">
-                                                    @foreach ($fungsis as $fungsi)
-                                                        <ul class="space-y-2 mb-2">
-                                                            <li class="flex items-center">
-                                                                <input id="fungsi-{{ Str::slug($fungsi->nama) }}"
-                                                                    type="checkbox" name="fungsi[]"
-                                                                    value="{{ $fungsi->nama }}"
-                                                                    class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-emerald-600 focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                                                <label for="fungsi-{{ Str::slug($fungsi->nama) }}"
-                                                                    class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $fungsi->nama }}</label>
-                                                            </li>
-                                                        </ul>
-                                                    @endforeach
-                                                </div>
-                                            </div>
 
                                             <!-- Jenis Kelamin -->
                                             <h2 id="jenius_kelamin-heading">
@@ -203,22 +172,73 @@
                                             <div id="jenis_kelamin-body" class="hidden"
                                                 aria-labelledby="jenis_kelamin-heading">
                                                 <div class="py-2 font-light border-gray-300 dark:border-gray-600">
+
+                                                    @php
+                                                        $selectedJenisKelamin = (array) request()->input(
+                                                            'jenis_kelamin',
+                                                        );
+                                                    @endphp
+
                                                     <ul class="space-y-2 mb-2">
                                                         <li class="flex items-center">
                                                             <input id="status-laki-laki" type="checkbox"
                                                                 name="jenis_kelamin[]" value="Laki-laki"
+                                                                {{ in_array('Laki-laki', $selectedJenisKelamin) ? 'checked' : '' }}
                                                                 class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-emerald-600 focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
                                                             <label for="status-laki-laki"
-                                                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">Laki-laki</label>
+                                                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                                Laki-laki
+                                                            </label>
                                                         </li>
                                                         <li class="flex items-center">
                                                             <input id="status-perempuan" type="checkbox"
                                                                 name="jenis_kelamin[]" value="Perempuan"
+                                                                {{ in_array('Perempuan', $selectedJenisKelamin) ? 'checked' : '' }}
                                                                 class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-emerald-600 focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
                                                             <label for="status-perempuan"
-                                                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">Perempuan</label>
+                                                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                                Perempuan
+                                                            </label>
                                                         </li>
                                                     </ul>
+                                                </div>
+                                            </div>
+
+                                            <!-- Fungsi -->
+                                            <h2 id="fungsi-heading">
+                                                <button type="button"
+                                                    class="flex items-center justify-between w-full py-2 px-1.5 text-sm font-medium text-left text-gray-500 border-gray-200 dark:border-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 border-b"
+                                                    data-accordion-target="#fungsi-body" aria-expanded="true"
+                                                    aria-controls="fungsi-body">
+                                                    <span>Fungsi</span>
+                                                    <svg aria-hidden="true" data-accordion-icon=""
+                                                        class="w-5 h-5 rotate-180 shrink-0" fill="currentColor"
+                                                        viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                        <path fill-rule="evenodd" clip-rule="evenodd"
+                                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                                                    </svg>
+                                                </button>
+                                            </h2>
+                                            <div id="fungsi-body" class="hidden" aria-labelledby="fungsi-heading">
+                                                <div class="py-2 font-light border-gray-300 dark:border-gray-600">
+
+                                                    @php
+                                                        $selectedFungsis = (array) request()->input('fungsi');
+                                                    @endphp
+
+                                                    @foreach ($fungsis as $fungsi)
+                                                        <ul class="space-y-2 mb-2">
+                                                            <li class="flex items-center">
+                                                                <input id="fungsi-{{ Str::slug($fungsi->nama) }}"
+                                                                    type="checkbox" name="fungsi[]"
+                                                                    value="{{ $fungsi->nama }}"
+                                                                    {{ in_array($fungsi->nama, $selectedFungsis) ? 'checked' : '' }}
+                                                                    class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-emerald-600 focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                                                                <label for="fungsi-{{ Str::slug($fungsi->nama) }}"
+                                                                    class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $fungsi->nama }}</label>
+                                                            </li>
+                                                        </ul>
+                                                    @endforeach
                                                 </div>
                                             </div>
 
@@ -274,7 +294,7 @@
                                             </svg>
                                         </button>
                                         <div id="users-{{ $user->id }}-dropdown"
-                                            class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
+                                            class="hidden z-999 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
                                             <ul class="py-1 text-sm"
                                                 aria-labelledby="users-{{ $user->id }}-dropdown-button">
                                                 <li>

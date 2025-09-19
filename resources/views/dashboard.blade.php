@@ -357,13 +357,20 @@
                                     </h2>
                                     <div id="kehadiran-body" class="hidden" aria-labelledby="kehadiran-heading">
                                         <div class="py-2 font-light border-gray-300 dark:border-gray-600">
+
+                                            @php
+                                                $selectedStatuses = (array) request()->input('status');
+                                            @endphp
+
                                             @foreach ($statuses as $status)
                                                 <ul class="space-y-2 mb-2">
                                                     <li class="flex items-center">
                                                         <input id="status-{{ Str::slug($status->nama) }}"
-                                                            type="checkbox" name="status"
+                                                            type="checkbox" name="status[]"
                                                             value="{{ $status->nama }}"
+                                                            {{ in_array($status->nama, $selectedStatuses) ? 'checked' : '' }}
                                                             class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-emerald-600 focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+
                                                         <label for="status-{{ Str::slug($status->nama) }}"
                                                             class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $status->nama }}</label>
                                                     </li>
@@ -390,12 +397,17 @@
                                         </h2>
                                         <div id="fungsi-body" class="hidden" aria-labelledby="fungsi-heading">
                                             <div class="py-2 font-light border-gray-300 dark:border-gray-600">
+                                                @php
+                                                    $selectedFungsis = (array) request()->input('fungsi');
+                                                @endphp
+
                                                 @foreach ($fungsis as $fungsi)
                                                     <ul class="space-y-2 mb-2">
                                                         <li class="flex items-center">
                                                             <input id="fungsi-{{ Str::slug($fungsi->nama) }}"
-                                                                type="checkbox" name="fungsi"
+                                                                type="checkbox" name="fungsi[]"
                                                                 value="{{ $fungsi->nama }}"
+                                                                {{ in_array($fungsi->nama, $selectedFungsis) ? 'checked' : '' }}
                                                                 class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-emerald-600 focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
                                                             <label for="fungsi-{{ Str::slug($fungsi->nama) }}"
                                                                 class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $fungsi->nama }}</label>
@@ -563,8 +575,9 @@
                 params.delete('fungsi');
 
                 // Tambahkan parameter status dan fungsi
-                checkedStatuses.forEach(status => params.append('status', status));
-                checkedFunctions.forEach(fungsi => params.append('fungsi', fungsi));
+                checkedStatuses.forEach(status => params.append('status[]', status));
+                checkedFunctions.forEach(fungsi => params.append('fungsi[]', fungsi));
+
 
                 const url = `${window.location.pathname}?${params.toString()}`;
                 window.location.href = url;

@@ -34,25 +34,9 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        // $request->validate([
-        //     'name' => ['required', 'string', 'max:255'],
-        //     'nim' => ['required', 'numeric', 'digits_between:8,15', 'unique:users,nim'],
-        //     'jurusan' => ['required', 'string', 'max:255'],
-        //     'universitas' => ['required', 'string', 'max:255'],
-        //     'email' => ['required', 'string', 'lowercase', 'email:dns', 'max:255', 'unique:users,email'],
-        //     'telepon' => ['required', 'string', 'digits_between:9,13'],
-        //     'alamat' => ['required', 'string', 'max:1000'],
-        //     'tanggal_masuk' => ['required', 'date'],
-        //     'tanggal_keluar' => ['required', 'date', 'after_or_equal:tanggal_masuk'],
-        //     'jenis_kelamin' => ['required', Rule::in(['Laki-laki', 'Perempuan'])],
-        //     'keahlian' => ['required', 'string', 'max:255'],
-        //     'fungsi_id' => ['required', 'exists:fungsis,id'],
-        //     'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        // ]);
-
         Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255'],
-            'nim' => ['required', 'numeric', 'digits_between:8,15', 'unique:users,nim'],
+            'nim' => ['required', 'numeric', 'digits_between:6,15', 'unique:users,nim'],
             'jurusan' => ['required', 'string', 'max:255'],
             'universitas' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email:dns', 'max:255', 'unique:users,email'],

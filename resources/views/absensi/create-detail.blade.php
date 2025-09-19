@@ -8,7 +8,7 @@
                 Formulir Pengajuan Izin / Sakit
             </h2>
 
-            @if ($absensi && in_array($absensi->status_id, [2, 3]))
+            @if ($absensi && in_array($absensi->status_id, [1, 2, 3]))
                 <div class="p-4 mb-6 text-red-700 bg-red-100 rounded-lg">
                     Kamu sudah mengajukan {{ strtolower($absensi->status->nama) }} hari ini. Tidak bisa mengajukan lagi.
                 </div>

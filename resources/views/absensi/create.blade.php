@@ -11,8 +11,8 @@
 
         <!-- Tombol Absen -->
         <div
-            class="absolute bottom-10 left-10 bg-white shadow-lg py-4 px-[30px] rounded-lg z-[999] flex flex-col space-y-2">
-            <p class="text-sm text-gray-600 max-w-sm">
+            class="max-w-xs sm:max-w-sm absolute bottom-10 left-10 bg-white shadow-lg py-4 px-[30px] rounded-lg z-[999] flex flex-col space-y-2">
+            <p class="text-sm text-gray-600">
                 Jl. H. Bau No.6, Kunjung Mae, Kec. Mariso, Kota Makassar, Sulawesi Selatan 90125
             </p>
 

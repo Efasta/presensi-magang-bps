@@ -1,10 +1,10 @@
 <?php
 
 use Illuminate\Support\Carbon;
-use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Foundation\Inspiring;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Str;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -51,9 +51,8 @@ Artisan::command('absensi:auto-mark-absent', function () {
     $this->info('Selesai tandai absen otomatis.');
 });
 
-
 Artisan::command('user:auto-delete', function () {
-    $today = \Illuminate\Support\Carbon::now('Asia/Makassar')->toDateString();
+    $today = Carbon::now('Asia/Makassar')->toDateString();
 
     $users = DB::table('users')
         ->where('is_admin', '!=', 1)
@@ -81,7 +80,27 @@ Artisan::command('user:auto-delete', function () {
         $deletedCount++;
     }
 
-    $this->info("[$deletedCount] user dihapus otomatis & dicatat ke deleted_users.");
+    // ✅ Hanya kirim email jika ada user yang dihapus
+    if ($deletedCount > 0) {
+        $to = "admin@example.com"; // ganti sesuai email penerima
+        $subject = "Laporan Auto Delete User - {$today}";
+        $body = "Tanggal: {$today}\n"
+            . "Jumlah user dihapus: {$deletedCount}\n\n"
+            . "Detail user:\n";
+
+        foreach ($users as $u) {
+            $body .= "- {$u->name} ({$u->email}) [keluar: {$u->tanggal_keluar}]\n";
+        }
+
+        Mail::raw($body, function ($message) use ($to, $subject) {
+            $message->to($to)
+                ->subject($subject);
+        });
+
+        $this->info("[$deletedCount] user dihapus otomatis & laporan terkirim ke {$to}.");
+    } else {
+        $this->info("Tidak ada user yang dihapus hari ini. Email tidak dikirim.");
+    }
 });
 
 Artisan::command('user:morning-absen-reminder', function () {

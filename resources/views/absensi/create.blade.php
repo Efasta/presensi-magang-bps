@@ -20,7 +20,7 @@
             @if ($isWeekend)
                 <!-- Jika hari ini Sabtu atau Minggu -->
                 <button type="button" class="bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed" disabled>
-                    Hari ini {{ $namaHari }}!
+                    Hari ini hari {{ $namaHari }}!
                 </button>
             @elseif ($absensi && in_array($absensi->status_id, ['3', '2']))
                 <!-- Sudah mengajukan izin atau sakit -->

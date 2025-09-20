@@ -7,11 +7,12 @@
 
     <div class="p-6 relative">
         <!-- Map -->
-        <div id="map" class="w-full h-[661px] rounded-lg border pointer-events-auto"></div>
+        <div id="map" class="w-full h-[661px] rounded-lg border pointer-events-auto z-0"></div>
 
         <!-- Tombol Absen -->
         <div
-            class="max-w-xs sm:max-w-sm absolute bottom-10 left-10 bg-white shadow-lg py-4 px-[30px] rounded-lg z-[999] flex flex-col space-y-2">
+            class="max-w-xs sm:max-w-sm absolute bottom-10 left-10 bg-white shadow-lg py-4 px-[30px] rounded-lg z-32 flex flex-col space-y-2">
+
             <p class="text-sm text-gray-600">
                 Jl. H. Bau No.6, Kunjung Mae, Kec. Mariso, Kota Makassar, Sulawesi Selatan 90125
             </p>
@@ -33,7 +34,8 @@
                     @csrf
                     <input type="hidden" name="latitude" id="latInput">
                     <input type="hidden" name="longitude" id="lngInput">
-                    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                    <button id="btnAbsenMasuk" type="submit"
+                        class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
                         Absen Sekarang
                     </button>
                 </form>
@@ -43,7 +45,8 @@
                     @csrf
                     <input type="hidden" name="latitude" id="latInput">
                     <input type="hidden" name="longitude" id="lngInput">
-                    <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+                    <button id="btnAbsenPulang" type="submit"
+                        class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
                         Absen Pulang
                     </button>
                 </form>

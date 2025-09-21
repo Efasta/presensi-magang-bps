@@ -82,7 +82,7 @@ Artisan::command('user:auto-delete', function () {
 
     // ✅ Hanya kirim email jika ada user yang dihapus
     if ($deletedCount > 0) {
-        $to = "admin@example.com"; // ganti sesuai email penerima
+        $to = "chatbotbpsabsen@gmail.com"; // ganti sesuai email penerima
         $subject = "Laporan Auto Delete User - {$today}";
         $body = "Tanggal: {$today}\n"
             . "Jumlah user dihapus: {$deletedCount}\n\n"

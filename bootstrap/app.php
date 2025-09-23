@@ -24,7 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
             ->timezone('Asia/Makassar');
 
         $schedule->command('user:morning-absen-reminder')
-            ->everyFiveMinutes()
+            ->everyTenMinutes()
             ->between('07:00', '08:00')
             ->timezone('Asia/Makassar');
 

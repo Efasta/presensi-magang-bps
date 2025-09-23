@@ -184,9 +184,11 @@
                                 Anda belum menerima pesan apapun...
                             </p>
                         @endforelse
-
                     </div>
                 </div>
+                @if ($notifs->hasPages())
+                    {{ $notifs->onEachSide(0)->links('components.pagination.custom') }}
+                @endif
             </div>
         </section>
 

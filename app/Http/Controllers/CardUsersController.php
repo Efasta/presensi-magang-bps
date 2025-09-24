@@ -19,6 +19,7 @@ class CardUsersController extends Controller
         $filters = request()->only(['search', 'fungsi', 'jenis_kelamin']);
 
         $users = User::with(['fungsi'])
+            ->where('is_admin', 0) // hanya ambil user bukan admin
             ->filter($filters)
             ->orderBy('id', 'asc')
             ->paginate(10)
@@ -32,6 +33,7 @@ class CardUsersController extends Controller
             'fungsis' => $fungsis
         ]);
     }
+
 
     /**
      * Show the form for creating a new resource.

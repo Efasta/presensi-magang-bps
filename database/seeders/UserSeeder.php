@@ -19,7 +19,7 @@ class UserSeeder extends Seeder
             'is_admin' => true,
             'email' => 'ipds@gmail.com',
             'jenis_kelamin' => 'Laki-laki',
-            'password' => Hash::make('admin$%^!@#')
+            'password' => Hash::make('admin!@#')
         ]);
 
         User::factory()->create([
@@ -27,7 +27,7 @@ class UserSeeder extends Seeder
             'is_admin' => true,
             'email' => 'sdm@gmail.com',
             'jenis_kelamin' => 'Laki-laki',
-            'password' => Hash::make('admin$%^!@#')
+            'password' => Hash::make('admin!@#')
         ]);
 
         User::factory()->create([
@@ -35,7 +35,7 @@ class UserSeeder extends Seeder
             'is_admin' => true,
             'email' => 'neraca@gmail.com',
             'jenis_kelamin' => 'Laki-laki',
-            'password' => Hash::make('admin$%^!@#')
+            'password' => Hash::make('admin!@#')
         ]);
 
         User::factory()->create([
@@ -43,7 +43,7 @@ class UserSeeder extends Seeder
             'is_admin' => true,
             'email' => 'sosial@gmail.com',
             'jenis_kelamin' => 'Laki-laki',
-            'password' => Hash::make('admin$%^!@#')
+            'password' => Hash::make('admin!@#')
         ]);
 
         User::factory()->create([
@@ -51,7 +51,7 @@ class UserSeeder extends Seeder
             'is_admin' => true,
             'email' => 'produksi@gmail.com',
             'jenis_kelamin' => 'Laki-laki',
-            'password' => Hash::make('admin$%^!@#')
+            'password' => Hash::make('admin!@#')
         ]);
 
         User::factory()->create([
@@ -59,7 +59,7 @@ class UserSeeder extends Seeder
             'is_admin' => true,
             'email' => 'distribusi@gmail.com',
             'jenis_kelamin' => 'Laki-laki',
-            'password' => Hash::make('admin$%^!@#')
+            'password' => Hash::make('admin!@#')
         ]);
     }
 }

@@ -17,7 +17,7 @@ class UserSeeder extends Seeder
         User::factory()->create([
             'name' => 'ADMINIPDS',
             'is_admin' => true,
-            'email' => 'chatbotbpsabsen@gmail.com',
+            'email' => 'ipds@gmail.com',
             'jenis_kelamin' => 'Laki-laki',
             'password' => Hash::make('admin$%^!@#')
         ]);
@@ -25,7 +25,7 @@ class UserSeeder extends Seeder
         User::factory()->create([
             'name' => 'ADMINSDM',
             'is_admin' => true,
-            'email' => 'chatbotbpsabsen@gmail.com',
+            'email' => 'sdm@gmail.com',
             'jenis_kelamin' => 'Laki-laki',
             'password' => Hash::make('admin$%^!@#')
         ]);
@@ -33,7 +33,7 @@ class UserSeeder extends Seeder
         User::factory()->create([
             'name' => 'ADMINNERACA',
             'is_admin' => true,
-            'email' => 'chatbotbpsabsen@gmail.com',
+            'email' => 'neraca@gmail.com',
             'jenis_kelamin' => 'Laki-laki',
             'password' => Hash::make('admin$%^!@#')
         ]);
@@ -41,7 +41,7 @@ class UserSeeder extends Seeder
         User::factory()->create([
             'name' => 'ADMINSOSIAL',
             'is_admin' => true,
-            'email' => 'chatbotbpsabsen@gmail.com',
+            'email' => 'sosial@gmail.com',
             'jenis_kelamin' => 'Laki-laki',
             'password' => Hash::make('admin$%^!@#')
         ]);
@@ -49,7 +49,7 @@ class UserSeeder extends Seeder
         User::factory()->create([
             'name' => 'ADMINPRODUKSI',
             'is_admin' => true,
-            'email' => 'chatbotbpsabsen@gmail.com',
+            'email' => 'produksi@gmail.com',
             'jenis_kelamin' => 'Laki-laki',
             'password' => Hash::make('admin$%^!@#')
         ]);
@@ -57,7 +57,7 @@ class UserSeeder extends Seeder
         User::factory()->create([
             'name' => 'ADMINDISTRIBUSI',
             'is_admin' => true,
-            'email' => 'chatbotbpsabsen@gmail.com',
+            'email' => 'distribusi@gmail.com',
             'jenis_kelamin' => 'Laki-laki',
             'password' => Hash::make('admin$%^!@#')
         ]);

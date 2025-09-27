@@ -8,7 +8,7 @@
     <div class="px-6 pt-3 mb-35 sm:pt-8.5 sm:mb-0 relative">
         <!-- Map selalu tampil -->
         <div id="map" class="w-full h-[661px] rounded-lg border pointer-events-auto z-0"></div>
-        
+
         <!-- Tombol Absen -->
         <div
             class="max-w-xs sm:max-w-sm absolute bottom-4 left-10 bg-white shadow-lg py-4 px-[30px] rounded-lg z-32 flex flex-col space-y-2">
@@ -63,6 +63,10 @@
         let map;
 
         function initMap(userLat = null, userLng = null) {
+            if (map) {
+                map.remove(); // reset kalau map sudah ada
+            }
+
             map = L.map('map').setView([kantorLat, kantorLng], 17);
 
             // Load OpenStreetMap tiles
@@ -83,35 +87,43 @@
                 radius: radius
             }).addTo(map);
 
-            if (userLat && userLng) {
-                L.marker([userLat, userLng], {
-                        title: 'Lokasi Anda'
-                    }).addTo(map)
-                    .bindPopup('Lokasi Anda');
-
-                map.setView([userLat, userLng], 17);
-            }
+            // Tampilkan marker user hanya kalau weekday
+            @if (!$isWeekend)
+                if (userLat && userLng) {
+                    L.marker([userLat, userLng], {
+                            title: 'Lokasi Anda'
+                        })
+                        .addTo(map)
+                        .bindPopup('Lokasi Anda');
+                    map.setView([userLat, userLng], 17);
+                }
+            @endif
         }
 
         function getUserLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(pos) {
-                    const lat = pos.coords.latitude;
-                    const lng = pos.coords.longitude;
+            @if ($isWeekend)
+                // Weekend → langsung tampilkan kantor saja
+                initMap();
+            @else
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(pos) {
+                        const lat = pos.coords.latitude;
+                        const lng = pos.coords.longitude;
 
-                    // Set nilai ke form input hidden
-                    document.getElementById("latInput").value = lat;
-                    document.getElementById("lngInput").value = lng;
+                        // Set nilai ke form input hidden
+                        document.getElementById("latInput").value = lat;
+                        document.getElementById("lngInput").value = lng;
 
-                    initMap(lat, lng);
-                }, function(error) {
-                    alert("Gagal mendapatkan lokasi: " + error.message);
-                    initMap(); // tetap tampilkan peta kantor
-                });
-            } else {
-                alert("Browser tidak mendukung GPS.");
-                initMap(); // fallback
-            }
+                        initMap(lat, lng);
+                    }, function(error) {
+                        alert("Gagal mendapatkan lokasi: " + error.message);
+                        initMap(); // fallback kantor
+                    });
+                } else {
+                    alert("Browser tidak mendukung GPS.");
+                    initMap(); // fallback kantor
+                }
+            @endif
         }
 
         window.onload = () => getUserLocation();
@@ -149,41 +161,44 @@
             return distance <= radius;
         }
 
-        // Intercept submit jika di luar waktu
+        // Intercept submit jika di luar waktu / radius
         document.addEventListener('DOMContentLoaded', () => {
             const absenMasukBtn = document.getElementById('btnAbsenMasuk');
             const absenPulangBtn = document.getElementById('btnAbsenPulang');
 
-            if (absenMasukBtn) {
-                absenMasukBtn.closest('form').addEventListener('submit', function(e) {
-                    const lat = parseFloat(document.getElementById("latInput").value);
-                    const lng = parseFloat(document.getElementById("lngInput").value);
+            @if (!$isWeekend)
+                if (absenMasukBtn) {
+                    absenMasukBtn.closest('form').addEventListener('submit', function(e) {
+                        const lat = parseFloat(document.getElementById("latInput").value);
+                        const lng = parseFloat(document.getElementById("lngInput").value);
 
-                    if (!isWithinAllowedTime()) {
-                        e.preventDefault();
-                        showBlockedAlert();
-                    } else if (!isInsideRadius(lat, lng)) {
-                        e.preventDefault();
-                        alert("Kamu berada di luar radius kantor (50m).");
-                    }
-                });
-            }
+                        if (!isWithinAllowedTime()) {
+                            e.preventDefault();
+                            showBlockedAlert();
+                        } else if (!isInsideRadius(lat, lng)) {
+                            e.preventDefault();
+                            alert("Kamu berada di luar radius kantor (50m).");
+                        }
+                    });
+                }
 
-            if (absenPulangBtn) {
-                absenPulangBtn.closest('form').addEventListener('submit', function(e) {
-                    const lat = parseFloat(document.getElementById("latInput").value);
-                    const lng = parseFloat(document.getElementById("lngInput").value);
+                if (absenPulangBtn) {
+                    absenPulangBtn.closest('form').addEventListener('submit', function(e) {
+                        const lat = parseFloat(document.getElementById("latInput").value);
+                        const lng = parseFloat(document.getElementById("lngInput").value);
 
-                    if (!isWithinAllowedTime()) {
-                        e.preventDefault();
-                        showBlockedAlert();
-                    } else if (!isInsideRadius(lat, lng)) {
-                        e.preventDefault();
-                        alert("Kamu berada di luar radius kantor (50m).");
-                    }
-                });
-            }
+                        if (!isWithinAllowedTime()) {
+                            e.preventDefault();
+                            showBlockedAlert();
+                        } else if (!isInsideRadius(lat, lng)) {
+                            e.preventDefault();
+                            alert("Kamu berada di luar radius kantor (50m).");
+                        }
+                    });
+                }
+            @endif
         });
     </script>
+
 
 </x-layout>

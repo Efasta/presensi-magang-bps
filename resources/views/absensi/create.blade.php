@@ -5,13 +5,13 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-    <div class="px-6 pt-3 pb-25 sm:pt-8.5 sm:pb-0 relative">
+    <div class="px-6 pt-3 mb-35 sm:pt-8.5 sm:mb-0 relative">
         <!-- Map -->
         <div id="map" class="w-full h-[661px] rounded-lg border pointer-events-auto z-0"></div>
 
         <!-- Tombol Absen -->
         <div
-            class="max-w-xs sm:max-w-sm absolute bottom-30 sm:bottom-10 left-10 bg-white shadow-lg py-4 px-[30px] rounded-lg z-32 flex flex-col space-y-2">
+            class="max-w-xs sm:max-w-sm absolute bottom-4 left-10 bg-white shadow-lg py-4 px-[30px] rounded-lg z-32 flex flex-col space-y-2">
 
             <p class="text-sm text-gray-600">
                 Jl. H. Bau No.6, Kunjung Mae, Kec. Mariso, Kota Makassar, Sulawesi Selatan 90125

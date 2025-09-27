@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-    <div class="px-6 mt-3 mb-35 sm:mt-8.5 sm:mb-0">
+    <div class="px-6" style="margin-top:0.75rem; margin-bottom:8.75rem;">
         <!-- Wrapper relative agar absolute bekerja -->
         <div class="relative w-full h-[661px]">
             <!-- Map -->
@@ -58,6 +58,14 @@
         </div>
     </div>
 
+    <style>
+        @media (min-width: 640px) {
+            .px-6 {
+                margin-top: 2.125rem !important;
+                margin-bottom: 0 !important;
+            }
+        }
+    </style>
 
     <script>
         const kantorLat = -5.1488763012991425;

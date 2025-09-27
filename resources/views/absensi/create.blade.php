@@ -12,8 +12,8 @@
             <div id="map" class="w-full h-full rounded-lg border pointer-events-auto z-0"></div>
 
             <!-- Tombol Absen -->
-            <div
-                class="max-w-xs sm:max-w-sm absolute bottom-4 left-10 bg-white shadow-lg py-4 px-[30px] rounded-lg z-40 flex flex-col space-y-2">
+            <div class="max-w-xs sm:max-w-sm bg-white shadow-lg py-4 px-[30px] rounded-lg flex flex-col space-y-2"
+                style="position:absolute; bottom:1rem; left:2.5rem; z-index:50;">
 
                 <p class="text-sm text-gray-600">
                     Jl. H. Bau No.6, Kunjung Mae, Kec. Mariso, Kota Makassar, Sulawesi Selatan 90125

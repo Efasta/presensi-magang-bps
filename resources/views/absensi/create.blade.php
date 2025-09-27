@@ -6,9 +6,9 @@
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
     <div class="px-6 pt-3 mb-35 sm:pt-8.5 sm:mb-0 relative">
-        <!-- Map -->
+        <!-- Map selalu tampil -->
         <div id="map" class="w-full h-[661px] rounded-lg border pointer-events-auto z-0"></div>
-
+        
         <!-- Tombol Absen -->
         <div
             class="max-w-xs sm:max-w-sm absolute bottom-4 left-10 bg-white shadow-lg py-4 px-[30px] rounded-lg z-32 flex flex-col space-y-2">
@@ -21,15 +21,13 @@
             @if ($isWeekend)
                 <!-- Jika hari ini Sabtu atau Minggu -->
                 <button type="button" class="bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed" disabled>
-                    Hari ini hari {{ $namaHari }}!
+                    Hari ini {{ $namaHari }}, absen tidak tersedia
                 </button>
             @elseif ($absensi && in_array($absensi->status_id, ['3', '2']))
-                <!-- Sudah mengajukan izin atau sakit -->
                 <button type="button" class="bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed" disabled>
                     Kamu Sudah {{ $absensi->status->nama }} Hari Ini
                 </button>
             @elseif (!$absensi)
-                <!-- Belum absen masuk -->
                 <form action="{{ url('/absensi') }}" method="POST">
                     @csrf
                     <input type="hidden" name="latitude" id="latInput">
@@ -40,7 +38,6 @@
                     </button>
                 </form>
             @elseif (!$absensi->jam_keluar || $absensi->jam_keluar === '-')
-                <!-- Sudah absen masuk tapi belum absen pulang -->
                 <form action="{{ url('/absensi/pulang') }}" method="POST">
                     @csrf
                     <input type="hidden" name="latitude" id="latInput">
@@ -51,12 +48,12 @@
                     </button>
                 </form>
             @else
-                <!-- Sudah absen masuk dan pulang -->
                 <button type="button" class="bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed" disabled>
                     Sudah Absen Masuk & Pulang
                 </button>
             @endif
         </div>
+
     </div>
 
     <script>

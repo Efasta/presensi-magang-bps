@@ -541,9 +541,9 @@
                 </div>
 
                 {{-- Pagination --}}
-                @if ($isAdmin && $users->hasPages())
+                @if ($isAdmin && $processedUsers->hasPages())
                     <div class="border-t pt-3.5 border-gray-200">
-                        {{ $users->onEachSide(0)->links('pagination::tailwind') }}
+                        {{ $processedUsers->onEachSide(0)->links('pagination::tailwind') }}
                     </div>
                 @elseif (!$isAdmin && $absensisPaginated->hasPages())
                     <div class="border-t pt-3.5 border-gray-200">

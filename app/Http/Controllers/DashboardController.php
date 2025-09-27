@@ -80,8 +80,6 @@ class DashboardController extends Controller
                 ->filter($filters)
                 ->orderBy('id', 'asc');
 
-            $users = $userQuery->paginate(5)->withQueryString();
-
             // Pie chart data
             $absensiQuery = Absensi::whereNotNull('status_id');
             if ($startDate && $endDate) {
@@ -101,33 +99,60 @@ class DashboardController extends Controller
                 }
             ])->get();
 
-            $allUsers = $userQuery->get(); // re-use query
+            // Ambil semua user dulu
+            $allUsers = $userQuery->get();
 
+            // Flatten jadi baris2 absensi per user × status
+            $processedUsers = collect();
             foreach ($allUsers as $user) {
-                $absensisGrouped = $user->absensis->groupBy('status_id');
+                $absensisGrouped = $user->absensis
+                    ->when(!empty($filters['status']), function ($query) use ($filters) {
+                        return $query->filter(function ($absensi) use ($filters) {
+                            return in_array($absensi->status->nama, $filters['status']);
+                        });
+                    })
+                    ->groupBy('status_id');
+
                 foreach ($absensisGrouped as $statusGroup) {
                     $status = $statusGroup->first()->status;
-                    $processedUsers[] = [
+                    $processedUsers->push([
                         'user' => $user,
                         'status' => $status->nama ?? '-',
                         'status_color' => $status->warna ?? 'bg-gray-300',
                         'count' => $statusGroup->count(),
-                    ];
+                    ]);
                 }
             }
+
+
+            // ✅ Paginasi berdasarkan baris tabel, bukan user
+            $page = request()->get('page', 1);
+            $perPage = 10; // atau sesuaikan
+            $pagedProcessedUsers = new \Illuminate\Pagination\LengthAwarePaginator(
+                $processedUsers->forPage($page, $perPage)->values(),
+                $processedUsers->count(),
+                $perPage,
+                $page,
+                ['path' => request()->url(), 'query' => request()->query()]
+            );
         } else {
-            /** ============================
+            /** =========================   ===
              * 👤 USER MODE
              * ============================ */
-            $user = User::with(['absensis' => function ($query) use ($startDate, $endDate) {
+            $user = User::with(['absensis' => function ($query) use ($startDate, $endDate, $filters) {
                 $query->whereNotNull('status_id')->with('status');
+
                 if ($startDate && $endDate) {
                     $query->whereDate('tanggal', '>=', $startDate->toDateString());
                     $query->whereDate('tanggal', '<=', $endDate->toDateString());
                 }
-            }, 'fungsi'])->findOrFail($userId);
 
-            $users = collect([$user]);
+                if (!empty($filters['status'])) {
+                    $query->whereHas('status', function ($q) use ($filters) {
+                        $q->whereIn('nama', $filters['status']);
+                    });
+                }
+            }, 'fungsi'])->findOrFail($userId);
 
             $absensiQuery = Absensi::where('user_id', $userId)
                 ->whereNotNull('status_id')
@@ -165,6 +190,15 @@ class DashboardController extends Controller
                     }
                 }
             ])->get();
+
+            // ✅ Untuk user biasa, kita kosongkan saja processedUsers
+            $pagedProcessedUsers = new \Illuminate\Pagination\LengthAwarePaginator(
+                collect([]), // kosong
+                0,
+                10,
+                request()->get('page', 1),
+                ['path' => request()->url(), 'query' => request()->query()]
+            );
         }
 
         // Static data
@@ -173,7 +207,6 @@ class DashboardController extends Controller
 
         return view('dashboard', [
             'title' => 'Dashboard',
-            'users' => $users,
             'statuses' => $statuses,
             'absensis' => $absensis,
             'absensisPaginated' => $absensisPaginated,
@@ -184,7 +217,7 @@ class DashboardController extends Controller
             'defaultRange' => $defaultRange, // ✅ Untuk Blade JS dropdown
             'totalAbsensi' => $isAdmin ? $absensis->count() : null,
             'hasData' => $statusCounts->sum('user_count') > 0,
-            'processedUsers' => $processedUsers,
+            'processedUsers' => $pagedProcessedUsers,
         ]);
     }
 

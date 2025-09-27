@@ -7,6 +7,7 @@ use App\Models\Fungsi;
 use App\Models\Status;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class FungsiController extends Controller
 {
@@ -23,7 +24,7 @@ class FungsiController extends Controller
                 $endDate = now()->subDay();
                 break;
             case '7':
-                $startDate = now()->subDays(6); // termasuk hari ini
+                $startDate = now()->subDays(6);
                 break;
             case '30':
                 $startDate = now()->subDays(29);
@@ -37,17 +38,27 @@ class FungsiController extends Controller
         }
 
         $statuses = Status::all();
-        $fungsis = Fungsi::all();
+        $fungsis  = Fungsi::all();
 
+        // fungsi yang dipilih
+        $initialFungsi = $request->get('fungsi', $fungsis->first()?->slug ?? '');
+
+        // ambil user berdasarkan fungsi yang dipilih
         $users = User::whereHas('absensis', function ($query) use ($startDate, $endDate) {
-            if ($startDate) {
-                $query->whereBetween('tanggal', [$startDate->toDateString(), $endDate->toDateString()]);
-            }
-            $query->whereNotNull('status_id');
-        })
+                if ($startDate) {
+                    $query->whereBetween('tanggal', [$startDate->toDateString(), $endDate->toDateString()]);
+                }
+                $query->whereNotNull('status_id');
+            })
+            ->whereHas('fungsi', function ($q) use ($initialFungsi) {
+                if ($initialFungsi) {
+                    $q->where('slug', $initialFungsi);
+                }
+            })
             ->with(['fungsi', 'absensis.status'])
             ->get();
 
+        // proses users → processedUsers
         $processedUsers = [];
 
         foreach ($users as $user) {
@@ -65,18 +76,29 @@ class FungsiController extends Controller
                 $status = $absens->first()->status;
 
                 $processedUsers[] = [
-                    'id' => $user->id,
-                    'user' => $user,
-                    'status' => $status->nama,
+                    'id'           => $user->id,
+                    'user'         => $user,
+                    'status'       => $status->nama,
                     'status_color' => $status->warna,
-                    'count' => $absens->count(),
+                    'count'        => $absens->count(),
                 ];
             }
         }
 
+        // pagination untuk processedUsers
+        $page    = $request->get('page', 1);
+        $perPage = 10;
+        $offset  = ($page - 1) * $perPage;
 
+        $processedUsers = new LengthAwarePaginator(
+            collect($processedUsers)->slice($offset, $perPage)->values(),
+            count($processedUsers),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
 
-        // Buat data untuk chart
+        // data untuk chart
         $data = [];
 
         foreach ($fungsis as $fungsi) {
@@ -98,15 +120,13 @@ class FungsiController extends Controller
             $data[$fungsi->slug] = $counts;
         }
 
-        $initialFungsi = $request->get('fungsi', $fungsis->first()?->slug ?? '');
-
         return view('fungsi', [
-            'title' => 'Fungsi',
-            'chartData' => $data,
-            'fungsis' => $fungsis,
-            'statuses' => $statuses,
+            'title'        => 'Fungsi',
+            'chartData'    => $data,
+            'fungsis'      => $fungsis,
+            'statuses'     => $statuses,
             'processedUsers' => $processedUsers,
-            'initialFungsi' => $initialFungsi, // ⬅️ ini kuncinya
+            'initialFungsi'  => $initialFungsi,
         ]);
     }
 }

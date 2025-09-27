@@ -230,6 +230,11 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                            @if ($processedUsers->hasPages())
+                            <div class="border-t py-2 border-gray-200">
+                                {{ $processedUsers->appends(request()->query())->links() }}
+                            </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -317,39 +322,6 @@
         });
     }
 
-    function filterAnggotaFungsi(selectedFungsi) {
-        const rows = document.querySelectorAll('tbody tr[data-fungsi]');
-        let visibleCount = 0;
-
-        rows.forEach(row => {
-            const rowFungsi = row.getAttribute('data-fungsi');
-            const shouldShow = rowFungsi === selectedFungsi.toLowerCase();
-            row.style.display = shouldShow ? '' : 'none';
-
-            if (shouldShow) visibleCount++;
-        });
-
-        const tbody = document.querySelector('#anggotaFungsiTableBody');
-        const existingEmptyRow = document.getElementById('empty-message-row');
-
-        if (visibleCount === 0) {
-            if (!existingEmptyRow) {
-                const colCount = document.querySelectorAll('thead tr th').length;
-                const emptyRow = document.createElement('tr');
-                emptyRow.id = 'empty-message-row';
-                emptyRow.innerHTML = `<td colspan="${colCount}" class="text-center text-gray-500 py-6">
-                Tidak ada data pengguna untuk ditampilkan.
-            </td>`;
-                tbody.appendChild(emptyRow);
-            }
-        } else {
-            if (existingEmptyRow) {
-                existingEmptyRow.remove();
-            }
-        }
-    }
-
-
     document.addEventListener('DOMContentLoaded', () => {
         renderPieChart(pieChartDataByfungsi[initialFungsi]);
         updateTable(pieChartDataByfungsi[initialFungsi]);
@@ -367,15 +339,11 @@
         const activeEl = document.querySelector(`[data-fungsi="${initialFungsi}"]`);
         if (activeEl) activeEl.classList.add('active');
 
-        // Event klik untuk filter fungsi dan update chart/table
+        // Event klik untuk filter fungsi (reload server-side)
         document.querySelectorAll('[data-fungsi]').forEach(item => {
             item.addEventListener('click', event => {
-                // Cegah klik yang terjadi di dalam tabel (tbody)
-                if (event.target.closest('tbody')) {
-                    return; // jangan lanjut, ini klik di tabel anggota
-                }
+                if (event.target.closest('tbody')) return; // cegah klik di tabel anggota
 
-                // Hapus kelas active di semua tombol fungsi, lalu aktifkan yang diklik
                 document.querySelectorAll('[data-fungsi]').forEach(el => el.classList.remove(
                     'active'));
                 event.target.classList.add('active');
@@ -390,19 +358,17 @@
                     .textContent;
                 document.getElementById('tabelKehadiranTitle').textContent =
                     `Tabel Kehadiran: ${event.target.textContent}`;
-
                 document.getElementById('tabelAnggotaTitle').textContent =
                     `Anggota Fungsi: ${event.target.textContent}`;
 
-                history.replaceState(null, '', `?fungsi=${selectedFungsi}`);
-
-                filterAnggotaFungsi(selectedFungsi);
+                // ✅ langsung reload halaman dengan query baru
+                const currentRange = new URLSearchParams(window.location.search).get('range') ||
+                    'today';
+                window.location.href = `?fungsi=${selectedFungsi}&range=${currentRange}`;
             });
         });
 
-        // Initial filter call
-        filterAnggotaFungsi(initialFungsi);
-
+        // Event klik untuk filter range (server-side reload)
         document.querySelectorAll('.range-option').forEach(item => {
             item.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -411,9 +377,9 @@
                 const selectedFungsi = document.querySelector('[data-fungsi].active')
                     ?.getAttribute('data-fungsi') || initialFungsi;
 
-                // Update URL
+                // ✅ reload halaman agar backend handle filter + pagination
                 const newUrl = `?fungsi=${selectedFungsi}&range=${selectedRange}`;
-                window.location.href = newUrl; // reload for now (recommended for easier sync)
+                window.location.href = newUrl;
             });
         });
 

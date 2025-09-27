@@ -5,56 +5,59 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-    <div class="px-6 pt-3 mb-35 sm:pt-8.5 sm:mb-0 relative">
-        <!-- Map selalu tampil -->
-        <div id="map" class="w-full h-[661px] rounded-lg border pointer-events-auto z-0"></div>
+    <div class="px-6 pt-3 mb-35 sm:pt-8.5 sm:mb-0">
+        <!-- Wrapper relative agar absolute bekerja -->
+        <div class="relative w-full h-[661px]">
+            <!-- Map -->
+            <div id="map" class="w-full h-full rounded-lg border pointer-events-auto z-0"></div>
 
-        <!-- Tombol Absen -->
-        <div
-            class="max-w-xs sm:max-w-sm absolute bottom-4 left-10 bg-white shadow-lg py-4 px-[30px] rounded-lg z-32 flex flex-col space-y-2">
+            <!-- Tombol Absen -->
+            <div
+                class="max-w-xs sm:max-w-sm absolute bottom-4 left-10 bg-white shadow-lg py-4 px-[30px] rounded-lg z-40 flex flex-col space-y-2">
 
-            <p class="text-sm text-gray-600">
-                Jl. H. Bau No.6, Kunjung Mae, Kec. Mariso, Kota Makassar, Sulawesi Selatan 90125
-            </p>
+                <p class="text-sm text-gray-600">
+                    Jl. H. Bau No.6, Kunjung Mae, Kec. Mariso, Kota Makassar, Sulawesi Selatan 90125
+                </p>
 
-            <!-- Form absensi -->
-            @if ($isWeekend)
-                <!-- Jika hari ini Sabtu atau Minggu -->
-                <button type="button" class="bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed" disabled>
-                    Hari ini {{ $namaHari }}, absen tidak tersedia
-                </button>
-            @elseif ($absensi && in_array($absensi->status_id, ['3', '2']))
-                <button type="button" class="bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed" disabled>
-                    Kamu Sudah {{ $absensi->status->nama }} Hari Ini
-                </button>
-            @elseif (!$absensi)
-                <form action="{{ url('/absensi') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="latitude" id="latInput">
-                    <input type="hidden" name="longitude" id="lngInput">
-                    <button id="btnAbsenMasuk" type="submit"
-                        class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                        Absen Sekarang
+                <!-- Form absensi -->
+                @if ($isWeekend)
+                    <!-- Jika hari ini Sabtu atau Minggu -->
+                    <button type="button" class="bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed" disabled>
+                        Hari ini {{ $namaHari }}, absen tidak tersedia
                     </button>
-                </form>
-            @elseif (!$absensi->jam_keluar || $absensi->jam_keluar === '-')
-                <form action="{{ url('/absensi/pulang') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="latitude" id="latInput">
-                    <input type="hidden" name="longitude" id="lngInput">
-                    <button id="btnAbsenPulang" type="submit"
-                        class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
-                        Absen Pulang
+                @elseif ($absensi && in_array($absensi->status_id, ['3', '2']))
+                    <button type="button" class="bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed" disabled>
+                        Kamu Sudah {{ $absensi->status->nama }} Hari Ini
                     </button>
-                </form>
-            @else
-                <button type="button" class="bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed" disabled>
-                    Sudah Absen Masuk & Pulang
-                </button>
-            @endif
+                @elseif (!$absensi)
+                    <form action="{{ url('/absensi') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="latitude" id="latInput">
+                        <input type="hidden" name="longitude" id="lngInput">
+                        <button id="btnAbsenMasuk" type="submit"
+                            class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                            Absen Sekarang
+                        </button>
+                    </form>
+                @elseif (!$absensi->jam_keluar || $absensi->jam_keluar === '-')
+                    <form action="{{ url('/absensi/pulang') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="latitude" id="latInput">
+                        <input type="hidden" name="longitude" id="lngInput">
+                        <button id="btnAbsenPulang" type="submit"
+                            class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+                            Absen Pulang
+                        </button>
+                    </form>
+                @else
+                    <button type="button" class="bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed" disabled>
+                        Sudah Absen Masuk & Pulang
+                    </button>
+                @endif
+            </div>
         </div>
-
     </div>
+
 
     <script>
         const kantorLat = -5.1488763012991425;

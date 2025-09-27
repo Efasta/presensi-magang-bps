@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-    <div class="px-6 pt-3 mb-35 sm:pt-8.5 sm:mb-0">
+    <div class="px-6 pt-10 mb-35 sm:pt-8.5 sm:mb-0">
         <!-- Wrapper relative agar absolute bekerja -->
         <div class="relative w-full h-[661px]">
             <!-- Map -->
@@ -13,7 +13,7 @@
 
             <!-- Tombol Absen -->
             <div class="max-w-xs sm:max-w-sm bg-white shadow-lg py-4 px-[30px] rounded-lg flex flex-col space-y-2"
-                style="position:absolute; bottom:1rem; left:2.5rem; z-index:50;">
+                style="position:absolute; bottom:1rem; left:1.5rem; z-index:50;">
 
                 <p class="text-sm text-gray-600">
                     Jl. H. Bau No.6, Kunjung Mae, Kec. Mariso, Kota Makassar, Sulawesi Selatan 90125

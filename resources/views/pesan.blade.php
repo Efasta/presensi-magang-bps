@@ -89,7 +89,7 @@
     @endphp
     @if (!$isAdmin)
         <section class="bg-white dark:bg-gray-900 antialiased">
-            <div class="max-w-screen-xl px-4 pt-6 mx-auto lg:px-6">
+            <div class="max-w-screen-xl px-4 pt-6 sm:pt-18 mx-auto lg:px-6">
                 <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-6">
                     <div class="border-b-2 border-gray-400 dark:border-gray-700 pb-4 mb-4">
 
@@ -390,7 +390,7 @@
             }
         </style>
     @else
-        <section class="mt-10.5 mb-22.5 antialiased">
+        <section class="mt-8.5 mb-22.5 antialiased">
             <div class="mx-auto px-4">
                 <div class="bg-white dark:bg-gray-800 relative border rounded-lg overflow-hidden">
                     <div class="flex flex-row items-center justify-between space-y-0 space-x-4 p-4">

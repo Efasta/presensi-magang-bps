@@ -1,5 +1,5 @@
 <x-layout :title="$title">
-    <div class="max-w-3xl sm:max-w-6xl sm:mx-auto mx-2 mt-25 bg-white rounded-lg border border-gray-200 p-6">
+    <div class="max-w-3xl sm:max-w-6xl sm:mx-auto mx-2 mt-3 mb-20 bg-white rounded-lg border border-gray-200 p-6">
         <div class="flex items-center mb-5 space-x-5">
             <img src="{{ $absensi->user && $absensi->user->foto ? asset('storage/' . $absensi->user->foto) : asset('img/Anonymous.png') }}"
                 alt="{{ $absensi->user->name ?? 'Anonymous' }}" class="w-20 h-20 rounded-full object-cover">

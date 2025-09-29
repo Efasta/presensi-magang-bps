@@ -16,8 +16,8 @@
 
         @stack('style')
     </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
+    <body class="font-sans antialiased flex flex-col min-h-screen bg-gray-100">
+        <div class="flex-grow">
             @include('layouts.navigation')
 
             <!-- Page Heading -->
@@ -34,6 +34,13 @@
                 {{ $slot }}
             </main>
         </div>
+
+        <footer class="border-t border-gray-200 bg-white w-full">
+            <div class="px-4 py-6 text-right text-gray-500 text-sm font-light">
+                &copy; {{ date('Y') }} BPS Provinsi Sulawesi Selatan. All rights reserved.
+            </div>
+        </footer>
+
         @stack('script')
     </body>
 </html>

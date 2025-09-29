@@ -6,16 +6,16 @@
     <!-- Chart.js & Flowbite CDN -->
     @if ($isAdmin)
         <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-        <main class="mt-6 mb-20 lg:pb-15">
-            <div class=" px-4 2xl:px-0 mx-auto max-w-screen-2xl">
+        <main class="mt-6 mb-20 sm:mb-18.5">
+            <div class=" px-4 mx-auto max-w-screen-full">
                 <article class="mx-auto w-full">
 
                     <!-- Tabel & Chart Container -->
                     <div
-                        class="flex flex-col lg:flex-row gap-6 bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200">
+                        class="flex flex-col sm:flex-row gap-6 bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200">
 
                         <!-- Tabel Kehadiran -->
-                        <div class="w-full lg:w-1/2">
+                        <div class="w-full sm:w-1/2">
                             <div class="flex justify-between items-center mb-4">
                                 <h2 id="tabelKehadiranTitle" class="text-xl font-semibold text-gray-800 dark:text-white">
                                     Tabel Kehadiran:
@@ -70,7 +70,7 @@
                         </div>
 
                         <!-- Pie Chart -->
-                        <div class="w-full lg:w-1/2 flex flex-col relative space-y-4">
+                        <div class="w-full sm:w-1/2 flex flex-col relative space-y-4">
 
                             <!-- Header: Judul + Dropdown (Responsif & Sejajar) -->
                             <div
@@ -166,7 +166,7 @@
             </div>
             <!-- Start block -->
             <section class= "dark:bg-gray-900 py-3 sm:p-5 antialiased">
-                <div class=" mx-auto max-w-screen-2xl px-4 sm:px-0">
+                <div class=" mx-auto max-w-screen-full px-4 sm:px-0">
                     <div class="bg-white dark:bg-gray-800 relative border border-gray-200 rounded-lg overflow-hidden">
                         <div class="flex items-center justify-between p-5">
                             <p id="tabelAnggotaTitle" class="text-xl font-semibold text-gray-900 dark:text-white">
@@ -244,9 +244,9 @@
     @else
         {{-- Optional: Jika kamu mau tampilkan pesan untuk non-admin --}}
         <section class="bg-white dark:bg-gray-900">
-            <div class="py-8 px-4 mx-auto max-w-screen-xl lg:pt-40 pt-50 lg:px-6">
+            <div class="py-8 px-4 mx-auto max-w-screen-xl sm:pt-40 pt-50 sm:px-6">
                 <div class="mx-auto max-w-screen-sm text-center">
-                    <h1 class="mb-4 text-7xl tracking-tight font-extrabold lg:text-9xl text-red-600">
+                    <h1 class="mb-4 text-7xl tracking-tight font-extrabold sm:text-9xl text-red-600">
                         403</h1>
                     <p class="mb-4 text-3xl tracking-tight font-bold text-gray-900 md:text-4xl dark:text-white">Akses
                         Ditolak</p>

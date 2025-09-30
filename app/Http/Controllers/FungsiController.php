@@ -13,10 +13,14 @@ class FungsiController extends Controller
 {
     public function index(Request $request)
     {
-        $range = $request->get('range', 'today'); // default: today
-
         $startDate = now();
         $endDate = now();
+        if ($request->has('range')) {
+            $range = $request->get('range');
+        } else {
+            $range = 'all'; // default khusus admin
+        }
+        $defaultRange = $range;
 
         switch ($range) {
             case 'yesterday':
@@ -45,11 +49,11 @@ class FungsiController extends Controller
 
         // ambil user berdasarkan fungsi yang dipilih
         $users = User::whereHas('absensis', function ($query) use ($startDate, $endDate) {
-                if ($startDate) {
-                    $query->whereBetween('tanggal', [$startDate->toDateString(), $endDate->toDateString()]);
-                }
-                $query->whereNotNull('status_id');
-            })
+            if ($startDate) {
+                $query->whereBetween('tanggal', [$startDate->toDateString(), $endDate->toDateString()]);
+            }
+            $query->whereNotNull('status_id');
+        })
             ->whereHas('fungsi', function ($q) use ($initialFungsi) {
                 if ($initialFungsi) {
                     $q->where('slug', $initialFungsi);
@@ -127,6 +131,7 @@ class FungsiController extends Controller
             'statuses'     => $statuses,
             'processedUsers' => $processedUsers,
             'initialFungsi'  => $initialFungsi,
+            'defaultRange'   => $defaultRange, // 🔥
         ]);
     }
 }

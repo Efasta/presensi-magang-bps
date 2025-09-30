@@ -95,7 +95,7 @@
                                                     '60' => '2 bulan terakhir',
                                                     'all' => 'Sepanjang waktu',
                                                 ];
-                                                $currentRange = request('range', 'today');
+                                                $currentRange = $defaultRange;
                                             @endphp
                                             {{ $labels[$currentRange] ?? 'Hari ini' }}
                                         </span>

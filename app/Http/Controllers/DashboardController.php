@@ -22,9 +22,14 @@ class DashboardController extends Controller
             'status' => (array) request()->input('status', []),
             'fungsi' => (array) request()->input('fungsi', []),
         ];
-        $range = request('range', 'today'); // 🔥 Ambil dari query string `?range=`
-        $isAdmin = Auth::user()->is_admin;
         $userId = Auth::id();
+        $isAdmin = Auth::user()->is_admin;
+
+        if (request()->has('range')) {
+            $range = request('range');
+        } else {
+            $range = $isAdmin ? 'all' : 'today';
+        } // 🔥 Ambil dari query string `?range=`
 
         $absensisPaginated = null;
         $defaultRange = $range;
@@ -88,16 +93,13 @@ class DashboardController extends Controller
             }
             $absensis = $absensiQuery->get();
 
-            $statusCounts = Status::withCount([
-                'absensis as user_count' => function ($query) use ($startDate, $endDate) {
-                    $query->whereNotNull('status_id');
-                    if ($startDate && $endDate) {
-                        $query->whereDate('tanggal', '>=', $startDate->toDateString());
-                        $query->whereDate('tanggal', '<=', $endDate->toDateString());
-                    }
-                    $query->select(DB::raw('count(distinct user_id)'));
-                }
-            ])->get();
+            $statusCounts = Absensi::join('statuses', 'absensis.status_id', '=', 'statuses.id')
+                ->select('statuses.id', 'statuses.nama', DB::raw('COUNT(absensis.id) as user_count'))
+                ->when($startDate && $endDate, function ($q) use ($startDate, $endDate) {
+                    $q->whereBetween('tanggal', [$startDate->toDateString(), $endDate->toDateString()]);
+                })
+                ->groupBy('statuses.id', 'statuses.nama')
+                ->get();
 
             // Ambil semua user dulu
             $allUsers = $userQuery->get();
@@ -180,16 +182,14 @@ class DashboardController extends Controller
                 ->paginate(10)
                 ->withQueryString();
 
-            $statusCounts = Status::withCount([
-                'absensis as user_count' => function ($query) use ($userId, $startDate, $endDate) {
-                    $query->where('user_id', $userId)
-                        ->whereNotNull('status_id');
-                    if ($startDate && $endDate) {
-                        $query->whereDate('tanggal', '>=', $startDate->toDateString());
-                        $query->whereDate('tanggal', '<=', $endDate->toDateString());
-                    }
-                }
-            ])->get();
+            $statusCounts = Absensi::join('statuses', 'absensis.status_id', '=', 'statuses.id')
+                ->select('statuses.id', 'statuses.nama', DB::raw('COUNT(absensis.id) as user_count'))
+                ->where('user_id', $userId)
+                ->when($startDate && $endDate, function ($q) use ($startDate, $endDate) {
+                    $q->whereBetween('tanggal', [$startDate->toDateString(), $endDate->toDateString()]);
+                })
+                ->groupBy('statuses.id', 'statuses.nama')
+                ->get();
 
             // ✅ Untuk user biasa, kita kosongkan saja processedUsers
             $pagedProcessedUsers = new \Illuminate\Pagination\LengthAwarePaginator(

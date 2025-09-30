@@ -153,7 +153,7 @@ Artisan::command('notif:auto-cleanup', function () {
     $batasWaktu = \Carbon\Carbon::now('Asia/Makassar')->subDay(); // Lebih dari 1 hari
     $totalDihapus = DB::table('notifs')
         ->where('is_read', 0)
-        ->where('pesan', 'like', 'Halo, sekarang udah jam%yuk absen%') // format pesan reminder
+        ->where('pesan', 'like', 'Halo, sekarang udah jam%') // format pesan reminder
         ->where('created_at', '<', $batasWaktu)
         ->delete();
 

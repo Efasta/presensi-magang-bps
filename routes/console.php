@@ -150,7 +150,7 @@ Artisan::command('user:morning-absen-reminder', function () {
 })->purpose('Kirim notifikasi absen pagi setiap 5 menit antara jam 07:00 - 08:00 WITA');
 
 Artisan::command('notif:auto-cleanup', function () {
-    $batasWaktu = \Carbon\Carbon::now('Asia/Makassar')->subDay(); // Lebih dari 1 hari
+    $batasWaktu = \Carbon\Carbon::now('Asia/Makassar')->subHours(10); // Lebih dari 1 hari
     $totalDihapus = DB::table('notifs')
         ->where('is_read', 0)
         ->where('pesan', 'like', 'Halo, sekarang udah jam%') // format pesan reminder

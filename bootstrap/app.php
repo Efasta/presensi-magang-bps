@@ -29,7 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
             ->timezone('Asia/Makassar');
 
         $schedule->command('notif:auto-cleanup')
-            ->dailyAt('00:10')
+            ->dailyAt('17:00')
             ->timezone('Asia/Makassar');
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -191,7 +191,7 @@
                                     </tr>
                                 </thead>
                                 <tbody id="anggotaFungsiTableBody">
-                                    @foreach ($processedUsers as $item)
+                                    @forelse ($processedUsers as $item)
                                         <tr data-status="{{ strtolower($item['status']) }}"
                                             data-fungsi="{{ strtolower($item['user']->fungsi->slug ?? '') }}"
                                             class="border-t">
@@ -227,7 +227,13 @@
                                                 <x-dropdown-action :user="$item['user']" :rowId="$loop->iteration" />
                                             </td>
                                         </tr>
-                                    @endforeach
+                                    @empty
+                                        <tr>
+                                            <td colspan="8" class="text-center text-gray-500 py-10">
+                                                Belum ada data anggota untuk ditampilkan...
+                                            </td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                             @if ($processedUsers->hasPages())

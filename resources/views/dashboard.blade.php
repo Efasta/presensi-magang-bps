@@ -489,7 +489,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="7" class="text-center text-gray-500 pt-50">
+                                            <td colspan="7" class="text-center text-gray-500 py-50">
                                                 Belum ada pengguna yang absen...
                                             </td>
                                         </tr>

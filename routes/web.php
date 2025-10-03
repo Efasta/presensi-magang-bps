@@ -27,6 +27,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensis.index');
     Route::get('/keterangan/{absensi:slug}', [AbsensiController::class, 'show']);
     Route::get('/absensi-detail/{user:slug}', [AbsensiController::class, 'showDetail']);
+    Route::get('/absensi-detail/{user:slug}/pdf', [AbsensiController::class, 'exportPdf'])->name('absensi.exportPdf');
     Route::post('/absensi/{absensi}/stop', [AbsensiController::class, 'stopRange'])->name('absensi.stop');
     Route::post('/absensi/pulang', [AbsensiController::class, 'pulang']);
     Route::post('/absensi', [AbsensiController::class, 'store']);

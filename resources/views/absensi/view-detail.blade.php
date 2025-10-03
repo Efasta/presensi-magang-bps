@@ -3,6 +3,15 @@
         <div class="rounded-lg py-3 mb-4 border w-full border-gray-200 flex flex-col min-h-[700px]">
             <div class="flex flex-row items-center justify-between border-b border-gray-200 pb-3 px-4">
                 <div class="text-center font-semibold text-base">Detail Absensi {{ $user->name }}</div>
+                <a href="{{ route('absensi.exportPdf', $user->slug) }}"
+                    class="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm">
+                    <svg class="w-5 h-5 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 16 18">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 1v11m0 0 4-4m-4 4L4 8m11 4v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3" />
+                    </svg>
+                    Download PDF
+                </a>
             </div>
 
             <div class="flex-grow overflow-y-auto max-h-[600px]">

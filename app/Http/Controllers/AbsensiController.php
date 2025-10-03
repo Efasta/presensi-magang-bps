@@ -9,6 +9,7 @@ use App\Models\Status;
 use App\Models\Absensi;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 
 class AbsensiController extends Controller
@@ -384,6 +385,29 @@ class AbsensiController extends Controller
 
         return redirect('/dashboard')->with('success', 'Rentang waktu berhasil dihentikan mulai hari ini.');
     }
+
+    public function exportPdf(User $user)
+    {
+        // ambil semua data absensi user, urut dari lama ke terbaru
+        $absensis = $user->absensis()
+            ->with('status')
+            ->orderBy('tanggal', 'asc') // ASC = lama ke baru
+            ->get();
+
+        // hitung total per status (Hadir, Izin, Sakit, dll)
+        $rekap = $absensis->groupBy(fn($a) => $a->status->nama ?? 'Tidak Ada')
+            ->map(fn($g) => $g->count());
+
+        // kirim ke view
+        $pdf = Pdf::loadView('pdf.absensi', [
+            'user' => $user,
+            'absensis' => $absensis,
+            'rekap' => $rekap,
+        ])->setPaper('a4', 'portrait');
+
+        return $pdf->download("Absensi-{$user->name}.pdf");
+    }
+
 
 
     /**

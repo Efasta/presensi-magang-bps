@@ -304,7 +304,20 @@
                     @endif
 
                     <!-- Kanan (Tombol Filter) -->
-                    <div>
+                    <div class="flex items-center gap-2">
+                        @if (!$isAdmin)
+                            <!-- Tombol Download PDF -->
+                            <a href="{{ route('absensi.exportPdf', Auth::user()->slug) }}"
+                                class="flex items-center justify-center text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800 text-center sm:text-right">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16" />
+                                </svg>
+                                Download PDF
+                            </a>
+                        @endif
+
                         <button id="filterDropdownButton" data-dropdown-toggle="filterDropdown"
                             class="flex items-center justify-center text-white bg-emerald-600 hover:bg-emerald-800 focus:ring-4 focus:ring-emerald-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-emerald-600 dark:hover:bg-emerald-700 focus:outline-none dark:focus:ring-emerald-800"
                             type="button">

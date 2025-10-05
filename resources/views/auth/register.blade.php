@@ -70,7 +70,6 @@
                 <x-text-input id="tanggal_masuk" class="block mt-1 w-full" type="date"
                     name="tanggal_masuk" :value="old('tanggal_masuk')" autocomplete="tanggal_masuk" />
                 <x-input-error :messages="$errors->get('tanggal_masuk')" class="mt-2" />
-                    <p class="text-gray-400 pt-1">*formatnya (bulan-tanggal-tahun)</p>
             </div>
 
             <!-- Tanggal Keluar -->

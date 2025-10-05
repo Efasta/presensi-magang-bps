@@ -390,7 +390,7 @@
             }
         </style>
     @else
-        <section class="mt-8.5 mb-22.5 antialiased">
+        <section class="mt-8 mb-22.5 antialiased">
             <div class="mx-auto px-4">
                 <div class="bg-white dark:bg-gray-800 relative border rounded-lg overflow-hidden">
                     <div class="flex flex-row items-center justify-between space-y-0 space-x-4 p-4">

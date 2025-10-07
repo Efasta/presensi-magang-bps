@@ -312,10 +312,6 @@ class AbsensiController extends Controller
         return redirect('/dashboard')->with('success', 'Absen pulang berhasil!');
     }
 
-
-
-
-
     /**
      * Display the specified resource.
      */

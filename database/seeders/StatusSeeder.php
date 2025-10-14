@@ -32,5 +32,10 @@ class StatusSeeder extends Seeder
             'nama' => "Absen",
             'warna' => "bg-red-500"
         ]);
+
+        Status::create([
+            'nama' => "Selesai",
+            'warna' => "bg-green-500"
+        ]);
     }
 }

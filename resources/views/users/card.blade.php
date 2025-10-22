@@ -58,6 +58,10 @@
                 <div class="flex mt-6 w-full">
                     @php
                         $isAdmin = Auth::user()->is_admin;
+                        
+                        $isAlumni = \App\Models\Absensi::where('user_id', $user->id)
+                            ->where('status_id', 5)
+                            ->exists();
                     @endphp
                     {{-- Tombol Kembali --}}
                     @if (!$isAdmin)
@@ -66,18 +70,14 @@
                         ← Kembali ke Dashboard
                     </a>
                     @else
-                    <a href="/users"
+                    <a href="{{ url()->previous() }}"
                         class="inline-block px-4 py-2 text-sm bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition">
-                        ← Kembali ke Daftar
+                        ← Kembali
                     </a>
                     @endif
 
-                    @php
-                        $isAdmin = Auth::user()->is_admin;
-                    @endphp
-
                     {{-- Tombol Edit & Delete (dalam flex) --}}
-                    @if(!$isAdmin)
+                    @if(!$isAdmin && !$isAlumni)
                     <div class="flex space-x-3 ml-auto">
                         {{-- Edit --}}
                         <a href="/profile"

@@ -192,11 +192,13 @@
             @endphp
             @if (!$isAdmin)
                 <a href="/users/{{ $user->slug }}"
-                    class="inline-flex items-center text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-semibold rounded-lg text-sm px-4 py-2 text-center dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900 uppercase">
-                    Back to Card
+                    class="inline-flex items-center text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-semibold rounded-lg text-sm px-4 py-2 text-center 
+                    dark:bg-red-500 dark:hover:bg-red-600 
+                    dark:focus:ring-red-900 uppercase">
+                    Kembali ke Card
                 </a>
             @else
-                <a href="/users"
+                <a href="{{ url()->previous() }}"
                     class="inline-flex items-center text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-semibold rounded-lg text-sm px-4 py-2 text-center dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900 uppercase">
                     Cancel
                 </a>

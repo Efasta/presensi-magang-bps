@@ -1,9 +1,8 @@
 <?php
 
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Artisan;
 
 Artisan::command('inspire', function () {
@@ -19,15 +18,24 @@ Artisan::command('absensi:auto-mark-absent', function () {
         return;
     }
 
-    // Ambil tanggal sebagai string
     $yesterdayStr = $yesterday->toDateString();
 
-    // Ambil semua user ID yang bukan admin
     $userIds = DB::table('users')
         ->where('is_admin', '!=', 1)
         ->pluck('id');
 
     foreach ($userIds as $userId) {
+        // ✅ Cek apakah user ini sudah berstatus "selesai"
+        $sudahSelesai = DB::table('absensis')
+            ->where('user_id', $userId)
+            ->where('status_id', 5)
+            ->exists();
+
+        if ($sudahSelesai) {
+            $this->info("User ID {$userId} dilewati (sudah berstatus selesai).");
+            continue;
+        }
+
         // Cek apakah user ini sudah absen di tanggal kemarin
         $sudahAbsen = DB::table('absensis')
             ->where('user_id', $userId)
@@ -35,96 +43,135 @@ Artisan::command('absensi:auto-mark-absent', function () {
             ->exists();
 
         if (!$sudahAbsen) {
-            // Kalau belum absen kemarin, tandai absen otomatis
             DB::table('absensis')->insert([
                 'user_id' => $userId,
                 'tanggal' => $yesterdayStr,
-                'status_id' => 4, // Asumsikan 4 = Absen
+                'status_id' => 4, // Absen otomatis
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
 
-            $this->info("User ID $userId ditandai absen pada $yesterdayStr.");
+            $this->info("User ID {$userId} ditandai absen otomatis pada {$yesterdayStr}.");
         }
     }
 
     $this->info('Selesai tandai absen otomatis.');
 });
 
-Artisan::command('user:auto-delete', function () {
+Artisan::command('user:auto-complete-status', function () {
     $today = Carbon::now('Asia/Makassar')->toDateString();
 
+    // Ambil semua user non-admin yang sudah selesai magang (tanggal_keluar hari ini atau sebelumnya)
     $users = DB::table('users')
         ->where('is_admin', '!=', 1)
         ->whereDate('tanggal_keluar', '<=', $today)
         ->get();
 
-    $deletedCount = 0;
+    $jumlahDiproses = 0;
 
     foreach ($users as $user) {
-        DB::table('deleted_users')->insert([
-            'original_user_id'      => $user->id,
-            'name'                  => $user->name,
-            'email'                 => $user->email,
-            'slug'                  => $user->slug,
-            'is_admin'              => $user->is_admin,
-            'tanggal_keluar'        => $user->tanggal_keluar,
-            'full_data'             => json_encode($user),
-            'deleted_by_system_at'  => now('Asia/Makassar'),
-            'created_at'            => now(),
-            'updated_at'            => now(),
-        ]);
+        // Cek apakah user ini sudah punya absensi status 'selesai'
+        $sudahAda = DB::table('absensis')
+            ->where('user_id', $user->id)
+            ->where('status_id', 5) // status "selesai"
+            ->whereDate('tanggal', $user->tanggal_keluar)
+            ->exists();
 
-        DB::table('users')->where('id', $user->id)->delete();
+        if (!$sudahAda) {
+            // 1️⃣ Tambahkan entri absensi baru
+            DB::table('absensis')->insert([
+                'user_id'       => $user->id,
+                'tanggal'       => $user->tanggal_keluar,
+                'status_id'     => 5, // status selesai
+                'created_at'    => now('Asia/Makassar'),
+                'updated_at'    => now('Asia/Makassar'),
+            ]);
 
-        $deletedCount++;
-    }
+            $this->info("Status 'selesai' dibuat untuk user ID {$user->id} pada tanggal {$user->tanggal_keluar}");
+            $jumlahDiproses++;
 
-    // ✅ Hanya kirim email jika ada user yang dihapus
-    if ($deletedCount > 0) {
-        $to = "chatbotbpsabsen@gmail.com"; // ganti sesuai email penerima
-        $subject = "Laporan Auto Delete User - {$today}";
-        $body = "Tanggal: {$today}\n"
-            . "Jumlah user dihapus: {$deletedCount}\n\n"
-            . "Detail user:\n";
+            // 2️⃣ Format tanggal masuk & keluar ke gaya Indonesia
+            Carbon::setLocale('id');
+            $tanggalMasukFormatted = Carbon::parse($user->tanggal_masuk)->translatedFormat('d F Y');
+            $tanggalKeluarFormatted = Carbon::parse($user->tanggal_keluar)->translatedFormat('d F Y');
 
-        foreach ($users as $u) {
-            $body .= "- {$u->name} ({$u->email}) [keluar: {$u->tanggal_keluar}]\n";
+            // 3️⃣ Kirim notifikasi ke semua admin
+            $admins = DB::table('users')->where('is_admin', 1)->get();
+
+            Carbon::setLocale('id');
+            $tanggalMasukFormatted = Carbon::parse($user->tanggal_masuk)->translatedFormat('d F Y');
+            $tanggalKeluarFormatted = Carbon::parse($user->tanggal_keluar)->translatedFormat('d F Y');
+
+            // Pesan dibuat lebih informatif & berparagraf
+            $pesan = <<<EOT
+            🎓 <b>Informasi Alumni Magang</b>
+
+            User <b>{$user->name}</b> (<i>NIM/NISN: {$user->nim}</i>) telah resmi menyelesaikan masa magangnya dan dinyatakan sebagai <b>Alumni</b>.
+
+            📚 Jurusan: {$user->jurusan}  
+            🏫 Universitas: {$user->universitas}  
+            🗓️ Periode Magang: {$tanggalMasukFormatted} – {$tanggalKeluarFormatted}
+
+            Terima kasih atas kontribusi dan dedikasi yang telah diberikan selama menjalani magang di BPS Provinsi Sulawesi Selatan.
+            EOT;
+
+            foreach ($admins as $admin) {
+                DB::table('notifs')->insert([
+                    'user_id'    => $admin->id,
+                    'foto'       => 'img/BPS_Chatbot.jpg',
+                    'nama'       => 'Chatbot BPS ABSEN 2025',
+                    'slug'       => \Illuminate\Support\Str::uuid(),
+                    'pesan'      => $pesan,
+                    'is_read'    => 0,
+                    'created_at' => now('Asia/Makassar'),
+                    'updated_at' => now('Asia/Makassar'),
+                ]);
+            }
+
+            $this->info("Notifikasi alumni dikirim ke semua admin untuk user {$user->name}.");
         }
-
-        Mail::raw($body, function ($message) use ($to, $subject) {
-            $message->to($to)
-                ->subject($subject);
-        });
-
-        $this->info("[$deletedCount] user dihapus otomatis & laporan terkirim ke {$to}.");
-    } else {
-        $this->info("Tidak ada user yang dihapus hari ini. Email tidak dikirim.");
     }
-});
+
+    $this->info("Total absensi status 'selesai' yang ditambahkan: {$jumlahDiproses}");
+})->purpose('Buat absensi status selesai otomatis dan kirim notifikasi ke admin saat user jadi alumni');
+
 
 Artisan::command('user:morning-absen-reminder', function () {
-    $now = \Carbon\Carbon::now('Asia/Makassar');
+    $now = Carbon::now('Asia/Makassar');
     $jam = $now->format('H:i');
 
-    // ✅ Validasi jika hari ini Sabtu (6) atau Minggu (0)
+    // ✅ Jangan kirim di hari Sabtu atau Minggu
     if (in_array($now->dayOfWeek, [0, 6])) {
         $this->info("Hari ini adalah {$now->format('l')} ({$now->toDateString()}), tidak ada pengiriman notifikasi absen.");
         return;
     }
 
-    // ✅ Validasi waktu (07:00 - 08:00 WITA)
+    // ✅ Batasi waktu antara jam 07:00 - 08:00
     if ($now->lt($now->copy()->setTime(7, 0)) || $now->gt($now->copy()->setTime(8, 0))) {
         $this->info("Command dijalankan di luar jam 07:00-08:00. Dibatalkan.");
         return;
     }
 
     $pesan = "Halo, sekarang udah jam {$jam} nih, yuk absen sebelum terlambat!";
-
-    $users = DB::table('users')->where('is_admin', '!=', 1)->get();
     $jumlahDikirim = 0;
 
+    $users = DB::table('users')
+        ->where('is_admin', '!=', 1)
+        ->get();
+
     foreach ($users as $user) {
+        // ✅ Cek apakah user ini sudah punya status selesai
+        $sudahSelesai = DB::table('absensis')
+            ->where('user_id', $user->id)
+            ->where('status_id', 5)
+            ->exists();
+
+        if ($sudahSelesai) {
+            $this->info("User ID {$user->id} dilewati (sudah selesai magang).");
+            continue;
+        }
+
+        // Cegah notifikasi ganda di hari yang sama
         $notifSudahAda = DB::table('notifs')
             ->where('user_id', $user->id)
             ->where('pesan', $pesan)
@@ -146,11 +193,11 @@ Artisan::command('user:morning-absen-reminder', function () {
         }
     }
 
-    $this->info("{$jumlahDikirim} notifikasi dikirim ke user non-admin pada {$jam}.");
-})->purpose('Kirim notifikasi absen pagi setiap 5 menit antara jam 07:00 - 08:00 WITA');
+    $this->info("{$jumlahDikirim} notifikasi dikirim ke user non-admin aktif pada {$jam}.");
+});
 
 Artisan::command('notif:auto-cleanup', function () {
-    $batasWaktu = \Carbon\Carbon::now('Asia/Makassar')->subHours(10); // Lebih dari 10 jam
+    $batasWaktu = Carbon::now('Asia/Makassar')->subHours(10); // Lebih dari 10 jam
     $totalDihapus = DB::table('notifs')
         ->where('is_read', 0)
         ->where('pesan', 'like', 'Halo, sekarang udah jam%') // format pesan reminder

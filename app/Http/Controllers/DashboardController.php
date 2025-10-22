@@ -16,6 +16,15 @@ class DashboardController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+    private function excludeSelesai($query)
+    {
+        return $query->whereHas('status', function ($q) {
+            $q->where('nama', '!=', 'Selesai');
+        });
+    }
+
+
     public function index()
     {
         $filters = [
@@ -25,11 +34,21 @@ class DashboardController extends Controller
         $userId = Auth::id();
         $isAdmin = Auth::user()->is_admin;
 
+        // cek apakah user punya absensi dengan status_id = 5
+        $isAlumni = Auth::user()->absensis()->latest()->first()?->status_id == 5;
+
+        // ✅ Atur default range berdasarkan role / status
         if (request()->has('range')) {
             $range = request('range');
         } else {
-            $range = $isAdmin ? 'all' : 'today';
-        } // 🔥 Ambil dari query string `?range=`
+            if ($isAdmin || $isAlumni) {
+                // 🔹 Admin & Alumni sama-sama dapat range "all" (sepanjang waktu)
+                $range = 'all';
+            } else {
+                // 🔹 Peserta aktif tetap default ke "today"
+                $range = 'today';
+            }
+        }
 
         $absensisPaginated = null;
         $defaultRange = $range;
@@ -68,7 +87,8 @@ class DashboardController extends Controller
              * 👤 ADMIN MODE
              * ============================ */
             $userQuery = User::with(['absensis' => function ($query) use ($startDate, $endDate) {
-                $query->whereNotNull('status_id')->with('status');
+                $query->whereNotNull('status_id')->with('status')
+                    ->whereHas('status', fn($q) => $q->where('nama', '!=', 'Selesai'));
                 if ($startDate && $endDate) {
                     // Gunakan whereDate untuk membandingkan hanya tanggal tanpa waktu
                     $query->whereDate('tanggal', '>=', $startDate->toDateString());
@@ -76,7 +96,8 @@ class DashboardController extends Controller
                 }
             }, 'fungsi'])
                 ->whereHas('absensis', function ($query) use ($startDate, $endDate) {
-                    $query->whereNotNull('status_id');
+                    $query->whereNotNull('status_id')
+                        ->whereHas('status', fn($q) => $q->where('nama', '!=', 'Selesai'));
                     if ($startDate && $endDate) {
                         $query->whereDate('tanggal', '>=', $startDate->toDateString());
                         $query->whereDate('tanggal', '<=', $endDate->toDateString());
@@ -86,7 +107,8 @@ class DashboardController extends Controller
                 ->orderBy('id', 'asc');
 
             // Pie chart data
-            $absensiQuery = Absensi::whereNotNull('status_id');
+            $absensiQuery = Absensi::whereNotNull('status_id')
+                ->whereHas('status', fn($q) => $q->where('nama', '!=', 'Selesai'));
             if ($startDate && $endDate) {
                 $absensiQuery->whereDate('tanggal', '>=', $startDate->toDateString());
                 $absensiQuery->whereDate('tanggal', '<=', $endDate->toDateString());
@@ -94,6 +116,7 @@ class DashboardController extends Controller
             $absensis = $absensiQuery->get();
 
             $statusCounts = Absensi::join('statuses', 'absensis.status_id', '=', 'statuses.id')
+                ->where('statuses.nama', '!=', 'Selesai')
                 ->select('statuses.id', 'statuses.nama', DB::raw('COUNT(absensis.id) as user_count'))
                 ->when($startDate && $endDate, function ($q) use ($startDate, $endDate) {
                     $q->whereBetween('tanggal', [$startDate->toDateString(), $endDate->toDateString()]);
@@ -142,7 +165,8 @@ class DashboardController extends Controller
              * 👤 USER MODE
              * ============================ */
             $user = User::with(['absensis' => function ($query) use ($startDate, $endDate, $filters) {
-                $query->whereNotNull('status_id')->with('status');
+                $query->whereNotNull('status_id')->with('status')
+                    ->whereHas('status', fn($q) => $q->where('nama', '!=', 'Selesai'));
 
                 if ($startDate && $endDate) {
                     $query->whereDate('tanggal', '>=', $startDate->toDateString());
@@ -158,6 +182,7 @@ class DashboardController extends Controller
 
             $absensiQuery = Absensi::where('user_id', $userId)
                 ->whereNotNull('status_id')
+                ->whereHas('status', fn($q) => $q->where('nama', '!=', 'Selesai'))
                 ->when(!empty($filters['status']), function ($query) use ($filters) {
                     $query->whereHas('status', function ($q) use ($filters) {
                         $q->whereIn('nama', $filters['status']);
@@ -202,8 +227,27 @@ class DashboardController extends Controller
         }
 
         // Static data
-        $statuses = Status::all();
+        $statuses = Status::where('id', '!=', 5)
+            ->where('status', '!=', 'Selesai')
+            ->get();
         $fungsis = Fungsi::all();
+
+        $userId = Auth::id();
+
+        if ($isAlumni && !session()->has('alumni_popup_shown')) {
+            session()->put('show_alumni_popup', true);
+            session()->put('alumni_popup_shown', true); // 🔹 hanya diset sekali
+        }
+
+        // ✅ Format tanggal masuk & keluar (contoh: "10 Oktober 2025")
+        $tanggalMasuk = Auth::user()->tanggal_masuk
+            ? Carbon::parse(Auth::user()->tanggal_masuk)->translatedFormat('d F Y')
+            : '-';
+
+        $tanggalKeluar = Auth::user()->tanggal_keluar
+            ? Carbon::parse(Auth::user()->tanggal_keluar)->translatedFormat('d F Y')
+            : '-';
+
 
         return view('dashboard', [
             'title' => 'Dashboard',
@@ -218,6 +262,10 @@ class DashboardController extends Controller
             'totalAbsensi' => $isAdmin ? $absensis->count() : null,
             'hasData' => $statusCounts->sum('user_count') > 0,
             'processedUsers' => $pagedProcessedUsers,
+            'isAlumni' => $isAlumni,
+            'status_id' => Auth::user()->status_id,
+            'tanggal_masuk' => $tanggalMasuk,
+            'tanggal_keluar' => $tanggalKeluar,
         ]);
     }
 
@@ -226,7 +274,8 @@ class DashboardController extends Controller
         $isAdmin = Auth::user()->is_admin;
         $userId  = Auth::id();
 
-        $query = Absensi::query()->whereNotNull('status_id');
+        $query = Absensi::query()->whereNotNull('status_id')
+            ->whereHas('status', fn($q) => $q->where('nama', '!=', 'Selesai'));
 
         // filter tanggal (sama seperti yang ada)
         switch ($range) {

@@ -10,7 +10,13 @@ use App\Models\Absensi;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Concerns\FromView;
+use Maatwebsite\Excel\Events\AfterSheet;
+use Maatwebsite\Excel\Concerns\WithEvents;
 
 class AbsensiController extends Controller
 {
@@ -20,8 +26,7 @@ class AbsensiController extends Controller
     public function index()
     {
         $filters = request()->only(['search', 'status', 'fungsi']);
-
-        $today = now()->toDateString(); // Sesuaikan dengan format di database
+        $today = now()->toDateString();
 
         $users = User::with([
             'fungsi',
@@ -32,18 +37,26 @@ class AbsensiController extends Controller
             ->whereHas('absensis', function ($query) use ($today) {
                 $query->where('tanggal', $today);
             })
+            ->whereDoesntHave('absensis', function ($query) {
+                $query->where('status_id', 5); // abaikan user yang absensinya sudah selesai
+            })
             ->filter($filters)
             ->latest()
             ->paginate(8)
             ->withQueryString();
 
+        $statuses = Status::where('id', '!=', 5)
+            ->where('status', '!=', 'Selesai')
+            ->get();
+
         return view('absensi', [
             'title' => 'Absensi',
             'users' => $users,
-            'statuses' => Status::all(),
+            'statuses' => $statuses,
             'fungsis' => Fungsi::all(),
         ]);
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -61,11 +74,16 @@ class AbsensiController extends Controller
             ->where('tanggal', $today)
             ->first();
 
+        $isAlumni = Absensi::where('user_id', Auth::id())
+            ->where('status_id', 5)
+            ->exists();
+
         return view('absensi.create', [
             'title' => 'Absensi',
             'absensi' => $absensiToday,
             'isWeekend' => $isWeekend,
             'namaHari' => $namaHari,
+            'isAlumni' => $isAlumni,
         ]);
     }
 
@@ -73,8 +91,31 @@ class AbsensiController extends Controller
     {
         $user = auth()->user();
         $today = now()->toDateString();
+        $now = Carbon::now('Asia/Makassar');
 
-        // Ambil data absen hari ini milik user yang dipilih
+        // 🕒 Validasi waktu izin/sakit
+        $dayOfWeek = $now->dayOfWeek; // 1=Senin, ..., 5=Jumat
+        $currentTime = $now->format('H:i');
+
+        if (in_array($dayOfWeek, [Carbon::SATURDAY, Carbon::SUNDAY])) {
+            return redirect('/dashboard')->with('error', 'Pengajuan izin/sakit tidak bisa dilakukan di hari Sabtu atau Minggu.');
+        }
+
+        $maxTime = $now->isFriday() ? '16:30' : '16:00';
+
+        if ($currentTime < '00:01' || $currentTime > $maxTime) {
+            return redirect('/dashboard')->with('error', "Pengajuan izin/sakit hanya bisa dilakukan antara pukul 00:01 sampai $maxTime WITA.");
+        }
+
+        // 🚫 Cegah alumni
+        $isAlumni = Absensi::where('user_id', $user->id)
+            ->where('status_id', 5)
+            ->exists();
+
+        if ($isAlumni) {
+            return redirect('/dashboard')->with('error', 'Alumni tidak dapat mengajukan perizinan.');
+        }
+
         $absensiToday = Absensi::where('user_id', $user->id)
             ->where('tanggal', $today)
             ->first();
@@ -85,6 +126,8 @@ class AbsensiController extends Controller
             'user' => $user,
         ]);
     }
+
+
 
     /**
      * Store a newly created resource in storage.
@@ -99,6 +142,10 @@ class AbsensiController extends Controller
         $user = auth()->user();
         $today = now()->toDateString();
         $now = Carbon::now('Asia/Makassar');
+
+        $isAlumni = Absensi::where('user_id', Auth::id())
+            ->where('status_id', 5)
+            ->exists();
 
         // Lokasi kantor
         $kantorLat = -5.1488763012991425;
@@ -142,6 +189,10 @@ class AbsensiController extends Controller
             return redirect('/dashboard')->with('error', 'Kamu sudah mengajukan izin/sakit hari ini!');
         }
 
+        if ($isAlumni) {
+            return redirect('/dashboard')->with('error', 'Alumni tidak dapat melakukan absensi.');
+        }
+
         Absensi::create([
             'user_id' => $user->id,
             'tanggal' => $today,
@@ -171,6 +222,17 @@ class AbsensiController extends Controller
 
     public function storeDetail(Request $request)
     {
+        $user = auth()->user();
+
+        // 🚫 Cegah alumni
+        $isAlumni = Absensi::where('user_id', $user->id)
+            ->where('status_id', 5)
+            ->exists();
+
+        if ($isAlumni) {
+            return redirect('/dashboard')->with('error', 'Alumni tidak dapat mengajukan perizinan.');
+        }
+
         $request->validate([
             'judul' => 'required|string|max:255',
             'keterangan' => 'required|string',
@@ -277,6 +339,10 @@ class AbsensiController extends Controller
         $today = now()->toDateString();
         $now = Carbon::now('Asia/Makassar');
 
+        $isAlumni = Absensi::where('user_id', Auth::id())
+            ->where('status_id', 5)
+            ->exists();
+
         // Validasi jam pulang
         if ($now->isFriday()) {
             // Jumat: mulai jam 16:30
@@ -301,6 +367,10 @@ class AbsensiController extends Controller
 
         if ($absensi->jam_keluar !== null) {
             return redirect('/dashboard')->with('error', 'Sudah absen pulang!');
+        }
+
+        if ($isAlumni) {
+            return redirect('/dashboard')->with('error', 'Alumni tidak dapat melakukan absensi.');
         }
 
         $absensi->update([
@@ -328,15 +398,22 @@ class AbsensiController extends Controller
 
     public function showDetail(User $user)
     {
+        $from = request('from');
+
         $absensis = $user->absensis()
             ->with('status')
             ->orderBy('tanggal', 'desc')
             ->paginate(12);
 
+        $title = $from === 'alumni'
+            ? 'Absensi Alumni'
+            : 'Absensi User';
+
         return view('absensi.view-detail', [
-            'title' => 'Absensi',
+            'title' => $title,
             'user' => $user,
             'absensis' => $absensis,
+            'from' => $from,
         ]);
     }
 
@@ -404,29 +481,64 @@ class AbsensiController extends Controller
         return $pdf->download("Absensi-{$user->name}.pdf");
     }
 
-
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Absensi $absensi)
+    public function exportExcel(User $user)
     {
-        //
-    }
+        $export = new class($user) implements FromView, WithEvents {
+            protected $user;
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Absensi $absensi)
-    {
-        //
-    }
+            public function __construct($user)
+            {
+                $this->user = $user;
+            }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Absensi $absensi)
-    {
-        //
+            public function view(): View
+            {
+                $absensis = $this->user->absensis()
+                    ->with('status')
+                    ->orderBy('tanggal', 'asc')
+                    ->get();
+
+                $rekap = $absensis->groupBy(fn($a) => $a->status->nama ?? 'Tidak Ada')
+                    ->map(fn($g) => $g->count());
+
+                return view('excel.absensi', [
+                    'user' => $this->user,
+                    'absensis' => $absensis,
+                    'rekap' => $rekap,
+                ]);
+            }
+
+            // ✨ Tambahkan event styling di sini
+            public function registerEvents(): array
+            {
+                return [
+                    AfterSheet::class => function (AfterSheet $event) {
+                        $sheet = $event->sheet->getDelegate();
+
+                        // Auto size semua kolom dari A sampai F
+                        foreach (range('A', 'F') as $col) {
+                            $sheet->getColumnDimension($col)->setAutoSize(true);
+                        }
+
+                        // Bold judul & tengah
+                        $sheet->getStyle('A1:F1')->getFont()->setBold(true);
+                        $sheet->getStyle('A1:F1')->getAlignment()->setHorizontal('center');
+
+                        // Tengahin header kolom juga
+                        $sheet->getStyle('A3:F3')->getAlignment()->setHorizontal('center');
+
+                        // Supaya wrap text di kolom keterangan panjang
+                        $sheet->getStyle('F')->getAlignment()->setWrapText(true);
+                    },
+                ];
+            }
+        };
+
+        // 🧹 Bersihkan nama & batasi panjang
+        $safeName = preg_replace('/[:\\\\\\/?*\\[\\]]/', '', $user->name);
+        $safeName = Str::limit($safeName, 25, '');
+        $fileName = "Absensi-{$safeName}.xlsx";
+
+        return Excel::download($export, $fileName);
     }
 }

@@ -15,17 +15,17 @@
                     <form action="/pesan" method="POST">
                         @csrf
                         <div class="mb-4">
-                            <label for="nama"
-                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama</label>
-                            <input type="text" name="nama" id="nama"
-                                class="@error('nama')
-                                bg-red-50 border-red-500 text-red-500 placeholder-red-700 focus:ring-red-500 focus:border-red-500
-                            @enderror border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-emerald-600 focus:border-emerald-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-emerald-500 dark:focus:border-emerald-500"
-                                placeholder="Nama anda">
-                            @error('nama')
-                                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                            @enderror
+                            <label for="nama" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                Nama
+                            </label>
+                            <input type="text" name="nama" id="nama" value="{{ Auth::user()->name }}"
+                                {{-- otomatis isi nama admin --}} readonly {{-- supaya tidak bisa diubah --}}
+                                class="border border-gray-300 text-gray-500 text-sm rounded-lg 
+                            focus:ring-emerald-600 focus:border-emerald-600 
+                            block w-full p-2.5 bg-gray-100 cursor-not-allowed
+                            dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                         </div>
+
 
                         <div class="mb-4">
                             <label for="pesan"
@@ -43,9 +43,9 @@
                         <!-- Tombol Aksi -->
                         <div class="flex justify-end space-x-2">
                             <!-- Tombol kembali -->
-                            <a href="/pesan"
+                            <a href="{{ url()->previous() }}"
                                 class="px-4 py-2 text-sm text-gray-800 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200">
-                                ← Kembali ke pesan
+                                ← Kembali
                             </a>
 
                             <!-- Tombol submit -->

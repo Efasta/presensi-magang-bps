@@ -62,15 +62,13 @@ class LoginRequest extends FormRequest
         $user = \App\Models\User::where($this->user_type, $this->input('user_cred'))->first();
 
         if (!$user) {
-            // User tidak ditemukan, error di user_cred
             throw ValidationException::withMessages([
                 'user_cred' => trans('auth.failed'),
             ]);
         }
 
-        // User ada, cek password-nya manual
+        // Validasi password
         if (!\Illuminate\Support\Facades\Hash::check($this->input('password'), $user->password)) {
-            // Password salah, error di password
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
@@ -78,11 +76,25 @@ class LoginRequest extends FormRequest
             ]);
         }
 
-        // Kalau valid, login user
-        Auth::login($user, $this->boolean('remember'));
+        // 🔒 Cek apakah alumni
+        $isAlumni = \App\Models\Absensi::where('user_id', $user->id)
+            ->where('status_id', 5)
+            ->exists();
+
+        // Ambil opsi remember (kalau user centang "ingat saya")
+        $remember = $this->boolean('remember');
+
+        // 🚫 Nonaktifkan remember untuk alumni
+        if ($isAlumni) {
+            $remember = false;
+        }
+
+        // Login dengan remember yang sudah disesuaikan
+        Auth::login($user, $remember);
 
         RateLimiter::clear($this->throttleKey());
     }
+
 
     /**
      * Ensure the login request is not rate limited.

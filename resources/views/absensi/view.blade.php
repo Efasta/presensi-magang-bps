@@ -99,14 +99,14 @@
             $isAdmin = Auth::user()->is_admin;
         @endphp
         @if (!$isAdmin)
-            <div class="">
-                <a href="/dashboard"
+            <div>
+                <a href="{{ url()->previous() }}"
                     class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 font-semibold text-sm transition">
                     ← Kembali
                 </a>
             @else
-                <div class="">
-                    <a href="/absensi"
+                <div>
+                    <a href="{{ url()->previous() }}"
                         class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 font-semibold text-sm transition">
                         ← Kembali
                     </a>

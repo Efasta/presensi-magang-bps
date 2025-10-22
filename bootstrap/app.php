@@ -19,8 +19,8 @@ return Application::configure(basePath: dirname(__DIR__))
             ->dailyAt('00:01')
             ->timezone('Asia/Makassar');
 
-        $schedule->command('user:auto-delete')
-            ->dailyAt('00:05')
+        $schedule->command('user:auto-complete-status')
+            ->dailyAt('00:10')
             ->timezone('Asia/Makassar');
 
         $schedule->command('user:morning-absen-reminder')

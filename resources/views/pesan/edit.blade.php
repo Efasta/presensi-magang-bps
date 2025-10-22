@@ -45,9 +45,9 @@
                         <!-- Tombol Aksi -->
                         <div class="flex justify-end space-x-2">
                             <!-- Tombol kembali -->
-                            <a href="/pesan"
+                            <a href="{{ url()->previous() }}"
                                 class="px-4 py-2 text-sm text-gray-800 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200">
-                                ← Kembali ke pesan
+                                ← Kembali
                             </a>
 
                             <!-- Tombol submit -->

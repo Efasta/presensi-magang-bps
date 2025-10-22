@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Fungsi;
+use App\Models\Absensi;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -20,6 +22,9 @@ class CardUsersController extends Controller
 
         $users = User::with(['fungsi'])
             ->where('is_admin', 0) // hanya ambil user bukan admin
+            ->whereDoesntHave('absensis', function ($query) {
+                $query->where('status_id', 5);
+            })
             ->filter($filters)
             ->orderBy('id', 'asc')
             ->paginate(10)
@@ -28,7 +33,7 @@ class CardUsersController extends Controller
         $fungsis = Fungsi::all();
 
         return view('users', [
-            'title' => 'Users',
+            'title' => 'Users Aktif',
             'users' => $users,
             'fungsis' => $fungsis
         ]);
@@ -56,7 +61,18 @@ class CardUsersController extends Controller
      */
     public function show(User $user)
     {
-        return view('users.card', ['title' => 'Detail User: ' . $user['name'], 'user' => $user]);
+        $from = request('from');
+
+        // Tentukan title berdasarkan asal halaman
+        $title = $from === 'alumni'
+            ? 'Detail Alumni: ' . $user->name
+            : 'Detail User: ' . $user->name;
+
+        return view('users.card', [
+            'title' => $title,
+            'user' => $user,
+            'from' => $from,
+        ]);
     }
 
     /**
@@ -64,10 +80,18 @@ class CardUsersController extends Controller
      */
     public function edit(User $user)
     {
+        $from = request('from');
+
+        // Tentukan title berdasarkan asal halaman
+        $title = $from === 'alumni'
+            ? 'Edit Alumni: ' . $user->name
+            : 'Edit User: ' . $user->name;
+
         return view('users.edit', [
-            'title' => 'Edit User: ' . $user['name'],
+            'title' => $title,
             'user' => $user,
-            'fungsis' => Fungsi::all()
+            'fungsis' => Fungsi::all(),
+            'from' => $from,
         ]);
     }
 
@@ -76,52 +100,64 @@ class CardUsersController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        // Validasi data input
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'nim' => [
                 'required',
-                'numeric',
-                'digits_between:6,15',
-                Rule::unique(User::class, 'nim')->ignore($user->id),
-            ],
-            'email' => [
-                'required',
                 'string',
-                'lowercase',
-                'email:dns',
-                'max:255',
-                Rule::unique(User::class)->ignore($user->id),
+                'min:6',
+                'max:15',
+                Rule::unique('users', 'nim')->ignore($user->id),
             ],
             'jurusan' => ['required', 'string', 'max:255'],
             'universitas' => ['required', 'string', 'max:255'],
+            'email' => [
+                'required',
+                'string',
+                'email:dns',
+                'max:255',
+                Rule::unique('users', 'email')->ignore($user->id),
+            ],
             'telepon' => ['required', 'string', 'digits_between:9,13'],
-            'alamat' => ['required', 'string', 'max:255'],
+            'alamat' => ['required', 'string', 'max:1000'],
             'tanggal_masuk' => ['required', 'date'],
-            'tanggal_keluar' => ['required', 'date'],
-            'keahlian' => ['required', 'string', 'max:255'],
+            'tanggal_keluar' => ['required', 'date', 'after_or_equal:tanggal_masuk'],
             'jenis_kelamin' => ['required', Rule::in(['Laki-laki', 'Perempuan'])],
+            'keahlian' => ['required', 'string', 'max:255'],
             'fungsi_id' => ['required', 'exists:fungsis,id'],
         ], [
-            'nim.required' => 'NIM wajib diisi.',
-            'nim.numeric' => 'NIM harus berupa angka.',
-            'nim.digits_between' => 'NIM harus terdiri dari antara 6 sampai 15 digit.',
-            'nim.unique' => 'NIM ini sudah digunakan.',
-            'email.required' => 'Email wajib diisi.',
+            'required' => 'Field :attribute harus diisi.',
+            'name.max' => 'Nama tidak boleh lebih dari :max karakter.',
+            'nim.string' => 'NIM harus berupa kombinasi huruf dan/atau angka.',
+            'nim.min' => 'NIM harus memiliki minimal :min karakter.',
+            'nim.max' => 'NIM tidak boleh lebih dari :max karakter.',
+            'nim.unique' => 'NIM ini sudah terdaftar.',
+            'jurusan.max' => 'Jurusan tidak boleh lebih dari :max karakter.',
+            'universitas.max' => 'Universitas tidak boleh lebih dari :max karakter.',
             'email.email' => 'Format email tidak valid.',
-            'email.unique' => 'Email sudah digunakan.',
-            // ... pesan error lain sama seperti sebelumnya
+            'email.unique' => 'Email ini sudah terdaftar.',
+            'telepon.digits_between' => 'Nomor telepon harus terdiri dari :min sampai :max digit.',
+            'alamat.max' => 'Alamat tidak boleh lebih dari :max karakter.',
+            'tanggal_masuk.date' => 'Tanggal masuk harus berupa tanggal yang valid.',
+            'tanggal_keluar.date' => 'Tanggal keluar harus berupa tanggal yang valid.',
+            'tanggal_keluar.after_or_equal' => 'Tanggal keluar tidak boleh sebelum tanggal masuk.',
+            'jenis_kelamin.in' => 'Jenis kelamin harus diisi dengan Laki-laki atau Perempuan.',
+            'keahlian.max' => 'Keahlian tidak boleh lebih dari :max karakter.',
+            'fungsi_id.exists' => 'Fungsi yang dipilih tidak tersedia.',
+        ], [
+            'name' => 'Nama',
+            'nim' => 'NIM/NISN',
+            'jurusan' => 'Jurusan',
+            'universitas' => 'Universitas',
+            'email' => 'Email',
+            'telepon' => 'Nomor Telepon',
+            'alamat' => 'Alamat',
+            'tanggal_masuk' => 'Tanggal Masuk',
+            'tanggal_keluar' => 'Tanggal Keluar',
+            'jenis_kelamin' => 'Jenis Kelamin',
+            'keahlian' => 'Keahlian',
+            'fungsi_id' => 'Fungsi',
         ]);
-
-        // Validasi tambahan: tanggal_keluar tidak boleh sebelum tanggal_masuk
-        if (
-            isset($validated['tanggal_masuk'], $validated['tanggal_keluar']) &&
-            $validated['tanggal_keluar'] < $validated['tanggal_masuk']
-        ) {
-            return back()
-                ->withErrors(['tanggal_keluar' => 'Tanggal keluar tidak boleh sebelum tanggal masuk.'])
-                ->withInput();
-        }
 
         // Update data user
         $user->update([
@@ -139,6 +175,18 @@ class CardUsersController extends Controller
             'jenis_kelamin' => $validated['jenis_kelamin'],
             'fungsi_id' => $validated['fungsi_id'],
         ]);
+
+        // === Logika Perpanjangan Masa Magang ===
+        $today = Carbon::today();
+        $tanggalKeluarBaru = Carbon::parse($validated['tanggal_keluar']);
+
+        // Jika tanggal keluar diperpanjang (lebih besar dari hari ini)
+        if ($tanggalKeluarBaru->greaterThan($today)) {
+            // Hapus absensi dengan status selesai (5)
+            Absensi::where('user_id', $user->id)
+                ->where('status_id', 5)
+                ->delete();
+        }
 
         return redirect()->route('users.index')->with('success', 'Data user berhasil diperbarui.');
     }

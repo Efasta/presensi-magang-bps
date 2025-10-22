@@ -13,6 +13,7 @@ class Notif extends Model
 
     protected $fillable = [
         'user_id',
+        'admin_id',
         'foto',
         'nama',
         'slug',

@@ -37,28 +37,36 @@
                             class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
 
                             <form method="GET" action="/absensi" id="filterForm" onsubmit="return true;">
-                                <button id="filterDropdownButton" type="button"
-                                    class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-800 focus:outline-none rounded-lg focus:z-10 focus:ring-4 focus:ring-emerald-300 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
-                                    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
-                                        class="h-4 w-4 mr-1.5 -ml-1" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd"
-                                            d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                    Filter
-                                    <svg class="-mr-1 ml-1.5 w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
-                                        xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                        <path fill-rule="evenodd" clip-rule="evenodd"
-                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-                                    </svg>
-                                </button>
+                                <div class="relative inline-block">
+                                    <button id="filterDropdownButton" type="button"
+                                        class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-800 focus:outline-none rounded-lg focus:z-10 focus:ring-4 focus:ring-emerald-300 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                                        <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
+                                            class="h-4 w-4 mr-1.5 -ml-1" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd"
+                                                d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                        Filter
+                                        <svg class="-mr-1 ml-1.5 w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                                            xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                                        </svg>
+                                    </button>
+
+                                    <!-- Badge -->
+                                    <span id="filterBadge"
+                                        class="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-[20px] h-[20px] text-[11px] font-bold leading-none text-white bg-red-600 rounded-full px-[5px] py-[1px] hidden">
+                                    </span>
+                                </div>
+
                                 <div id="filterDropdown"
-                                    class="absolute hidden z-10 px-3 pt-1 bg-white rounded-lg shadow w-80 dark:bg-gray-700 right-0 max-h-72 overflow-y-auto">
+                                    class="absolute hidden z-10 px-3 pt-1 bg-white rounded-lg shadow w-80 dark:bg-gray-700 right-1 top-33 max-h-72 overflow-y-auto">
                                     <div class="flex items-center justify-between pt-2 pb-2 border-b border-gray-200">
                                         <h6 class="text-sm font-medium text-black dark:text-white">Filters</h6>
                                         <div class="flex items-center space-x-3">
-                                            <button type="submit"
-                                                class="text-sm font-medium text-emerald-600 dark:text-emerald-500 hover:underline">
+                                            <button id="applyFilterButton" type="button"
+                                                class="text-sm font-medium text-emerald-600 dark:text-emerald-500 hover:underline cursor-pointer">
                                                 Terapkan
                                             </button>
                                             <a href="/absensi"
@@ -172,7 +180,8 @@
                                     <tr data-status="{{ strtolower(optional($absensi->status)->nama) ?? 'belum-absen' }}"
                                         data-fungsi="{{ strtolower($user->fungsi->nama) }}"
                                         class="border-t border-gray-200 dark:border-gray-600 dark:hover:bg-gray-700">
-                                        <td class="px-4 py-3 font-medium text-gray-900">{{ $loop->iteration }}</td>
+                                        <td class="px-4 py-3 font-medium text-gray-900">
+                                            {{ $loop->iteration + $users->firstItem() - 1 }}</td>
                                         <th scope="row"
                                             class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                             <div class="flex items-center gap-3 whitespace-nowrap">
@@ -188,9 +197,10 @@
                                                 {{ $user->fungsi->nama }}
                                             </a>
                                         </td>
-                                        <td class="px-4 py-3 whitespace-nowrap">{{ $absensi?->tanggal ?? '-' }}</td>
-                                        <td class="px-4 py-3">{{ $absensi?->jam_masuk ?? '-' }}</td>
-                                        <td class="px-4 py-3">{{ $absensi?->jam_keluar ?? '-' }}</td>
+                                        <td class="px-4 py-3 whitespace-nowrap text-black">
+                                            {{ $absensi?->tanggal ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-black">{{ $absensi?->jam_masuk ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-black">{{ $absensi?->jam_keluar ?? '-' }}</td>
                                         <td class="px-4 py-3">
                                             @if ($absensi)
                                                 <div class="flex items-center">
@@ -206,7 +216,7 @@
                                         @php
                                             $absensiToday = $user->absensis->first(); // ambil absensi pertama di koleksi absensis
                                         @endphp
-                                        <td class="px-4 py-3">
+                                        <td class="px-4 py-3 text-black">
                                             @if (!empty($absensi->judul))
                                                 <a href="/keterangan/{{ $absensi->slug }}" class="hover:underline">
                                                     {{ Str::limit($absensi->judul, 10) }}
@@ -216,14 +226,9 @@
                                             @endif
                                         </td>
                                         <td class="px-4 py-3">
-                                            @if ($absensi)
-                                                <!-- tombol dropdown seperti biasa -->
-                                            @else
-                                                <span class="text-xs text-gray-400 italic">Tidak ada aksi</span>
-                                            @endif
                                         </td>
                                         <td class="px-4 py-3">
-                                            <x-dropdown-action :user="$user" :rowId="$loop->iteration" />
+                                            <x-dropdown-action :user="$user" :rowId="$loop->iteration + $users->firstItem() - 1" />
                                         </td>
                                     </tr>
                                 @empty
@@ -249,8 +254,7 @@
         <section class="bg-white dark:bg-gray-900">
             <div class="py-8 px-4 mx-auto max-w-screen-xl lg:pt-40 pt-50 lg:px-6">
                 <div class="mx-auto max-w-screen-sm text-center">
-                    <h1
-                        class="mb-4 text-7xl tracking-tight font-extrabold lg:text-9xl text-red-600">
+                    <h1 class="mb-4 text-7xl tracking-tight font-extrabold lg:text-9xl text-red-600">
                         403</h1>
                     <p class="mb-4 text-3xl tracking-tight font-bold text-gray-900 md:text-4xl dark:text-white">Akses
                         Ditolak</p>
@@ -267,50 +271,89 @@
 </x-layout>
 
 <script>
-    function resetFilter() {
-        // Reset semua checkbox di dalam #filterDropdown
-        document.querySelectorAll('#filterDropdown input[type="checkbox"]').forEach(cb => cb.checked = false);
-
-        // Reset input teks search (simple-search)
+    document.addEventListener('DOMContentLoaded', function() {
+        const badge = document.getElementById('filterBadge');
+        const applyButton = document.getElementById('applyFilterButton');
+        const checkboxes = document.querySelectorAll('#filterDropdown input[type="checkbox"]');
         const searchInput = document.getElementById('simple-search');
-        if (searchInput) {
-            searchInput.value = '';
+        const dropdownButton = document.getElementById('filterDropdownButton');
+        const dropdown = document.getElementById('filterDropdown');
+
+        // Hitung jumlah filter aktif
+        function getActiveFilterCount() {
+            return Array.from(checkboxes).filter(cb => cb.checked).length;
         }
 
-        // applyFilter(); // tampilkan semua kembali setelah reset
-    }
+        // Update tampilan badge
+        function updateBadge() {
+            const total = getActiveFilterCount();
+            if (total > 0) {
+                badge.textContent = total;
+                badge.classList.remove('hidden');
+                badge.style.display = 'flex';
+            } else {
+                badge.textContent = '';
+                badge.classList.add('hidden');
+                badge.style.display = 'none';
+            }
+        }
 
-    function applyFilter() {
-        const checkedStatuses = Array.from(document.querySelectorAll('#kehadiran-body input[type="checkbox"]:checked'))
-            .map(cb => cb.value.toLowerCase());
+        // Terapkan filter
+        function applyFilter() {
+            const checkedStatuses = Array.from(document.querySelectorAll(
+                    '#kehadiran-body input[type="checkbox"]:checked'))
+                .map(cb => cb.value.toLowerCase());
+            const checkedFunctions = Array.from(document.querySelectorAll(
+                    '#fungsi-body input[type="checkbox"]:checked'))
+                .map(cb => cb.value.toLowerCase());
+            const searchValue = searchInput ? searchInput.value.toLowerCase() : '';
 
-        const checkedFunctions = Array.from(document.querySelectorAll('#fungsi-body input[type="checkbox"]:checked'))
-            .map(cb => cb.value.toLowerCase());
+            const rows = document.querySelectorAll('table tbody tr');
+            rows.forEach(row => {
+                const status = (row.dataset.status || '').toLowerCase();
+                const fungsi = (row.dataset.fungsi || '').toLowerCase();
+                const name = (row.querySelector('.user-name')?.innerText || '').toLowerCase();
 
-        const searchInput = document.getElementById('simple-search');
-        const searchValue = searchInput ? searchInput.value.toLowerCase() : '';
+                const statusMatch = checkedStatuses.length === 0 || checkedStatuses.includes(status);
+                const fungsiMatch = checkedFunctions.length === 0 || checkedFunctions.includes(fungsi);
+                const nameMatch = !searchValue || name.includes(searchValue);
 
-        const rows = document.querySelectorAll('table tbody tr');
+                row.style.display = (statusMatch && fungsiMatch && nameMatch) ? '' : 'none';
+            });
+        }
 
-        rows.forEach(row => {
-            const status = (row.dataset.status || '').toLowerCase();
-            const fungsi = (row.dataset.fungsi || '').toLowerCase();
-
-            // Ambil nama user dari class user-name (pastikan ada di HTML tabelmu)
-            const nameCell = row.querySelector('.user-name');
-            const name = nameCell ? nameCell.innerText.toLowerCase() : '';
-
-            const statusMatch = checkedStatuses.length === 0 || checkedStatuses.includes(status);
-            const fungsiMatch = checkedFunctions.length === 0 || checkedFunctions.includes(fungsi);
-            const nameMatch = !searchValue || name.includes(searchValue);
-
-            row.style.display = (statusMatch && fungsiMatch && nameMatch) ? '' : 'none';
+        // Toggle dropdown filter
+        dropdownButton.addEventListener('click', () => {
+            dropdown.classList.toggle('hidden');
         });
-    }
 
-    // Event listener untuk tombol filter buka/tutup dropdown
-    document.getElementById('filterDropdownButton').addEventListener('click', () => {
-        const dd = document.getElementById('filterDropdown');
-        dd.classList.toggle('hidden');
+        // Tutup dropdown saat klik di luar
+        document.addEventListener('click', function(event) {
+            if (!dropdownButton.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        // Klik tombol Terapkan
+        if (applyButton) {
+            applyButton.addEventListener('click', function() {
+                const form = document.getElementById('filterForm');
+                form.submit();
+            });
+        }
+
+        // Klik Reset filter
+        const resetLink = document.querySelector('a[href="/absensi"]');
+        if (resetLink) {
+            resetLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                checkboxes.forEach(cb => cb.checked = false);
+                updateBadge();
+                applyFilter();
+            });
+        }
+
+        // Jalankan saat pertama kali halaman dimuat
+        updateBadge();
     });
 </script>

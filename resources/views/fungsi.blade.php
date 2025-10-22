@@ -17,7 +17,8 @@
                         <!-- Tabel Kehadiran -->
                         <div class="w-full sm:w-1/2">
                             <div class="flex justify-between items-center mb-4">
-                                <h2 id="tabelKehadiranTitle" class="text-xl font-semibold text-gray-800 dark:text-white">
+                                <h2 id="tabelKehadiranTitle"
+                                    class="sm:text-xl font-semibold text-gray-800 dark:text-white">
                                     Tabel Kehadiran:
                                 </h2>
 
@@ -156,25 +157,104 @@
                                 </div>
                             </div>
                         </div>
-
-
-
                     </div>
-
-
                 </article>
             </div>
             <!-- Start block -->
             <section class= "dark:bg-gray-900 py-3 sm:p-5 antialiased">
                 <div class=" mx-auto max-w-screen-full px-4 sm:px-0">
-                    <div class="bg-white dark:bg-gray-800 relative border border-gray-200 rounded-lg overflow-hidden">
+                    <div class="bg-white dark:bg-gray-800 relative border border-gray-200 rounded-lg">
                         <div class="flex items-center justify-between p-5">
-                            <p id="tabelAnggotaTitle" class="text-xl font-semibold text-gray-900 dark:text-white">
-                                Anggota Fungsi:</p>
+                            <!-- Judul tabel -->
+                            <p id="tabelAnggotaTitle" class="sm:text-xl font-semibold text-gray-900 dark:text-white">
+                                Anggota Fungsi:
+                            </p>
+
+                            <!-- Wrapper tombol filter -->
+                            <div class="relative inline-block text-left">
+                                <!-- Tombol filter -->
+                                <button id="filterDropdownButton" type="button"
+                                    class="flex items-center py-2 px-4 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-800 focus:outline-none rounded-lg focus:ring-4 focus:ring-emerald-300 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                                    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
+                                        class="h-4 w-4 mr-1.5 -ml-1" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                    Filter
+                                    <svg class="-mr-1 ml-1.5 w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                                        xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                        <path fill-rule="evenodd" clip-rule="evenodd"
+                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                                    </svg>
+                                </button>
+
+                                <!-- Badge -->
+                                <span id="filterBadge"
+                                    class="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-[20px] h-[20px] text-[11px] font-bold leading-none text-white bg-red-600 rounded-full px-[5px] py-[1px] hidden">
+                                </span>
+
+                                <!-- Dropdown -->
+                                <div id="filterDropdown"
+                                    class="absolute z-10 hidden px-3 pt-1 bg-white rounded-lg shadow w-80 dark:bg-gray-700 right-0 mt-2 max-h-72 overflow-y-auto">
+                                    <div
+                                        class="flex items-center justify-between pt-2 pb-2 border-b border-gray-200 dark:border-gray-600">
+                                        <h6 class="text-sm font-medium text-black dark:text-white">Filters</h6>
+                                        <div class="flex items-center space-x-3">
+                                            <button type="button"
+                                                class="text-sm font-medium text-emerald-600 dark:text-emerald-500 hover:underline cursor-pointer"
+                                                onclick="applyFilter()">Terapkan</button>
+                                            <button type="button"
+                                                class="text-sm font-medium text-emerald-600 dark:text-emerald-500 hover:underline cursor-pointer"
+                                                onclick="resetFilter()">Reset</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Accordion Filter -->
+                                    <div id="accordion-flush" data-accordion="collapse"
+                                        data-active-classes="text-black dark:text-white"
+                                        data-inactive-classes="text-gray-500 dark:text-gray-400">
+                                        <h2 id="kehadiran-heading">
+                                            <button type="button"
+                                                class="flex items-center justify-between w-full py-2 px-1.5 text-sm font-medium text-left text-gray-500 border-gray-200 dark:border-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                                data-accordion-target="#kehadiran-body" aria-expanded="true"
+                                                aria-controls="kehadiran-body">
+                                                <span>Kehadiran</span>
+                                                <svg aria-hidden="true" data-accordion-icon=""
+                                                    class="w-5 h-5 rotate-180 shrink-0" fill="currentColor"
+                                                    viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                                                </svg>
+                                            </button>
+                                        </h2>
+                                        <div id="kehadiran-body" class="hidden" aria-labelledby="kehadiran-heading">
+                                            <div class="py-2 font-light border-gray-300 dark:border-gray-600">
+                                                @php
+                                                    $selectedStatuses = (array) request()->input('status');
+                                                @endphp
+
+                                                @foreach ($statuses as $status)
+                                                    <ul class="space-y-2 mb-2">
+                                                        <li class="flex items-center">
+                                                            <input id="status-{{ Str::slug($status->nama) }}"
+                                                                type="checkbox" name="status[]"
+                                                                value="{{ $status->nama }}"
+                                                                {{ in_array($status->nama, $selectedStatuses) ? 'checked' : '' }}
+                                                                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-emerald-600 focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+
+                                                            <label for="status-{{ Str::slug($status->nama) }}"
+                                                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $status->nama }}</label>
+                                                        </li>
+                                                    </ul>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div
-                            class="flex flex-col md:flex-row items-stretch md:items-center md:space-x-3 space-y-3 md:space-y-0 justify-between border-t border-gray-200 dark:border-gray-700">
-                        </div>
+
                         <div class="overflow-x-auto">
                             <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                                 <thead class="text-xs text-gray-700 uppercase bg-gray-50">
@@ -195,7 +275,8 @@
                                         <tr data-status="{{ strtolower($item['status']) }}"
                                             data-fungsi="{{ strtolower($item['user']->fungsi->slug ?? '') }}"
                                             class="border-t">
-                                            <td class="px-4 py-3">{{ $loop->iteration }}</td>
+                                            <td class="px-4 py-3 text-black">
+                                                {{ $loop->iteration + $processedUsers->firstItem() - 1 }}</td>
                                             <td class="px-4 py-3 text-black">
                                                 <div class="flex items-center gap-3 whitespace-nowrap">
                                                     <img class="w-8 h-8 rounded-full"
@@ -224,7 +305,7 @@
                                                 {{ $item['count'] }}x
                                             </td>
                                             <td class="px-4 py-3 flex items-center">
-                                                <x-dropdown-action :user="$item['user']" :rowId="$loop->iteration" />
+                                                <x-dropdown-action :user="$item['user']" :rowId="$loop->iteration + $processedUsers->firstItem() - 1" />
                                             </td>
                                         </tr>
                                     @empty
@@ -237,9 +318,9 @@
                                 </tbody>
                             </table>
                             @if ($processedUsers->hasPages())
-                            <div class="border-t py-2 border-gray-200">
-                                {{ $processedUsers->appends(request()->query())->links() }}
-                            </div>
+                                <div class="border-t py-2 border-gray-200">
+                                    {{ $processedUsers->appends(request()->query())->links() }}
+                                </div>
                             @endif
                         </div>
                     </div>
@@ -266,128 +347,261 @@
         </section>
     @endif
 
-</x-layout>
-<!-- Script Chart.js & Table Update -->
-<script>
-    const pieChartDataByfungsi = @json($chartData);
-    const pieChartLabels = @json($statuses->pluck('nama'));
-    const urlParams = new URLSearchParams(window.location.search);
-    const initialFungsi = urlParams.get('fungsi') || Object.keys(pieChartDataByfungsi)[0];
-
-    let chartInstance;
-
-    function renderPieChart(data) {
-        const pieCanvas = document.querySelector("#pie-chart-canvas");
-        const emptyState = document.getElementById("empty-piechart-state");
-
-        if (chartInstance) {
-            chartInstance.destroy();
-        }
-
-        const total = data.reduce((sum, value) => sum + value, 0);
-
-        if (total === 0) {
-            pieCanvas.classList.add("hidden");
-            emptyState.classList.remove("hidden");
-            return;
-        } else {
-            pieCanvas.classList.remove("hidden");
-            emptyState.classList.add("hidden");
-        }
-
-        const options = {
-            chart: {
-                type: 'pie',
-                height: 300
-            },
-            series: data,
-            labels: pieChartLabels,
-            colors: ['#10B981', '#EAB308', '#3B82F6', '#DC2626'],
-            legend: {
-                position: 'bottom',
-                labels: {
-                    colors: '#374151'
-                }
+    @push('script')
+        <!-- Script Chart.js & Table Update (revisi: sinkronisasi fungsi / fungsi[]) -->
+        <script>
+            function resetFilter() {
+                window.location.href = window.location.pathname;
             }
-        };
 
-        chartInstance = new ApexCharts(pieCanvas, options);
-        chartInstance.render();
-    }
+            function applyFilter() {
+                const checkedStatuses = Array.from(document.querySelectorAll('#kehadiran-body input[type="checkbox"]:checked'))
+                    .map(cb => cb.value);
 
-    function updateTable(data) {
-        const tbody = document.getElementById('attendanceTableBody');
-        tbody.innerHTML = '';
-        pieChartLabels.forEach((label, index) => {
-            const row = `
-            <tr class="border-b border-gray-200">
-                <td class="px-4 py-2 font-medium text-gray-800 dark:text-white">${label}</td>
-                <td class="px-4 py-2">${data[index]}</td>
-            </tr>`;
-            tbody.insertAdjacentHTML('beforeend', row);
-        });
-    }
+                const checkedFunctions = Array.from(document.querySelectorAll('#fungsi-body input[type="checkbox"]:checked'))
+                    .map(cb => cb.value);
 
-    document.addEventListener('DOMContentLoaded', () => {
-        renderPieChart(pieChartDataByfungsi[initialFungsi]);
-        updateTable(pieChartDataByfungsi[initialFungsi]);
+                // Jika semua filter kosong → langsung reset ke halaman utama
+                if (checkedStatuses.length === 0 && checkedFunctions.length === 0) {
+                    window.location.href = window.location.pathname;
+                    return;
+                }
 
-        // Set label dropdown ke nama fungsi yang dipilih
-        const selectedText = document.querySelector(`[data-fungsi="${initialFungsi}"]`)?.textContent;
-        if (selectedText) {
-            document.getElementById('fungsiDropdownLabel').textContent = selectedText;
-            document.getElementById('tabelKehadiranTitle').textContent = `Tabel Kehadiran: ${selectedText}`;
-            document.getElementById('tabelAnggotaTitle').textContent = `Anggota Fungsi: ${selectedText}`;
-        }
+                // Ambil param saat ini supaya bisa mempertahankan 'range', 'search', dan 'fungsi' jika perlu
+                const currentParams = new URLSearchParams(window.location.search);
+                const existingFungsiSingular = currentParams.get('fungsi'); // parameter fungsi yang dipakai chart (singular)
 
-        // Tandai tombol fungsi yg aktif awalnya
-        document.querySelectorAll('[data-fungsi]').forEach(el => el.classList.remove('active'));
-        const activeEl = document.querySelector(`[data-fungsi="${initialFungsi}"]`);
-        if (activeEl) activeEl.classList.add('active');
+                // Buat params baru (tanpa membawa sisa query lama)
+                const params = new URLSearchParams();
 
-        // Event klik untuk filter fungsi (reload server-side)
-        document.querySelectorAll('[data-fungsi]').forEach(item => {
-            item.addEventListener('click', event => {
-                if (event.target.closest('tbody')) return; // cegah klik di tabel anggota
+                // Tambahkan status jika ada
+                checkedStatuses.forEach(status => params.append('status[]', status));
 
-                document.querySelectorAll('[data-fungsi]').forEach(el => el.classList.remove(
-                    'active'));
-                event.target.classList.add('active');
+                // LOGIKA SINKRONISASI fungsi[] <-> fungsi (singular)
+                if (checkedFunctions.length > 0) {
+                    // Jika user memilih fungsi via checkbox, kirim sebagai fungsi[] untuk server
+                    checkedFunctions.forEach(f => params.append('fungsi[]', f));
+                    // Dan set juga fungsi (singular) ke fungsi pertama agar chart/label tetap sinkron
+                    params.set('fungsi', checkedFunctions[0]);
+                } else if (existingFungsiSingular) {
+                    // Jika tidak ada checkbox fungsi tapi URL sekarang punya fungsi (klik sebelumnya),
+                    // pertahankan fungsi (singular) agar pilihan fungsi tidak hilang
+                    params.set('fungsi', existingFungsiSingular);
+                }
 
-                const selectedFungsi = event.target.getAttribute('data-fungsi');
-                const data = pieChartDataByfungsi[selectedFungsi];
+                // Reset pagination ke halaman pertama
+                params.set('page', 1);
 
-                renderPieChart(data);
-                updateTable(data);
+                // Pertahankan parameter lain seperti range/search kalau ada di URL sekarang
+                ['range', 'search'].forEach(key => {
+                    const val = currentParams.get(key);
+                    if (val) params.set(key, val);
+                });
 
-                document.getElementById('fungsiDropdownLabel').textContent = event.target
-                    .textContent;
-                document.getElementById('tabelKehadiranTitle').textContent =
-                    `Tabel Kehadiran: ${event.target.textContent}`;
-                document.getElementById('tabelAnggotaTitle').textContent =
-                    `Anggota Fungsi: ${event.target.textContent}`;
+                // Tutup dropdown filter
+                const dropdown = document.getElementById('filterDropdown');
+                if (dropdown) dropdown.classList.add('hidden');
 
-                // ✅ langsung reload halaman dengan query baru
-                const currentRange = new URLSearchParams(window.location.search).get('range') ||
-                    'today';
-                window.location.href = `?fungsi=${selectedFungsi}&range=${currentRange}`;
+                // Bangun ulang URL dan reload
+                const url = `${window.location.pathname}?${params.toString()}`;
+                window.location.href = url;
+            }
+
+            // Toggle dropdown filter
+            const dropdownButton = document.getElementById('filterDropdownButton');
+            if (dropdownButton) {
+                dropdownButton.addEventListener('click', () => {
+                    const dd = document.getElementById('filterDropdown');
+                    if (dd) dd.classList.toggle('hidden');
+                });
+            }
+
+            // Tutup dropdown jika klik di luar
+            document.addEventListener('click', (event) => {
+                const dropdown = document.getElementById('filterDropdown');
+                if (dropdownButton && dropdown && !dropdownButton.contains(event.target) && !dropdown.contains(event
+                        .target)) {
+                    dropdown.classList.add('hidden');
+                }
             });
-        });
 
-        // Event klik untuk filter range (server-side reload)
-        document.querySelectorAll('.range-option').forEach(item => {
-            item.addEventListener('click', function(e) {
-                e.preventDefault();
+            // Badge counter untuk jumlah filter aktif
+            document.addEventListener('DOMContentLoaded', function() {
+                const badge = document.getElementById('filterBadge');
+                const checkboxes = document.querySelectorAll('#filterDropdown input[type="checkbox"]');
 
-                const selectedRange = this.getAttribute('data-range');
-                const selectedFungsi = document.querySelector('[data-fungsi].active')
-                    ?.getAttribute('data-fungsi') || initialFungsi;
+                function getActiveFilterCount() {
+                    return Array.from(checkboxes).filter(cb => cb.checked).length;
+                }
 
-                // ✅ reload halaman agar backend handle filter + pagination
-                const newUrl = `?fungsi=${selectedFungsi}&range=${selectedRange}`;
-                window.location.href = newUrl;
+                function updateBadge() {
+                    const total = getActiveFilterCount();
+                    if (total > 0) {
+                        badge.textContent = total;
+                        badge.classList.remove('hidden');
+                        badge.style.display = 'flex';
+                    } else {
+                        badge.textContent = '';
+                        badge.classList.add('hidden');
+                        badge.style.display = 'none';
+                    }
+                }
+
+                updateBadge();
             });
-        });
 
-    });
-</script>
+            // -----------------------------
+            //   Bagian Grafik & Tabel
+            // -----------------------------
+
+            const pieChartDataByfungsi = @json($chartData);
+            const pieChartLabels = @json($statuses->pluck('nama'));
+            const urlParams = new URLSearchParams(window.location.search);
+
+            // initialFungsi: cek 'fungsi' singular dulu; jika tidak ada, fallback ke existing keys
+            const initialFungsi = urlParams.get('fungsi') || Object.keys(pieChartDataByfungsi)[0];
+
+            let chartInstance;
+            let reloadTimeout;
+
+            function updateURLAndReload(newParams = {}) {
+                const url = new URL(window.location.href);
+
+                // Hapus page supaya selalu reset pagination ke 1
+                url.searchParams.delete('page');
+
+                // Tambahkan/overwrite param baru
+                Object.entries(newParams).forEach(([key, value]) => {
+                    url.searchParams.set(key, value);
+                });
+
+                clearTimeout(reloadTimeout);
+                reloadTimeout = setTimeout(() => {
+                    window.location.href = url.toString();
+                }, 0);
+            }
+
+            function renderPieChart(data) {
+                const pieCanvas = document.querySelector("#pie-chart-canvas");
+                const emptyState = document.getElementById("empty-piechart-state");
+
+                if (chartInstance) chartInstance.destroy();
+
+                const total = data.reduce((sum, value) => sum + value, 0);
+
+                if (total === 0) {
+                    pieCanvas.classList.add("hidden");
+                    emptyState.classList.remove("hidden");
+                    return;
+                } else {
+                    pieCanvas.classList.remove("hidden");
+                    emptyState.classList.add("hidden");
+                }
+
+                const options = {
+                    chart: {
+                        type: 'pie',
+                        height: 300
+                    },
+                    series: data,
+                    labels: pieChartLabels,
+                    colors: ['#10B981', '#EAB308', '#3B82F6', '#DC2626'],
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            colors: '#374151'
+                        }
+                    }
+                };
+
+                chartInstance = new ApexCharts(pieCanvas, options);
+                chartInstance.render();
+            }
+
+            function updateTable(data) {
+                const tbody = document.getElementById('attendanceTableBody');
+                if (!tbody) return;
+
+                tbody.innerHTML = '';
+                pieChartLabels.forEach((label, index) => {
+                    const row = `
+                <tr class="border-b border-gray-200">
+                    <td class="px-4 py-2 font-medium text-gray-800 dark:text-white">${label}</td>
+                    <td class="px-4 py-2">${data[index]}</td>
+                </tr>`;
+                    tbody.insertAdjacentHTML('beforeend', row);
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                if (!pieChartDataByfungsi) return;
+
+                renderPieChart(pieChartDataByfungsi[initialFungsi]);
+                updateTable(pieChartDataByfungsi[initialFungsi]);
+
+                const selectedText = document.querySelector(`[data-fungsi="${initialFungsi}"]`)?.textContent;
+                if (selectedText) {
+                    document.getElementById('fungsiDropdownLabel').textContent = selectedText;
+                    document.getElementById('tabelKehadiranTitle').textContent = `Tabel Kehadiran: ${selectedText}`;
+                    document.getElementById('tabelAnggotaTitle').textContent = `Anggota Fungsi: ${selectedText}`;
+                }
+
+                document.querySelectorAll('[data-fungsi]').forEach(el => el.classList.remove('active'));
+                const activeEl = document.querySelector(`[data-fungsi="${initialFungsi}"]`);
+                if (activeEl) activeEl.classList.add('active');
+
+                // Klik fungsi
+                document.querySelectorAll('[data-fungsi]').forEach(item => {
+                    item.addEventListener('click', event => {
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        if (event.target.closest('tbody')) return;
+
+                        document.querySelectorAll('[data-fungsi]').forEach(el => el.classList.remove(
+                            'active'));
+                        event.target.classList.add('active');
+
+                        const selectedFungsi = event.target.getAttribute('data-fungsi');
+                        const data = pieChartDataByfungsi[selectedFungsi];
+
+                        renderPieChart(data);
+                        updateTable(data);
+
+                        const name = event.target.textContent;
+                        document.getElementById('fungsiDropdownLabel').textContent = name;
+                        document.getElementById('tabelKehadiranTitle').textContent =
+                            `Tabel Kehadiran: ${name}`;
+                        document.getElementById('tabelAnggotaTitle').textContent =
+                            `Anggota Fungsi: ${name}`;
+
+                        const currentRange = new URLSearchParams(window.location.search).get('range') ||
+                            'all';
+                        // Saat klik fungsi via chart/list, set 'fungsi' singular (dipakai chart) dan juga reset page
+                        updateURLAndReload({
+                            fungsi: selectedFungsi,
+                            range: currentRange
+                        });
+                    });
+                });
+
+                // Klik range
+                document.querySelectorAll('.range-option').forEach(item => {
+                    item.addEventListener('click', e => {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        const selectedRange = item.getAttribute('data-range');
+                        const selectedFungsi = document.querySelector('[data-fungsi].active')
+                            ?.getAttribute('data-fungsi') || initialFungsi;
+
+                        updateURLAndReload({
+                            fungsi: selectedFungsi,
+                            range: selectedRange
+                        });
+                    });
+                });
+            });
+        </script>
+    @endpush
+</x-layout>

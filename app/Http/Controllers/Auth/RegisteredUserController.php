@@ -36,7 +36,7 @@ class RegisteredUserController extends Controller
     {
         Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255'],
-            'nim' => ['required', 'numeric', 'digits_between:6,15', 'unique:users,nim'],
+            'nim' => ['required', 'string', 'min:6', 'max:15', 'unique:users,nim'],
             'jurusan' => ['required', 'string', 'max:255'],
             'universitas' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email:dns', 'max:255', 'unique:users,email'],
@@ -53,8 +53,9 @@ class RegisteredUserController extends Controller
 
             // Spesifik
             'name.max' => 'Nama tidak boleh lebih dari :max karakter.',
-            'nim.numeric' => 'NIM harus berupa angka.',
-            'nim.digits_between' => 'NIM harus terdiri dari antara :min sampai :max digit.',
+            'nim.string' => 'NIM harus berupa kombinasi huruf dan/atau angka.',
+            'nim.min' => 'NIM harus memiliki minimal :min karakter.',
+            'nim.max' => 'NIM tidak boleh lebih dari :max karakter.',
             'nim.unique' => 'NIM ini sudah terdaftar.',
             'jurusan.max' => 'Jurusan tidak boleh lebih dari :max karakter.',
             'universitas.max' => 'Universitas tidak boleh lebih dari :max karakter.',

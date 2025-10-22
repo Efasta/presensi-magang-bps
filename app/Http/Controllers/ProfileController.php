@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Fungsi;
+use App\Models\Absensi;
 use Illuminate\View\View;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -18,13 +19,27 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): View
+    public function edit(Request $request): View|RedirectResponse
     {
+        $user = $request->user();
+
+        // 🔹 Cek apakah user ini alumni berdasarkan tabel absensi
+        $isAlumni = Absensi::where('user_id', $user->id)
+            ->where('status_id', 5)
+            ->exists();
+
+        // 🔹 Kalau alumni, redirect langsung ke halaman Card-nya
+        if ($isAlumni) {
+            return redirect('/users/' . $user->slug);
+        }
+
+        // 🔹 Kalau bukan alumni, tetap tampilkan halaman edit profil
         return view('profile.edit', [
-            'user' => $request->user(),
+            'user' => $user,
             'fungsiList' => Fungsi::all(),
         ]);
     }
+
 
     /**
      * Update the user's profile information.

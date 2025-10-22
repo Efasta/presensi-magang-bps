@@ -20,8 +20,11 @@
                 </p>
 
                 <!-- Form absensi -->
-                @if ($isWeekend)
-                    <!-- Jika hari ini Sabtu atau Minggu -->
+                @if ($isAlumni)
+                    <button type="button" class="bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed" disabled>
+                        Alumni tidak dapat melakukan absensi
+                    </button>
+                @elseif ($isWeekend)
                     <button type="button" class="bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed" disabled>
                         Hari ini {{ $namaHari }}, absen tidak tersedia
                     </button>

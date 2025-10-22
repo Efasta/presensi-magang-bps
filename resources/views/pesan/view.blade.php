@@ -27,8 +27,8 @@
 
                 <!-- Message Content -->
                 <div class="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow-sm mb-6">
-                    <p class="text-lg text-gray-800 dark:text-gray-200">
-                        {{ $notif->pesan }}
+                    <p class="text-lg text-gray-800 dark:text-gray-200 leading-relaxed">
+                        {!! nl2br($notif->pesan) !!}
                     </p>
                 </div>
 
@@ -68,9 +68,9 @@
                     @endif
 
                     <!-- Tombol Kembali -->
-                    <a href="/pesan"
+                    <a href="{{ url()->previous() }}"
                         class="px-4 py-2 text-sm text-gray-800 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200">
-                        ← Kembali ke pesan
+                        ← Kembali
                     </a>
                 </div>
 

@@ -126,5 +126,10 @@ class User extends Authenticatable implements MustVerifyEmail
         if (!empty($filters['jenis_kelamin']) && is_array($filters['jenis_kelamin'])) {
             $query->whereIn('jenis_kelamin', $filters['jenis_kelamin']);
         }
+
+        // Filter berdasarkan tahun (tanggal_keluar)
+        if (!empty($filters['tahun'])) {
+            $query->whereYear('tanggal_keluar', $filters['tahun']);
+        }
     }
 }

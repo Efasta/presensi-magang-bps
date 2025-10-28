@@ -62,7 +62,6 @@ Artisan::command('absensi:auto-mark-absent', function () {
 Artisan::command('user:auto-complete-status', function () {
     $today = Carbon::now('Asia/Makassar')->toDateString();
 
-    // Ambil semua user non-admin yang sudah selesai magang (tanggal_keluar hari ini atau sebelumnya)
     $users = DB::table('users')
         ->where('is_admin', '!=', 1)
         ->whereDate('tanggal_keluar', '<=', $today)
@@ -71,15 +70,14 @@ Artisan::command('user:auto-complete-status', function () {
     $jumlahDiproses = 0;
 
     foreach ($users as $user) {
-        // Cek apakah user ini sudah punya absensi status 'selesai'
+        // ✅ Pastikan hanya 1 absensi selesai per user (tanpa tergantung tanggal)
         $sudahAda = DB::table('absensis')
             ->where('user_id', $user->id)
-            ->where('status_id', 5) // status "selesai"
-            ->whereDate('tanggal', $user->tanggal_keluar)
+            ->where('status_id', 5)
             ->exists();
 
-        // Jika belum ada absensi selesai, buatkan satu
         if (!$sudahAda) {
+            // Tambahkan entri absensi baru hanya sekali
             DB::table('absensis')->insert([
                 'user_id'       => $user->id,
                 'tanggal'       => $user->tanggal_keluar,
@@ -90,9 +88,11 @@ Artisan::command('user:auto-complete-status', function () {
 
             $this->info("✅ Status 'selesai' dibuat untuk user ID {$user->id} ({$user->name})");
             $jumlahDiproses++;
+        } else {
+            $this->info("⏩ Lewati user {$user->name}, absensi 'selesai' sudah ada.");
         }
 
-        // 2️⃣ Kirim notifikasi hanya jika belum pernah dikirim
+        // Kirim notifikasi hanya jika belum pernah dikirim
         if (empty($user->notif_alumni_sent) || $user->notif_alumni_sent == false) {
 
             Carbon::setLocale('id');
@@ -126,7 +126,7 @@ Artisan::command('user:auto-complete-status', function () {
                 ]);
             }
 
-            // 🔒 Tandai bahwa notifikasi sudah dikirim (supaya tidak dikirim ulang)
+            // Tandai bahwa notifikasi sudah dikirim
             DB::table('users')
                 ->where('id', $user->id)
                 ->update(['notif_alumni_sent' => true]);
@@ -135,9 +135,8 @@ Artisan::command('user:auto-complete-status', function () {
         }
     }
 
-    $this->info("🏁 Total absensi status 'selesai' yang diproses hari ini: {$jumlahDiproses}");
+    $this->info("🏁 Total absensi status 'selesai' yang ditambahkan: {$jumlahDiproses}");
 })->purpose('Buat absensi status selesai otomatis dan kirim notifikasi ke admin saat user jadi alumni');
-
 
 Artisan::command('user:morning-absen-reminder', function () {
     $now = Carbon::now('Asia/Makassar');

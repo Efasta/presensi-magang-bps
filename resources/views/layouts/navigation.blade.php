@@ -84,8 +84,8 @@
 
                         <!-- Panah (animasi rotasi) -->
                         <svg :class="{ 'rotate-180': isUserOpen, 'rotate-0': !isUserOpen }"
-                            class="fill-current h-4 w-4 transform ease-in-out"
-                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            class="fill-current h-4 w-4 transform ease-in-out" xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20">
                             <path fill-rule="evenodd"
                                 d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
                                 clip-rule="evenodd" />
@@ -150,3 +150,85 @@
         </div>
     </div>
 </nav>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const notifDropdown = document.querySelector('[x-data] .relative div[x-show="isNotifOpen"] ul');
+        const bellButton = document.querySelector('.relative > button');
+
+        async function fetchNotifs() {
+            try {
+                const response = await fetch("{{ route('ajax.notifikasi') }}");
+                const data = await response.json();
+
+                // === Update badge ===
+                const oldBadge = bellButton.querySelector('span.bg-red-600');
+                if (oldBadge) oldBadge.remove();
+
+                if (data.unreadCount > 0) {
+                    const badge = document.createElement('span');
+                    badge.className =
+                        "absolute -top-1 -right-1 flex items-center justify-center min-w-[18px] h-[18px] text-[11px] font-bold text-white bg-red-600 rounded-full";
+                    badge.textContent = data.unreadCount;
+                    bellButton.querySelector('.relative').appendChild(badge);
+                }
+
+                // === Update dropdown ===
+                notifDropdown.innerHTML = "";
+
+                if (data.recentNotifs.length === 0) {
+                    notifDropdown.innerHTML = `
+                    <li class="w-full px-4 py-6 text-center text-gray-500 text-sm">
+                        Belum ada notifikasi baru...
+                    </li>`;
+                } else {
+                    data.recentNotifs.forEach(n => {
+                        notifDropdown.innerHTML += `
+                        <li class="border-b border-gray-100 last:border-none">
+                            <a href="/pesan/${n.slug}"
+                               class="notif-item flex gap-3 px-4 py-3 hover:bg-gray-50 transition-all duration-150 ease-in-out"
+                               data-id="${n.slug}">
+                                <img src="${n.foto}" alt="${n.nama}"
+                                     class="w-10 h-10 rounded-full object-cover shadow-sm">
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between">
+                                        <p class="font-semibold text-gray-900 text-sm truncate">${n.nama}</p>
+                                        <span class="text-xs text-blue-400 whitespace-nowrap">${n.created_at}</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mt-0.5 line-clamp-2 notif-message">${n.pesan}</p>
+                                </div>
+                            </a>
+                        </li>`;
+                    });
+                }
+
+                // === Tandai sebagai dibaca saat diklik ===
+                document.querySelectorAll(".notif-item").forEach(item => {
+                    item.addEventListener("click", async (e) => {
+                        const slug = item.dataset.id;
+
+                        await fetch("{{ route('notifikasi.read') }}", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                            },
+                            body: JSON.stringify({
+                                slug
+                            })
+                        });
+
+                        // Hapus langsung dari dropdown (UX lebih enak)
+                        item.parentElement.remove();
+                    });
+                });
+
+            } catch (error) {
+                console.error("Gagal memuat notifikasi:", error);
+            }
+        }
+
+        fetchNotifs();
+        setInterval(fetchNotifs, 10000);
+    });
+</script>

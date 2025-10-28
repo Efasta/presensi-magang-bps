@@ -45,9 +45,11 @@ class AppServiceProvider extends ServiceProvider
                     ->count();
 
                 $recentNotifs = Notif::where('user_id', $user->id)
+                    ->where('is_read', false) // hanya ambil notifikasi belum dibaca
                     ->orderBy('created_at', 'desc')
                     ->take(10)
                     ->get();
+
 
                 $view->with(compact('unreadCount', 'recentNotifs'));
             }

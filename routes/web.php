@@ -75,7 +75,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->where('is_read', false)
             ->count();
 
+        // ⛔ Sekarang tampilkan hanya yang belum dibaca
         $recentNotifs = \App\Models\Notif::where('user_id', $user->id)
+            ->where('is_read', false) // tambahkan ini!
             ->orderBy('created_at', 'desc')
             ->take(10)
             ->get()

@@ -187,19 +187,17 @@
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const notifDropdown = document.querySelector('[x-data] .relative div[x-show="isNotifOpen"] ul');
-        const bellButton = document.querySelector('.relative > button'); // tombol lonceng
+        const bellButton = document.querySelector('.relative > button');
 
         async function fetchNotifs() {
             try {
                 const response = await fetch("{{ route('ajax.notifikasi') }}");
                 const data = await response.json();
 
-                // === Update Badge ===
-                // Hapus badge lama (kalau ada)
+                // === Update badge ===
                 const oldBadge = bellButton.querySelector('span.bg-red-600');
                 if (oldBadge) oldBadge.remove();
 
-                // Tambahkan badge baru hanya jika ada unread
                 if (data.unreadCount > 0) {
                     const badge = document.createElement('span');
                     badge.className =
@@ -208,45 +206,61 @@
                     bellButton.querySelector('.relative').appendChild(badge);
                 }
 
-                // === Update Dropdown List ===
+                // === Update dropdown ===
                 notifDropdown.innerHTML = "";
 
                 if (data.recentNotifs.length === 0) {
                     notifDropdown.innerHTML = `
                     <li class="w-full px-4 py-6 text-center text-gray-500 text-sm">
-                        Notifikasi kamu lagi kosong nih...
+                        Belum ada notifikasi baru...
                     </li>`;
                 } else {
                     data.recentNotifs.forEach(n => {
                         notifDropdown.innerHTML += `
                         <li class="border-b border-gray-100 last:border-none">
                             <a href="/pesan/${n.slug}"
-                                class="flex gap-3 px-4 py-3 hover:bg-gray-50 transition-all duration-150 ease-in-out">
+                               class="notif-item flex gap-3 px-4 py-3 hover:bg-gray-50 transition-all duration-150 ease-in-out"
+                               data-id="${n.slug}">
                                 <img src="${n.foto}" alt="${n.nama}"
-                                    class="w-10 h-10 rounded-full object-cover shadow-sm">
+                                     class="w-10 h-10 rounded-full object-cover shadow-sm">
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center justify-between">
-                                        <p class="font-semibold text-gray-900 text-sm truncate">
-                                            ${n.nama}
-                                        </p>
-                                        <span class="text-xs text-blue-400 whitespace-nowrap">
-                                            ${n.created_at}
-                                        </span>
+                                        <p class="font-semibold text-gray-900 text-sm truncate">${n.nama}</p>
+                                        <span class="text-xs text-blue-400 whitespace-nowrap">${n.created_at}</span>
                                     </div>
-                                    <p class="text-sm text-gray-600 mt-0.5 line-clamp-2 notif-message">
-                                        ${n.pesan}
-                                    </p>
+                                    <p class="text-sm text-gray-600 mt-0.5 line-clamp-2 notif-message">${n.pesan}</p>
                                 </div>
                             </a>
                         </li>`;
                     });
                 }
+
+                // === Tandai sebagai dibaca saat diklik ===
+                document.querySelectorAll(".notif-item").forEach(item => {
+                    item.addEventListener("click", async (e) => {
+                        const slug = item.dataset.id;
+
+                        await fetch("{{ route('notifikasi.read') }}", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                            },
+                            body: JSON.stringify({
+                                slug
+                            })
+                        });
+
+                        // Hapus langsung dari dropdown (UX lebih enak)
+                        item.parentElement.remove();
+                    });
+                });
+
             } catch (error) {
                 console.error("Gagal memuat notifikasi:", error);
             }
         }
 
-        // Jalankan setiap 10 detik
         fetchNotifs();
         setInterval(fetchNotifs, 10000);
     });

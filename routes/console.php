@@ -1,6 +1,7 @@
 <?php
 
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
@@ -77,32 +78,29 @@ Artisan::command('user:auto-complete-status', function () {
             ->whereDate('tanggal', $user->tanggal_keluar)
             ->exists();
 
+        // Jika belum ada absensi selesai, buatkan satu
         if (!$sudahAda) {
-            // 1️⃣ Tambahkan entri absensi baru
             DB::table('absensis')->insert([
                 'user_id'       => $user->id,
                 'tanggal'       => $user->tanggal_keluar,
-                'status_id'     => 5, // status selesai
+                'status_id'     => 5,
                 'created_at'    => now('Asia/Makassar'),
                 'updated_at'    => now('Asia/Makassar'),
             ]);
 
-            $this->info("Status 'selesai' dibuat untuk user ID {$user->id} pada tanggal {$user->tanggal_keluar}");
+            $this->info("✅ Status 'selesai' dibuat untuk user ID {$user->id} ({$user->name})");
             $jumlahDiproses++;
+        }
 
-            // 2️⃣ Format tanggal masuk & keluar ke gaya Indonesia
+        // 2️⃣ Kirim notifikasi hanya jika belum pernah dikirim
+        if (empty($user->notif_alumni_sent) || $user->notif_alumni_sent == false) {
+
             Carbon::setLocale('id');
             $tanggalMasukFormatted = Carbon::parse($user->tanggal_masuk)->translatedFormat('d F Y');
             $tanggalKeluarFormatted = Carbon::parse($user->tanggal_keluar)->translatedFormat('d F Y');
 
-            // 3️⃣ Kirim notifikasi ke semua admin
             $admins = DB::table('users')->where('is_admin', 1)->get();
 
-            Carbon::setLocale('id');
-            $tanggalMasukFormatted = Carbon::parse($user->tanggal_masuk)->translatedFormat('d F Y');
-            $tanggalKeluarFormatted = Carbon::parse($user->tanggal_keluar)->translatedFormat('d F Y');
-
-            // Pesan dibuat lebih informatif & berparagraf
             $pesan = <<<EOT
             🎓 <b>Informasi Alumni Magang</b>
 
@@ -120,7 +118,7 @@ Artisan::command('user:auto-complete-status', function () {
                     'user_id'    => $admin->id,
                     'foto'       => 'img/BPS_Chatbot.jpg',
                     'nama'       => 'Chatbot BPS ABSEN 2025',
-                    'slug'       => \Illuminate\Support\Str::uuid(),
+                    'slug'       => Str::uuid(),
                     'pesan'      => $pesan,
                     'is_read'    => 0,
                     'created_at' => now('Asia/Makassar'),
@@ -128,11 +126,16 @@ Artisan::command('user:auto-complete-status', function () {
                 ]);
             }
 
-            $this->info("Notifikasi alumni dikirim ke semua admin untuk user {$user->name}.");
+            // 🔒 Tandai bahwa notifikasi sudah dikirim (supaya tidak dikirim ulang)
+            DB::table('users')
+                ->where('id', $user->id)
+                ->update(['notif_alumni_sent' => true]);
+
+            $this->info("📩 Notifikasi alumni dikirim ke semua admin untuk user {$user->name}.");
         }
     }
 
-    $this->info("Total absensi status 'selesai' yang ditambahkan: {$jumlahDiproses}");
+    $this->info("🏁 Total absensi status 'selesai' yang diproses hari ini: {$jumlahDiproses}");
 })->purpose('Buat absensi status selesai otomatis dan kirim notifikasi ke admin saat user jadi alumni');
 
 

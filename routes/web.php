@@ -10,7 +10,7 @@ use App\Http\Controllers\CardUsersController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NotifikasiController;
 
-Route::get('/', function () {
+Route::get('/presensi', function () {
     return view('welcome');
 });
 

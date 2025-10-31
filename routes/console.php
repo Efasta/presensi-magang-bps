@@ -64,7 +64,7 @@ Artisan::command('user:auto-complete-status', function () {
 
     $users = DB::table('users')
         ->where('is_admin', '!=', 1)
-        ->whereDate('tanggal_keluar', '<=', $today)
+        ->whereDate('tanggal_keluar', '<', $today)
         ->get();
 
     $jumlahDiproses = 0;
